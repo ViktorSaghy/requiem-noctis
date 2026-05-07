@@ -1,1 +1,2 @@
-// Audio — BGM and SFX management
+export { Audio } from './engine';
+export type { Mood } from './engine';

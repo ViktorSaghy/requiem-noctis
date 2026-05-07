@@ -65,29 +65,85 @@ class AudioEngineClass {
   private ctx: AudioContext | null = null;
   private masterGain: GainNode | null = null;
   private bgGain: GainNode | null = null;
+  private bgControlGain: GainNode | null = null;
   private sfxGain: GainNode | null = null;
+  private sfxControlGain: GainNode | null = null;
   private moodGen = 0;
-  private currentMood: Mood | null = null;
   private tensionPhase = 0;
+
+  private _masterVol = 0.8;
+  private _musicVol = 1.0;
+  private _sfxVol = 1.0;
+  private _musicEnabled = true;
+  private _sfxEnabled = true;
 
   private getCtx(): AudioContext {
     if (!this.ctx) {
       this.ctx = new AudioContext();
 
       this.masterGain = this.ctx.createGain();
-      this.masterGain.gain.value = 0.8;
+      this.masterGain.gain.value = this._masterVol;
       this.masterGain.connect(this.ctx.destination);
 
+      // Music chain: bgGain (animated by mood) → bgControlGain (user volume) → masterGain
       this.bgGain = this.ctx.createGain();
       this.bgGain.gain.value = 0;
-      this.bgGain.connect(this.masterGain);
+      this.bgControlGain = this.ctx.createGain();
+      this.bgControlGain.gain.value = this._musicEnabled ? this._musicVol : 0;
+      this.bgGain.connect(this.bgControlGain);
+      this.bgControlGain.connect(this.masterGain);
 
+      // SFX chain: sfxGain → sfxControlGain (user volume) → masterGain
       this.sfxGain = this.ctx.createGain();
       this.sfxGain.gain.value = 1.0;
-      this.sfxGain.connect(this.masterGain);
+      this.sfxControlGain = this.ctx.createGain();
+      this.sfxControlGain.gain.value = this._sfxEnabled ? this._sfxVol : 0;
+      this.sfxGain.connect(this.sfxControlGain);
+      this.sfxControlGain.connect(this.masterGain);
     }
     if (this.ctx.state === 'suspended') this.ctx.resume();
     return this.ctx;
+  }
+
+  unlock(): void {
+    const ctx = this.getCtx();
+    if (ctx.state === 'suspended') ctx.resume();
+  }
+
+  applySettings(s: { masterVolume: number; musicVolume: number; sfxVolume: number; musicEnabled: boolean; sfxEnabled: boolean }): void {
+    this._masterVol = s.masterVolume;
+    this._musicVol = s.musicVolume;
+    this._sfxVol = s.sfxVolume;
+    this._musicEnabled = s.musicEnabled;
+    this._sfxEnabled = s.sfxEnabled;
+    if (this.masterGain) this.masterGain.gain.value = this._masterVol;
+    if (this.bgControlGain) this.bgControlGain.gain.value = this._musicEnabled ? this._musicVol : 0;
+    if (this.sfxControlGain) this.sfxControlGain.gain.value = this._sfxEnabled ? this._sfxVol : 0;
+  }
+
+  setMasterVolume(v: number): void {
+    this._masterVol = Math.max(0, Math.min(1, v));
+    if (this.masterGain) this.masterGain.gain.value = this._masterVol;
+  }
+
+  setMusicVolume(v: number): void {
+    this._musicVol = Math.max(0, Math.min(1, v));
+    if (this.bgControlGain) this.bgControlGain.gain.value = this._musicEnabled ? this._musicVol : 0;
+  }
+
+  setMusicEnabled(enabled: boolean): void {
+    this._musicEnabled = enabled;
+    if (this.bgControlGain) this.bgControlGain.gain.value = enabled ? this._musicVol : 0;
+  }
+
+  setSfxVolume(v: number): void {
+    this._sfxVol = Math.max(0, Math.min(1, v));
+    if (this.sfxControlGain) this.sfxControlGain.gain.value = this._sfxEnabled ? this._sfxVol : 0;
+  }
+
+  setSfxEnabled(enabled: boolean): void {
+    this._sfxEnabled = enabled;
+    if (this.sfxControlGain) this.sfxControlGain.gain.value = enabled ? this._sfxVol : 0;
   }
 
   private scheduleNote(
@@ -178,7 +234,6 @@ class AudioEngineClass {
   setMood(mood: Mood): void {
     const ctx = this.getCtx();
     const gen = ++this.moodGen;
-    this.currentMood = mood;
     this.tensionPhase = 0;
 
     const bg = this.bgGain!;
@@ -203,7 +258,6 @@ class AudioEngineClass {
   stopMood(): void {
     const ctx = this.getCtx();
     this.moodGen++;
-    this.currentMood = null;
     const now = ctx.currentTime;
     const bg = this.bgGain!;
     bg.gain.cancelScheduledValues(now);

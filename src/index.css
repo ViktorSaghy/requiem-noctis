@@ -1120,6 +1120,38 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--gol
 .name-field-row input { flex: 1; }
 .name-gen-btn { flex-shrink: 0; white-space: nowrap; align-self: stretch; }
 
+/* ── Scene Illustrations ────────────────────────────────────────────────── */
+
+.scene-illustration-wrap {
+  width: 100%;
+  line-height: 0;
+  animation: illustrationFadeIn 0.7s ease both;
+}
+
+.scene-illustration {
+  width: 100%;
+  display: block;
+  max-height: 45vh;
+  object-fit: cover;
+  object-position: center top;
+}
+
+/* Ending screen: unconstrained height, allow the full image */
+.ending-illustration {
+  margin-bottom: 1.5rem;
+  border-radius: 3px;
+  overflow: hidden;
+}
+.ending-illustration .scene-illustration {
+  max-height: 35vh;
+  object-position: center center;
+}
+
+@keyframes illustrationFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
 /* ── Desktop (768px+) ───────────────────────────────────────────────────── */
 @media (min-width: 768px) {
   .game-screen {
@@ -1146,4 +1178,13 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--gol
   .creation-screen { max-width: 600px; margin: 0 auto; }
   .story-grid { grid-template-columns: 1fr 1fr; max-width: 680px; }
   .template-row { grid-template-columns: repeat(4, 1fr); }
+
+  .scene-illustration-wrap {
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .scene-illustration { max-height: 38vh; }
 }

@@ -30,6 +30,7 @@ export interface Choice {
 export interface Scene {
   act: number;
   title?: string;
+  image?: string;
   narrative?: string;
   choices?: Choice[];
   check?: DiceCheck;
@@ -42,6 +43,7 @@ export interface Scene {
 export interface Ending {
   type: EndingType;
   title: string;
+  image?: string;
   text: string;
 }
 

@@ -111,11 +111,13 @@ export const AshAndIvory: Chronicle = {
     good_escape: {
       type: 'good_end',
       title: 'Ivory',
+      image: '/backgrounds/ash-train.png',
       text: "The train west leaves Westbahnhof at 6:15am. You are on it.\n\nThe documents are ash. Kessler will write his report. No one in Berlin will act on it.\n\nVienna will fall. Vienna will suffer. But the Kindred of this city will survive the long night of occupation with their names unknown, their havens intact.\n\nYou bought them forty-eight hours. It was enough.\n\nIn this century, forty-eight hours is everything.",
     },
     perfect_the_asset: {
       type: 'perfect_end',
       title: 'The Asset',
+      image: '/backgrounds/ash-train.png',
       text: "Kessler's transfer orders arrive in a week. Bucharest.\n\nHe will carry, for the rest of his life, a precise understanding of what he owes and to whom. He will bury three investigations. He will redirect two raids.\n\nThe documents are ash. Vasile walks out of the Imperial Hotel under his own power.\n\nMiriam sends a postcard from Geneva. It says only: I told you.\n\nYou leave Vienna on the last night train. In the dark, the city looks almost peaceful.\n\nIt will not be. But you knew that already.",
     },
   },
@@ -124,6 +126,7 @@ export const AshAndIvory: Chronicle = {
     start: {
       act: 1,
       title: 'Kärntner Strasse, 2am',
+      image: '/backgrounds/ash-cafe.png',
       narrative: "The envelope has been memorised. A single line: 'Courier Vasile is missing. The documents exist. Find them before dawn Thursday.'\n\nOutside the café window, Vienna has been celebrating for six hours. Wehrmacht trucks moving through the Ringstrasse to cheering crowds. A woman threw flowers. A man near the front wept. You could not tell which was sincere.\n\nThe café owner — Hofer, fifty years old — sets a glass of red wine in front of you that you did not order. His hands are shaking.\n\nYou have until Thursday dawn. Vasile runs identity documents for the Camarilla. If those documents reach the wrong hands, seventeen Kindred are exposed.\n\nHofer is watching you. He has not looked away once.",
       choices: [
         { text: 'Examine the envelope — someone sent this deliberately', next: 'examine_envelope', icon: '🔍' },
@@ -136,6 +139,7 @@ export const AshAndIvory: Chronicle = {
     examine_envelope: {
       act: 1,
       title: 'What the Paper Knows',
+      image: '/backgrounds/ash-cafe.png',
       narrative: "The fold is exact. Three creases, perfectly parallel — the habit of someone who files correspondence for decades. Not a courier. An administrator.\n\nThe wax seal was cut with a blade, not broken. Opened and resealed. Someone read this before you.\n\nIn the lower-right corner, almost invisible: a printed number. 44. Camarilla administrative correspondence uses sequential reference codes. This envelope originated inside the network.\n\nSomeone is sending you an unofficial warning through official materials. A very short list of people who could do that.\n\nYou look up. Hofer's hands have stopped shaking. He is looking at the bar now, deliberately not at you. That is worse.",
       check: {
         type: 'mental',
@@ -277,6 +281,7 @@ export const AshAndIvory: Chronicle = {
     contact_miriam_initial: {
       act: 1,
       title: 'Taborstrasse',
+      image: '/backgrounds/ash-miriam.png',
       narrative: "The bookshop on Taborstrasse. Miriam Szabo is sitting in the back room with a Hungarian newspaper folded open to the crossword. She does not look up.\n\n'I wondered when you would come,' she says. Her accent is unguarded tonight. 'I sent the envelope. I used Camarilla materials because I wanted you to know it was real.'\n\nShe sets down the paper. When she looks at you, her eyes are sharper than the Malkavian reputation suggests.\n\n'I have what you are looking for. All of it. Vasile gave it to me before they took him.' A pause. 'But I want something in return.'",
       flags_set: ['miriam_contacted', 'miriam_has_documents', 'knows_miriam_sent_envelope'],
       choices: [
@@ -309,6 +314,7 @@ export const AshAndIvory: Chronicle = {
     miriam_wants: {
       act: 1,
       title: 'Her Price',
+      image: '/backgrounds/ash-miriam.png',
       narrative: "'I want to leave Vienna,' Miriam says. 'I have been here eighty years. I know what occupations feel like. This one will be worse than most.'\n\nShe moves to the window. In the street below, a column of Wehrmacht trucks moves east, slow and heavy.\n\n'The Camarilla will not evacuate me. But you need what I have — the documents, Vasile's location, and something else. About Kessler. About what made him afraid of your kind in the first place.'\n\nShe turns. 'Get me to Switzerland. I will give you everything.'",
       choices: [
         { text: 'Agree — you will escort her to the Swiss border', next: 'miriam_deal_made', icon: '🤝' },
@@ -506,6 +512,7 @@ export const AshAndIvory: Chronicle = {
     hotel_spotted_brandt: {
       act: 2,
       title: 'Brandt',
+      image: '/backgrounds/ash-brandt.png',
       narrative: "He does not call for help. He does not reach for his weapon immediately. He turns to face you, hands visible, and says in careful German: 'I was expecting someone.'\n\nHis eyes focus on your collar. Not your face.\n\n'I know not to look at you directly,' he says. 'I know you can make me forget this conversation if I do.' A pause. 'I have been preparing for two years. I would like to talk before this becomes something neither of us wants.'",
       flags_set: ['brandt_confrontation', 'brandt_knows_player'],
       choices: [
@@ -518,6 +525,7 @@ export const AshAndIvory: Chronicle = {
     brandt_talk: {
       act: 2,
       title: 'What Brandt Knows',
+      image: '/backgrounds/ash-brandt.png',
       narrative: "'I was in Prague,' he says. Very still. 'I saw what your kind can do. I also saw what Kessler became after — the partial resistance, the obsession.'\n\nHe keeps his hands visible. Silver ammunition in his jacket.\n\n'Kessler's investigation ends tonight either way — he has received orders to consolidate in Berlin. But he will not leave without answers.'\n\nBrandt glances at your collar. 'The courier in Room 14 — he is going to break. Not because we are cruel. Because it has been three days and he has not fed and that is what that does to your kind, is it not? The hunger.'",
       choices: [
         { text: 'He is right about everything. Negotiate.', next: 'brandt_negotiate', icon: '🤝' },
@@ -623,6 +631,7 @@ export const AshAndIvory: Chronicle = {
     brandt_fight: {
       act: 2,
       title: 'Hauptsturmführer Brandt',
+      image: '/backgrounds/ash-brandt.png',
       narrative: "Brandt is not like the men in the warehouse. He does not flinch at your speed. He does not freeze at your eyes. He keeps moving, keeps distance, uses the corridor geometry with the ease of someone who has thought carefully about fighting in confined spaces against something faster than him.\n\nHis first shot misses deliberately — a warning, or recalibration. The second will not.\n\nEvery shot is a Masquerade breach. End this fast.",
       check: {
         type: 'combat',
@@ -777,6 +786,7 @@ export const AshAndIvory: Chronicle = {
     kessler_meeting: {
       act: 3,
       title: 'Coffee at 4am',
+      image: '/backgrounds/ash-kessler.png',
       narrative: "Kessler pours two cups of coffee. Sets one in front of you.\n\n'I know you will not drink it. But it seemed polite.'\n\nHe sits across the desk. The files between you contain six months of meticulous work. He does not hide them. He wants you to see them.\n\n'My name — my real name — is Hans Bremer. I suspect you know that.'",
       flags_set: ['kessler_confesses_name', 'kessler_direct_meeting'],
       choices: [
@@ -790,6 +800,7 @@ export const AshAndIvory: Chronicle = {
     kessler_choice: {
       act: 3,
       title: 'What To Do With Kessler',
+      image: '/backgrounds/ash-kessler.png',
       narrative: "Kessler knows. Not everything — but enough.\n\n'The Reich is going to be at war within two years,' he says. 'I intend to survive. People with unusual resources might be useful to a man trying to survive a war.'\n\nHe is offering a deal. He is also, if you choose, offering himself as a target.",
       choices: [
         { text: 'Kill him. This ends here.', next: 'kessler_kill', icon: '⚔️' },
@@ -802,6 +813,7 @@ export const AshAndIvory: Chronicle = {
     kessler_wants: {
       act: 3,
       title: 'What Kessler Wants',
+      image: '/backgrounds/ash-kessler.png',
       narrative: "'I want to understand what I have found,' he says. 'Not to weaponise it. Not to report it up a chain that will make decisions I do not control. To understand it.'\n\nHe opens a drawer and removes a folder. 'This is my personal copy. The official report is in Berlin.' A pause. 'I could burn this.'\n\nHe sets it on the desk. 'I want a conversation. An honest one. About what you are and what this means. And then I want to leave Vienna and think about whether I can live with not telling anyone.'",
       choices: [
         { text: 'Give him the conversation. Honesty is a gamble — take it.', next: 'kessler_honest_talk', icon: '🤝' },

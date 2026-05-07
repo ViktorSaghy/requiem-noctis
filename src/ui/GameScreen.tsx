@@ -83,6 +83,11 @@ function StoryPane({
   return (
     <div className="story-pane">
       <div className="story-scroll">
+        {scene.image && (
+          <div key={game.sceneId} className="scene-illustration-wrap">
+            <img src={scene.image} alt="" className="scene-illustration" />
+          </div>
+        )}
         {scene.title && (
           <div className="scene-title-bar">Act {scene.act} — {scene.title}</div>
         )}

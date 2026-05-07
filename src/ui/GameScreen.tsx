@@ -4,6 +4,7 @@ import { listSaves } from '../engine';
 import type { SaveSlot, JournalEntry } from '../engine';
 import { Audio } from '../audio';
 import { DiceOverlay } from './DiceOverlay';
+import { CombatScreen } from './CombatScreen';
 
 type GameTab = 'story' | 'character' | 'journal' | 'menu';
 
@@ -341,6 +342,19 @@ export function GameScreen({
   }, [sceneId]);
 
   if (!scene) return null;
+
+  // Combat scenes bypass the tab layout
+  if (scene.combat) {
+    return (
+      <div className="game-screen combat-mode">
+        <CombatScreen
+          scenario={scene.combat}
+          character={character}
+          onEnd={onGoTo}
+        />
+      </div>
+    );
+  }
 
   const ACT_BG: Record<number, string> = {
     1: '/backgrounds/ash-cafe.png',

@@ -27,6 +27,33 @@ export interface Choice {
   requires_flag?: string;
 }
 
+export interface EnemySpec {
+  id: string;
+  name: string;
+  clan: string;
+  generation: number;
+  attackPool: number;
+  defensePool: number;
+  maxHealth: number;
+  maxWillpower: number;
+  hunger: number;
+  damageType: 'superficial' | 'aggravated';
+  baseDamage: number;
+  disciplines: Record<string, number>;
+  description: string;
+  image?: string;
+  regenPerRound?: number;
+}
+
+export interface CombatScenario {
+  label: string;
+  description: string;
+  enemies: EnemySpec[];
+  victory_next: string;
+  defeat_next: string;
+  flee_next?: string;
+}
+
 export interface Scene {
   act: number;
   title?: string;
@@ -34,6 +61,7 @@ export interface Scene {
   narrative?: string;
   choices?: Choice[];
   check?: DiceCheck;
+  combat?: CombatScenario;
   next?: string;
   flags_set?: string[];
   resolution?: boolean;

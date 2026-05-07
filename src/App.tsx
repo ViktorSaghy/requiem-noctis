@@ -12,13 +12,14 @@ import {
   SettingsPanel,
 } from './ui';
 import { AshAndIvory } from '../content/ash-ivory/scenes';
+import { BloodGamesChronicle } from '../content/blood-games/scenes';
 import { Audio } from './audio';
 import type { AppSettings } from './engine/settings';
 import { loadSettings } from './engine/settings';
 
 type Screen = 'title' | 'story' | 'create' | 'game' | 'ending' | 'settings';
 
-const CHRONICLES: Chronicle[] = [AshAndIvory];
+const CHRONICLES: Chronicle[] = [AshAndIvory, BloodGamesChronicle];
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('title');

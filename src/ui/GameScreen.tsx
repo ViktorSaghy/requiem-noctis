@@ -337,7 +337,13 @@ export function GameScreen({
 
   if (!scene) return null;
 
-  const bg = '/backgrounds/background-splash.png';
+  const ACT_BG: Record<number, string> = {
+    1: '/backgrounds/act1-vienna-streets.png',
+    2: '/backgrounds/act2-elysium.png',
+    3: '/backgrounds/act3-warehouse.png',
+    4: '/backgrounds/act4-final.png',
+  };
+  const bg = ACT_BG[scene.act] ?? '/backgrounds/background-splash.png';
   const showDice = diceState.phase !== 'idle' && diceState.result !== null;
 
   const TABS: { id: GameTab; icon: string; label: string }[] = [

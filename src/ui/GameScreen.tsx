@@ -343,12 +343,12 @@ export function GameScreen({
   if (!scene) return null;
 
   const ACT_BG: Record<number, string> = {
-    1: '/backgrounds/act1-vienna-streets.png',
-    2: '/backgrounds/act2-elysium.png',
-    3: '/backgrounds/act3-warehouse.png',
-    4: '/backgrounds/act4-final.png',
+    1: '/backgrounds/ash-cafe.png',
+    2: '/backgrounds/ash-brandt.png',
+    3: '/backgrounds/ash-kessler.png',
+    4: '/backgrounds/ash-train.png',
   };
-  const bg = ACT_BG[scene.act] ?? '/backgrounds/background-splash.png';
+  const bg = ACT_BG[scene.act] ?? '/backgrounds/ash-cafe.png';
   const showDice = diceState.phase !== 'idle' && diceState.result !== null;
 
   const TABS: { id: GameTab; icon: string; label: string }[] = [

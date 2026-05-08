@@ -1,7 +1,7 @@
 // src/engine/saves.ts
 // Save and load game state
 
-import { Character } from './character';
+import type { Character } from './character';
 
 export interface SaveSlot {
   slot: string;
@@ -54,10 +54,20 @@ export async function saveGame(
   }
 }
 
+function migrateCharacter(char: Character): Character {
+  return {
+    ...char,
+    superficialDmg: char.superficialDmg ?? 0,
+    aggravatedDmg: char.aggravatedDmg ?? 0,
+  };
+}
+
 export async function loadGame(slot: string = 'auto'): Promise<SaveSlot | null> {
   try {
     const raw = localStorage.getItem(`${STORAGE_PREFIX}save_${slot}`);
-    return raw ? JSON.parse(raw) : null;
+    if (!raw) return null;
+    const save: SaveSlot = JSON.parse(raw);
+    return { ...save, character: migrateCharacter(save.character) };
   } catch (e) {
     return null;
   }

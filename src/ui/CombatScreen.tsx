@@ -11,10 +11,10 @@ import { Audio } from '../audio';
 interface Props {
   scenario: CombatScenario;
   character: Character;
-  onEnd: (nextSceneId: string) => void;
+  onEnd: (nextSceneId: string, finalPlayer: PlayerCombatState) => void;
 }
 
-// ─────────────────── SUB-COMPONENTS ───────────────────
+// ─────────────── SUB-COMPONENTS ───────────────
 
 function HpTrack({ superficial, aggravated, max, compact }: {
   superficial: number; aggravated: number; max: number; compact?: boolean;
@@ -90,6 +90,9 @@ function EnemyCard({
           </div>
           {enemy.stunned && <div className="enemy-status-badge">STUNNED</div>}
           {enemy.attackPenalty > 0 && <div className="enemy-status-badge penalty">−{enemy.attackPenalty} ATK</div>}
+          {enemy.spec.description && (
+            <div className="enemy-desc">{enemy.spec.description}</div>
+          )}
         </>
       )}
       {targetable && !defeated && (
@@ -101,7 +104,7 @@ function EnemyCard({
 
 function PlayerPanel({ player, character }: { player: PlayerCombatState; character: Character }) {
   return (
-    <div className="combat-player-panel">
+    <div className={`combat-player-panel ${player.isFrenzy ? 'frenzy-active' : ''}`}>
       <div className="cpp-name">{character.name} · {character.clan}</div>
       <div className="cpp-stats">
         <div className="cpp-stat-row">
@@ -119,14 +122,19 @@ function PlayerPanel({ player, character }: { player: PlayerCombatState; charact
           <HungerPips hunger={player.hunger} />
           <span className="cpp-stat-val">{player.hunger}/5</span>
         </div>
-        {player.isFullDefense && <div className="cpp-badge">FULL DEFENSE</div>}
-        {player.fortitudeShield > 0 && <div className="cpp-badge">FORTITUDE −{player.fortitudeShield}</div>}
+        <div className="cpp-badges">
+          {player.isFullDefense && <div className="cpp-badge">FULL DEFENSE</div>}
+          {player.fortitudeShield > 0 && <div className="cpp-badge">FORTITUDE −{player.fortitudeShield}</div>}
+          {player.auspexShield > 0 && <div className="cpp-badge">PREMONITION −{player.auspexShield} vs attacks</div>}
+          {player.isFrenzy && <div className="cpp-badge frenzy">FRENZY</div>}
+          {player.compulsion && <div className="cpp-badge compulsion">COMPULSION</div>}
+        </div>
       </div>
     </div>
   );
 }
 
-// ─────────────────── MAIN COMPONENT ───────────────────
+// ─────────────── MAIN COMPONENT ───────────────
 
 type CombatMode =
   | 'actions'
@@ -138,22 +146,30 @@ type CombatMode =
 export function CombatScreen({ scenario, character, onEnd }: Props) {
   const [cs, setCs] = useState<CombatState>(() => initCombat(character, scenario.enemies));
   const [mode, setMode] = useState<CombatMode>('actions');
+
+  useEffect(() => {
+    Audio.setMood('combat');
+    return () => { Audio.setMood('exploration'); };
+  }, []);
   const [pendingDiscId, setPendingDiscId] = useState<string | null>(null);
   const [endDelay, setEndDelay] = useState(false);
+  const [wpBoost, setWpBoost] = useState(false);
   const logRef = useRef<HTMLDivElement>(null);
 
   const availableDiscs = getAvailableDiscActions(character);
   const aliveEnemies = cs.enemies.filter(e => e.hp > 0);
   const singleEnemy = aliveEnemies.length === 1;
+  const canSpendWP = cs.player.willpower > 0 && !cs.player.isFrenzy;
 
   useEffect(() => {
-    if (cs.outcome !== 'ongoing' && mode !== 'ended') {
-      setMode('ended');
-      setEndDelay(true);
-      if (cs.outcome === 'victory') Audio.success();
-      else if (cs.outcome === 'defeat') Audio.bestialFailure();
-    }
-  }, [cs.outcome, mode]);
+    if (cs.outcome === 'ongoing') return;
+    setMode('ended');
+    if (cs.outcome === 'victory') Audio.success();
+    else if (cs.outcome === 'defeat') Audio.bestialFailure();
+    const t = setTimeout(() => setEndDelay(true), 1500);
+    return () => clearTimeout(t);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cs.outcome]);
 
   useEffect(() => {
     if (logRef.current) {
@@ -161,15 +177,24 @@ export function CombatScreen({ scenario, character, onEnd }: Props) {
     }
   }, [cs.log.length]);
 
+  // When frenzy activates, lock mode to actions so the frenzy UI shows
+  useEffect(() => {
+    if (cs.player.isFrenzy && mode !== 'actions' && mode !== 'ended') {
+      setMode('actions');
+      setPendingDiscId(null);
+    }
+  }, [cs.player.isFrenzy, mode]);
+
   function dispatch(action: Parameters<typeof processCombatRound>[1]) {
     Audio.buttonTap();
     setCs(prev => processCombatRound(prev, action, character));
     setMode('actions');
     setPendingDiscId(null);
+    setWpBoost(false);
   }
 
   function handleAttack(targetIdx: number) {
-    dispatch({ type: 'attack', targetIdx });
+    dispatch({ type: 'attack', targetIdx, wpBoost });
   }
 
   function handleAttackClick() {
@@ -202,9 +227,9 @@ export function CombatScreen({ scenario, character, onEnd }: Props) {
   }
 
   function handleEnd() {
-    if (cs.outcome === 'victory') onEnd(scenario.victory_next);
-    else if (cs.outcome === 'fled' && scenario.flee_next) onEnd(scenario.flee_next);
-    else onEnd(scenario.defeat_next);
+    if (cs.outcome === 'victory') onEnd(scenario.victory_next, cs.player);
+    else if (cs.outcome === 'fled' && scenario.flee_next) onEnd(scenario.flee_next, cs.player);
+    else onEnd(scenario.defeat_next, cs.player);
   }
 
   const targetableMode = mode === 'select_target_attack' || mode === 'select_target_disc';
@@ -224,6 +249,8 @@ export function CombatScreen({ scenario, character, onEnd }: Props) {
     ongoing: '',
   }[cs.outcome];
 
+  const inFrenzy = cs.player.isFrenzy;
+
   return (
     <div className="combat-screen">
       {/* Header */}
@@ -231,6 +258,14 @@ export function CombatScreen({ scenario, character, onEnd }: Props) {
         <div className="combat-scenario-label">{scenario.label}</div>
         <div className="combat-round-badge">Round {cs.round}</div>
       </div>
+
+      {/* Compulsion banner */}
+      {cs.player.compulsion && (
+        <div className="compulsion-banner">
+          <span className="compulsion-banner-label">Compulsion</span>
+          <span className="compulsion-banner-text">{cs.player.compulsion}</span>
+        </div>
+      )}
 
       {/* Enemies */}
       <div className="combat-enemies">
@@ -258,7 +293,7 @@ export function CombatScreen({ scenario, character, onEnd }: Props) {
 
       {/* Action area */}
       <div className="combat-action-area">
-        {mode === 'disc_menu' ? (
+        {mode === 'disc_menu' && !inFrenzy ? (
           <div className="disc-menu">
             <div className="disc-menu-header">
               Choose a Discipline
@@ -273,7 +308,7 @@ export function CombatScreen({ scenario, character, onEnd }: Props) {
                 >
                   <div className="disc-item-header">
                     <span className="disc-item-name">{da.label}</span>
-                    <span className="disc-item-clan">{da.discipline} {da.requiresRouse ? '· Rouse' : ''}</span>
+                    <span className="disc-item-clan">{da.discipline} {da.requiresRouse ? '· Rouse' : '· No Rouse'}</span>
                   </div>
                   <div className="disc-item-desc">{da.description}</div>
                 </button>
@@ -297,41 +332,72 @@ export function CombatScreen({ scenario, character, onEnd }: Props) {
               </button>
             )}
           </div>
-        ) : mode === 'actions' ? (
-          <div className="combat-buttons">
+        ) : inFrenzy ? (
+          <div className="frenzy-action-area">
+            <div className="frenzy-banner">
+              <div className="frenzy-banner-title">FRENZY</div>
+              <div className="frenzy-banner-text">The Beast has seized control. You cannot choose — you can only attack.</div>
+            </div>
             <button
-              className="combat-btn attack"
+              className="combat-btn attack frenzy-btn"
               disabled={cs.outcome !== 'ongoing' || aliveEnemies.length === 0}
-              onClick={handleAttackClick}
+              onClick={() => {
+                const idx = cs.enemies.findIndex(e => e.hp > 0);
+                dispatch({ type: 'attack', targetIdx: Math.max(0, idx) });
+              }}
             >
-              ⚔ Attack
+              ⚔ Frenzy Attack
             </button>
-            {availableDiscs.length > 0 && (
-              <button
-                className="combat-btn discipline"
-                disabled={cs.outcome !== 'ongoing'}
-                onClick={() => setMode('disc_menu')}
-              >
-                ✦ Disciplines
-              </button>
-            )}
-            <button
-              className="combat-btn defense"
-              disabled={cs.outcome !== 'ongoing'}
-              onClick={() => dispatch({ type: 'full_defense' })}
-            >
-              🛡 Full Defense
-            </button>
-            {scenario.flee_next && (
-              <button
-                className="combat-btn flee"
-                disabled={cs.outcome !== 'ongoing'}
-                onClick={() => dispatch({ type: 'flee' })}
-              >
-                ↩ Flee
-              </button>
-            )}
           </div>
+        ) : mode === 'actions' ? (
+          <>
+            {/* WP spend toggle */}
+            {canSpendWP && (
+              <div className="wp-spend-row">
+                <button
+                  className={`wp-spend-btn ${wpBoost ? 'active' : ''}`}
+                  onClick={() => setWpBoost(v => !v)}
+                  title="Spend 1 Willpower for +3 dice on your next attack"
+                >
+                  {wpBoost ? '◉' : '○'} Spend WP (+3 dice) — {cs.player.willpower} remaining
+                </button>
+              </div>
+            )}
+            <div className="combat-buttons">
+              <button
+                className="combat-btn attack"
+                disabled={cs.outcome !== 'ongoing' || aliveEnemies.length === 0}
+                onClick={handleAttackClick}
+              >
+                ⚔ Attack{wpBoost ? ' +WP' : ''}
+              </button>
+              {availableDiscs.length > 0 && (
+                <button
+                  className="combat-btn discipline"
+                  disabled={cs.outcome !== 'ongoing'}
+                  onClick={() => setMode('disc_menu')}
+                >
+                  ✦ Disciplines
+                </button>
+              )}
+              <button
+                className="combat-btn defense"
+                disabled={cs.outcome !== 'ongoing'}
+                onClick={() => dispatch({ type: 'full_defense' })}
+              >
+                🛡 Full Defense
+              </button>
+              {scenario.flee_next && (
+                <button
+                  className="combat-btn flee"
+                  disabled={cs.outcome !== 'ongoing'}
+                  onClick={() => dispatch({ type: 'flee' })}
+                >
+                  ↩ Flee
+                </button>
+              )}
+            </div>
+          </>
         ) : null}
       </div>
 
@@ -342,11 +408,25 @@ export function CombatScreen({ scenario, character, onEnd }: Props) {
           <div className="combat-log-empty">The fight has not yet begun.</div>
         )}
         {[...cs.log].reverse().map(entry => (
-          <div key={entry.id} className={`clog-entry ${entry.isPlayer ? 'player' : 'enemy'}`}>
-            <span className="clog-round">R{entry.round}</span>
-            <span className="clog-actor">{entry.actor}</span>
-            <span className="clog-action">{entry.action}</span>
-            <span className="clog-result">{entry.result}</span>
+          <div
+            key={entry.id}
+            className={`clog-entry ${entry.isPlayer ? 'player' : 'enemy'} ${entry.isFrenzy ? 'frenzy' : ''} ${entry.isCompulsion ? 'compulsion' : ''} ${entry.actor === 'GM' ? 'gm-narration' : ''}`}
+          >
+            {entry.actor === 'GM' ? (
+              <>
+                <span className="clog-round">R{entry.round}</span>
+                <div className="clog-narration">{entry.narration}</div>
+              </>
+            ) : (
+              <>
+                <span className="clog-round">R{entry.round}</span>
+                <span className="clog-actor">{entry.actor}</span>
+                <span className="clog-action">{entry.action}</span>
+                <span className="clog-result">{entry.result}</span>
+                {entry.dice && <span className="clog-dice">{entry.dice}</span>}
+                {entry.narration && <div className="clog-narration">{entry.narration}</div>}
+              </>
+            )}
           </div>
         ))}
       </div>

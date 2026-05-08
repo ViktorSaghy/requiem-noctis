@@ -1,0 +1,55 @@
+{
+  "feeding": [
+    "feeding_near_silhouette",
+    "peaceful_feeding_support",
+    "nosferatu_rooftop_hunt"
+  ],
+  "hunger_or_beast": [
+    "beast_reflection_shop_window",
+    "wrong_shadow_wall",
+    "three_down_one_standing",
+    "vitae_dark_chalice"
+  ],
+  "obfuscate_or_stealth": [
+    "invisible_in_crowd",
+    "obfuscate_subway_crowd",
+    "predator_geometry_wall",
+    "nosferatu_rooftop_hunt"
+  ],
+  "presence_or_social_power": [
+    "presence_room_drawn_in",
+    "ivory_tower_anarchy_divide",
+    "corridor_power_standoff"
+  ],
+  "combat_start": [
+    "pistol_barrel_decision",
+    "wall_impact_collision"
+  ],
+  "combat_aftermath": [
+    "standing_over_fallen",
+    "modern_alley_aftermath",
+    "weapon_between_feet",
+    "three_down_one_standing"
+  ],
+  "politics": [
+    "ivory_tower_anarchy_divide",
+    "ash_cafe",
+    "ash_kessler",
+    "ash-ivory"
+  ],
+  "travel_or_escape": [
+    "ash_train",
+    "rooftop_escape_dawn",
+    "ash-ivory"
+  ],
+  "investigation_or_secret": [
+    "burning_names",
+    "ash_cafe",
+    "ash_kessler"
+  ],
+  "city_mood": [
+    "rain_slicked_gothic_street",
+    "predator_geometry_wall",
+    "nosferatu_rooftop_hunt"
+  ]
+}

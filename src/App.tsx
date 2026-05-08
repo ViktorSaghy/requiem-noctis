@@ -10,6 +10,7 @@ import {
   GameScreen,
   EndingScreen,
   SettingsPanel,
+  CreditsScreen,
 } from './ui';
 import { AshAndIvory } from '../content/ash-ivory/scenes';
 import { BloodGamesChronicle } from '../content/blood-games/scenes';
@@ -17,7 +18,7 @@ import { Audio } from './audio';
 import type { AppSettings } from './engine/settings';
 import { loadSettings } from './engine/settings';
 
-type Screen = 'title' | 'story' | 'create' | 'game' | 'ending' | 'settings';
+type Screen = 'title' | 'story' | 'create' | 'game' | 'ending' | 'settings' | 'credits';
 
 const CHRONICLES: Chronicle[] = [AshAndIvory, BloodGamesChronicle];
 
@@ -37,13 +38,13 @@ export default function App() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Unlock AudioContext on first user interaction, then start exploration music
+  // Unlock AudioContext on first user interaction, then start title music
   useEffect(() => {
     const unlock = () => {
       if (audioUnlocked.current) return;
       audioUnlocked.current = true;
       Audio.unlock();
-      Audio.setMood('exploration');
+      Audio.setMood('title');
     };
     document.addEventListener('click', unlock, { once: true, capture: true });
     document.addEventListener('touchstart', unlock, { once: true, capture: true });
@@ -53,11 +54,15 @@ export default function App() {
     };
   }, []);
 
-  // Restore exploration mood when returning to menu screens
+  // Set appropriate music for each screen
   useEffect(() => {
     if (!audioUnlocked.current) return;
-    if (screen === 'title' || screen === 'story' || screen === 'create') {
+    if (screen === 'title' || screen === 'credits') {
+      Audio.setMood('title');
+    } else if (screen === 'story' || screen === 'create' || screen === 'settings' || screen === 'game') {
       Audio.setMood('exploration');
+    } else if (screen === 'ending') {
+      Audio.setMood('ending');
     }
   }, [screen]);
 
@@ -95,7 +100,16 @@ export default function App() {
     setScreen('settings');
   }, [screen]);
 
+  const handleCredits = useCallback(() => {
+    setPrevScreen(screen);
+    setScreen('credits');
+  }, [screen]);
+
   const handleSettingsBack = useCallback(() => {
+    setScreen(prevScreen);
+  }, [prevScreen]);
+
+  const handleCreditsBack = useCallback(() => {
     setScreen(prevScreen);
   }, [prevScreen]);
 
@@ -162,7 +176,12 @@ export default function App() {
           settings={settings}
           onChange={setSettings}
           onBack={handleSettingsBack}
+          onCredits={handleCredits}
         />
+      )}
+
+      {screen === 'credits' && (
+        <CreditsScreen onBack={handleCreditsBack} />
       )}
     </>
   );

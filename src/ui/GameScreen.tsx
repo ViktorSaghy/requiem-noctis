@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import type { GameState } from '../engine';
-import { listSaves, CLANS, portraitPath } from '../engine';
+import { listSaves, CLANS, portraitPath, getSceneImage, preloadImages } from '../engine';
 import type { SaveSlot, JournalEntry } from '../engine';
 import { Audio } from '../audio';
 import { DiceOverlay } from './DiceOverlay';
@@ -26,11 +26,11 @@ interface Props {
 
 function HungerPips({ hunger }: { hunger: number }) {
   return (
-    <div className="hunger-pips">
+    <div className="status-hunger">
       {Array.from({ length: 5 }, (_, i) => (
         <div
           key={i}
-          className={`blood-pip ${i < hunger ? (hunger >= 5 ? 'bestial' : 'full') : ''}`}
+          className={`hunger-dot ${i < hunger ? (hunger >= 5 ? 'bestial' : 'full') : ''}`}
         />
       ))}
     </div>
@@ -63,94 +63,6 @@ function DotTrack({ value, max, label }: { value: number; max: number; label: st
   );
 }
 
-function StoryPane({
-  game, onGoTo, onBeginRoll, devMode,
-}: {
-  game: GameState;
-  onGoTo: (id: string) => void;
-  onBeginRoll: () => void;
-  devMode?: boolean;
-}) {
-  const { character, chronicle, sceneId, diceState } = game;
-  const scene = chronicle.scenes[sceneId];
-  if (!scene) return null;
-
-  function handleChoice(nextId: string) {
-    Audio.buttonTap();
-    onGoTo(nextId);
-  }
-
-  function handleNext() {
-    Audio.buttonTap();
-    if (scene.next) onGoTo(scene.next);
-  }
-
-  return (
-    <div className="story-pane">
-      <div className="story-scroll">
-        {scene.image && (
-          <div key={game.sceneId} className="scene-illustration-wrap">
-            <img src={scene.image} alt="" className="scene-illustration" />
-          </div>
-        )}
-        {scene.title && (
-          <div className="scene-title-bar">Act {scene.act} — {scene.title}</div>
-        )}
-        <div className="narrative-area">
-          <p className="narrative-text">{scene.narrative}</p>
-        </div>
-        {devMode && (
-          <div className="dev-panel">
-            <div className="dev-row"><span>Scene</span><code>{sceneId}</code></div>
-            {Object.keys(game.flags).length > 0 && (
-              <div className="dev-row"><span>Flags</span><code>{Object.keys(game.flags).join(', ')}</code></div>
-            )}
-          </div>
-        )}
-      </div>
-      <div className="interaction-area">
-        {scene.choices?.map((choice, i) => (
-          <button
-            key={i}
-            className="choice-btn"
-            onClick={() => handleChoice(choice.next)}
-          >
-            {choice.icon && <span className="choice-icon">{choice.icon}</span>}
-            {choice.text}
-          </button>
-        ))}
-
-        {scene.check && diceState.phase === 'idle' && (
-          <div className="check-card">
-            <div className="check-card-title">Dice Check</div>
-            <div className="check-card-desc">{scene.check.label}</div>
-            <div className="check-pool-row">
-              Pool: <strong>{scene.check.pool(character)}</strong>
-              &nbsp;· Difficulty: <strong>{scene.check.difficulty}</strong>
-              &nbsp;· Hunger: <strong>{scene.check.hunger(character)}</strong>
-            </div>
-            <button className="btn btn-primary btn-full" onClick={onBeginRoll}>
-              Roll the Dice
-            </button>
-          </div>
-        )}
-
-        {scene.next && !scene.choices && !scene.check && (
-          <button className="btn btn-primary btn-full" onClick={handleNext}>
-            Continue →
-          </button>
-        )}
-
-        {scene.resolution && (
-          <div style={{ color: 'var(--text-dim)', fontSize: '0.85rem', textAlign: 'center' }}>
-            Resolving…
-          </div>
-        )}
-      </div>
-    </div>
-  );
-}
-
 const SKILL_DISPLAY_CATS: Record<string, string[]> = {
   Physical: ['Athletics', 'Brawl', 'Craft', 'Drive', 'Firearms', 'Larceny', 'Melee', 'Stealth', 'Survival'],
   Social:   ['AnimalKen', 'Etiquette', 'Insight', 'Intimidation', 'Leadership', 'Performance', 'Persuasion', 'Streetwise', 'Subterfuge'],
@@ -162,7 +74,6 @@ function CharacterPane({ game }: { game: GameState }) {
   const discs = Object.entries(character.disciplines).filter(([, v]) => v > 0);
   const clanData = CLANS[character.clan];
   const currentHp = character.health - character.superficialDmg - character.aggravatedDmg;
-
   const nonZeroSkills = Object.entries(character.skills ?? {}).filter(([, v]) => (v ?? 0) > 0) as [string, number][];
 
   return (
@@ -237,9 +148,7 @@ function CharacterPane({ game }: { game: GameState }) {
             {discs.map(([k, v]) => (
               <div key={k} className="char-disc-row">
                 <span className="char-disc-name">{k}</span>
-                <span className="char-disc-dots">
-                  {'●'.repeat(v)}{'○'.repeat(5 - v)}
-                </span>
+                <span className="char-disc-dots">{'●'.repeat(v)}{'○'.repeat(5 - v)}</span>
               </div>
             ))}
           </div>
@@ -343,21 +252,9 @@ function MenuPane({
                 )}
               </div>
               <div className="save-actions">
-                <button
-                  className="btn btn-sm btn-gold"
-                  disabled={busy}
-                  onClick={() => handleSave(id)}
-                >
-                  Save
-                </button>
+                <button className="btn btn-sm btn-gold" disabled={busy} onClick={() => handleSave(id)}>Save</button>
                 {save && (
-                  <button
-                    className="btn btn-sm"
-                    disabled={busy}
-                    onClick={() => handleLoad(id)}
-                  >
-                    Load
-                  </button>
+                  <button className="btn btn-sm" disabled={busy} onClick={() => handleLoad(id)}>Load</button>
                 )}
               </div>
             </div>
@@ -366,12 +263,8 @@ function MenuPane({
       </div>
 
       <div className="menu-section">
-        <button className="btn btn-full" style={{ marginBottom: '0.5rem' }} onClick={onSettings}>
-          Settings
-        </button>
-        <button className="btn btn-danger btn-full" onClick={onBackToTitle}>
-          Back to Title
-        </button>
+        <button className="btn btn-full" style={{ marginBottom: '0.5rem' }} onClick={onSettings}>Settings</button>
+        <button className="btn btn-danger btn-full" onClick={onBackToTitle}>Back to Title</button>
       </div>
     </div>
   );
@@ -385,47 +278,57 @@ export function GameScreen({
   const scene = chronicle.scenes[sceneId];
   const [activeTab, setActiveTab] = useState<GameTab>('story');
 
+  // Preload all catalogue images once so transitions are instant
+  useEffect(() => { preloadImages(); }, []);
+
   useEffect(() => {
     if (endingId) onEndingReady(endingId);
   }, [endingId, onEndingReady]);
 
   useEffect(() => {
     if (scene) Audio.sceneTransition();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sceneId]);
+
+  // Always bring combat/story into view when navigating to a new scene
+  useEffect(() => {
+    setActiveTab('story');
   }, [sceneId]);
 
   if (!scene) return null;
 
-  // Combat scenes bypass the tab layout
-  if (scene.combat) {
-    return (
-      <div className="game-screen combat-mode">
-        <CombatScreen
-          scenario={scene.combat}
-          character={character}
-          onEnd={(nextSceneId, finalPlayer) => {
-            onApplyPostCombatDamage(finalPlayer);
-            onGoTo(nextSceneId);
-          }}
-        />
-      </div>
-    );
+  // Stable per-scene: recompute only when the scene changes, not on every render.
+  // Random selection within the candidate pool is intentional — same scene type
+  // shows different illustrations on repeat playthroughs.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  const bg = useMemo(() => getSceneImage({
+    sceneId,
+    explicitImage: scene.image,
+    hasCombat: !!scene.combat,
+    checkType: scene.check?.type,
+    hunger: character.hunger,
+    intensity: scene.combat ? 4 : scene.check ? 3 : 2,
+  }), [sceneId]);
+  const showDice = diceState.phase !== 'idle' && diceState.result !== null;
+
+  function handleChoice(nextId: string) {
+    Audio.buttonTap();
+    onGoTo(nextId);
   }
 
-  const ACT_BG: Record<number, string> = {
-    1: '/backgrounds/ash-cafe.png',
-    2: '/backgrounds/ash-cafe.png',
-    3: '/backgrounds/ash-kessler.png',
-    4: '/backgrounds/ash-cafe.png',
-  };
-  const bg = scene.image ?? ACT_BG[scene.act] ?? '/backgrounds/ash-cafe.png';
-  const showDice = diceState.phase !== 'idle' && diceState.result !== null;
+  function handleNext() {
+    Audio.buttonTap();
+    if (scene.next) onGoTo(scene.next);
+  }
+
+  // On desktop the side panel is always visible; default to character when story is active
+  const sideContent = (activeTab === 'story' ? 'character' : activeTab) as 'character' | 'journal' | 'menu';
 
   const TABS: { id: GameTab; icon: string; label: string }[] = [
     { id: 'story',     icon: '◈', label: 'Story' },
-    { id: 'character', icon: '☽', label: 'Char' },
-    { id: 'journal',   icon: '≡', label: 'Log' },
-    { id: 'menu',      icon: '⊞', label: 'Menu' },
+    { id: 'character', icon: '♦', label: 'Sheet' },
+    { id: 'journal',   icon: '✦', label: 'Journal' },
+    { id: 'menu',      icon: '≡', label: 'Menu' },
   ];
 
   return (
@@ -442,52 +345,180 @@ export function GameScreen({
         />
       )}
 
-      <div className="game-left">
-        <div className="game-bg-wrap">
-          <img key={bg} src={bg} alt="" className="game-bg" />
-          <div className="game-bg-overlay" />
-          <div className="hud">
-            <div className="hud-name">{character.name} · {character.clan}</div>
-            <HungerPips hunger={character.hunger} />
-            <HealthTrack superficial={character.superficialDmg} aggravated={character.aggravatedDmg} max={character.health} />
+      {/* Viewport wrapper: story (left) + side panel (right) */}
+      <div className="game-area">
+
+        {/* ── Story / Main column ── */}
+        <div className={`game-content${activeTab !== 'story' ? ' content-hidden' : ''}`}>
+          {/* Status bar */}
+          <div className="game-status-bar">
+            <div className="status-left">
+              <div className="status-character">{character.name}</div>
+              <div className="status-vitals">
+                <HungerPips hunger={character.hunger} />
+                <div className="status-health">
+                  {Math.max(0, character.health - character.superficialDmg - character.aggravatedDmg)}/{character.health}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Background */}
+          <div className="game-bg-container">
+            <img key={bg} src={bg} alt="" className="game-bg" />
+            <div className="game-bg-overlay" />
+          </div>
+
+          {/* Story or Combat — share the same visual frame */}
+          <div className="story-container">
+            {scene.combat ? (
+              <>
+                {scene.title && (
+                  <div className="combat-context-bar">
+                    <span className="combat-act-label">Act {scene.act}</span>
+                    <span className="combat-scene-title">{scene.title}</span>
+                  </div>
+                )}
+                <CombatScreen
+                  scenario={scene.combat}
+                  character={character}
+                  onEnd={(nextSceneId, finalPlayer) => {
+                    onApplyPostCombatDamage(finalPlayer);
+                    onGoTo(nextSceneId);
+                  }}
+                />
+              </>
+            ) : (
+              <>
+                <div className="story-scroll">
+                  {scene.title && (
+                    <div className="scene-header">
+                      <div className="scene-act">Act {scene.act}</div>
+                      <h2 className="scene-title">{scene.title}</h2>
+                    </div>
+                  )}
+                  <div className="narrative-container">
+                    <p className="narrative-text">{scene.narrative}</p>
+                  </div>
+                  {devMode && (
+                    <div className="dev-panel">
+                      <div className="dev-row"><span>Scene</span><code>{sceneId}</code></div>
+                      {Object.keys(game.flags).length > 0 && (
+                        <div className="dev-row"><span>Flags</span><code>{Object.keys(game.flags).join(', ')}</code></div>
+                      )}
+                    </div>
+                  )}
+                </div>
+
+                {/* Interaction */}
+                <div className="interaction-container">
+                  <div className="interaction-content">
+                    {scene.choices && scene.choices.length > 0 && (
+                      <div className="choice-list">
+                        {scene.choices.map((choice, i) => (
+                          <button key={i} className="choice-btn" onClick={() => handleChoice(choice.next)}>
+                            {choice.icon && <span className="choice-icon">{choice.icon}</span>}
+                            {choice.text}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+
+                    {scene.check && diceState.phase === 'idle' && (
+                      <div className="check-card">
+                        <div className="check-header">
+                          <span className="check-icon">🎲</span>
+                          <h3 className="check-title">Dice Check</h3>
+                        </div>
+                        <p className="check-description">{scene.check.label}</p>
+                        <div className="check-stats">
+                          <div className="check-stat">
+                            <div className="check-stat-label">Pool</div>
+                            <div className="check-stat-value">{scene.check.pool(character)}</div>
+                          </div>
+                          <div className="check-stat">
+                            <div className="check-stat-label">Difficulty</div>
+                            <div className="check-stat-value">{scene.check.difficulty}</div>
+                          </div>
+                        </div>
+                        <button className="roll-btn" onClick={onBeginRoll}>
+                          <span>🎲</span>
+                          Roll the Dice
+                        </button>
+                      </div>
+                    )}
+
+                    {scene.next && !scene.choices && !scene.check && (
+                      <button className="continue-btn" onClick={handleNext}>
+                        Continue
+                      </button>
+                    )}
+
+                    {scene.resolution && (
+                      <div style={{ color: 'var(--text-dim)', fontSize: 'var(--text-sm)', textAlign: 'center', padding: '1rem' }}>
+                        Resolving…
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* ── Side panel: overlay on mobile, fixed column on desktop ── */}
+        <div className={`game-side${activeTab !== 'story' ? ' side-open' : ''}`}>
+          <div className="side-tabs">
+            <button
+              className={`side-tab${sideContent === 'character' ? ' active' : ''}`}
+              onClick={() => setActiveTab('character')}
+            >
+              <span className="side-tab-icon">♦</span>
+              Sheet
+            </button>
+            <button
+              className={`side-tab${sideContent === 'journal' ? ' active' : ''}`}
+              onClick={() => setActiveTab('journal')}
+            >
+              <span className="side-tab-icon">✦</span>
+              Journal
+            </button>
+            <button
+              className={`side-tab${sideContent === 'menu' ? ' active' : ''}`}
+              onClick={() => setActiveTab('menu')}
+            >
+              <span className="side-tab-icon">≡</span>
+              Menu
+            </button>
+          </div>
+          <div className="side-content">
+            {sideContent === 'character' && <CharacterPane game={game} />}
+            {sideContent === 'journal' && <JournalPane journal={game.journal} />}
+            {sideContent === 'menu' && (
+              <MenuPane
+                onSaveSlot={onSaveSlot}
+                onLoadSlot={onLoadSlot}
+                onSettings={onSettings}
+                onBackToTitle={onBackToTitle}
+              />
+            )}
           </div>
         </div>
       </div>
 
-      <div className="game-right">
-        <div className="game-tab-content">
-          {activeTab === 'story' && (
-            <StoryPane game={game} onGoTo={onGoTo} onBeginRoll={onBeginRoll} devMode={devMode} />
-          )}
-          {activeTab === 'character' && (
-            <CharacterPane game={game} />
-          )}
-          {activeTab === 'journal' && (
-            <JournalPane journal={game.journal} />
-          )}
-          {activeTab === 'menu' && (
-            <MenuPane
-              onSaveSlot={onSaveSlot}
-              onLoadSlot={onLoadSlot}
-              onSettings={onSettings}
-              onBackToTitle={onBackToTitle}
-            />
-          )}
-        </div>
-
-        <div className="game-tab-bar">
-          {TABS.map(t => (
-            <button
-              key={t.id}
-              className={`tab-btn ${activeTab === t.id ? 'active' : ''}`}
-              onClick={() => setActiveTab(t.id)}
-            >
-              <span className="tab-btn-icon">{t.icon}</span>
-              {t.label}
-            </button>
-          ))}
-        </div>
-      </div>
+      {/* ── Mobile bottom tab bar ── */}
+      <nav className="game-tab-bar">
+        {TABS.map(t => (
+          <button
+            key={t.id}
+            className={`tab-btn${activeTab === t.id ? ' active' : ''}`}
+            onClick={() => setActiveTab(t.id)}
+          >
+            <span className="tab-btn-icon">{t.icon}</span>
+            <span>{t.label}</span>
+          </button>
+        ))}
+      </nav>
     </div>
   );
 }

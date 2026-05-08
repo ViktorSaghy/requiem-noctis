@@ -310,7 +310,7 @@ export function CharacterCreation({ chronicle, onComplete, onBack }: Props) {
                   >
                     <img
                       className="template-portrait"
-                      src={{portraitPath(chronicle.era, t.clan)}}
+                      src={portraitPath(chronicle.era, t.clan)}
                       alt=""
                       onError={e => { e.currentTarget.style.display = 'none'; }}
                     />
@@ -362,7 +362,7 @@ export function CharacterCreation({ chronicle, onComplete, onBack }: Props) {
                 >
                   <img
                     className="clan-portrait-thumb"
-                    src={{portraitPath(chronicle.era, c)}}
+                    src={portraitPath(chronicle.era, c)}
                     alt=""
                     onError={e => { e.currentTarget.style.display = 'none'; }}
                   />
@@ -375,7 +375,7 @@ export function CharacterCreation({ chronicle, onComplete, onBack }: Props) {
               <div className="clan-info-card">
                 <img
                   className="clan-portrait-large"
-                  src={{portraitPath(chronicle.era, clan)}}
+                  src={portraitPath(chronicle.era, clan)}
                   alt={clan}
                   onError={e => { e.currentTarget.style.display = 'none'; }}
                 />
@@ -541,7 +541,7 @@ export function CharacterCreation({ chronicle, onComplete, onBack }: Props) {
                 <div className="review-identity-card">
                   <img
                     className="review-portrait"
-                    src={{portraitPath(chronicle.era, clan)}}
+                    src={portraitPath(chronicle.era, clan)}
                     alt={clan}
                     onError={e => { e.currentTarget.style.display = 'none'; }}
                   />

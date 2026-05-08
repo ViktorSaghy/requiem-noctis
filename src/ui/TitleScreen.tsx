@@ -17,7 +17,7 @@ export function TitleScreen({ onNewGame, onContinue }: Props) {
     <div className="title-screen">
       <div
         className="title-bg"
-        style={{ backgroundImage: 'url(/backgrounds/ash-cafe.png)' }}
+        style={{ backgroundImage: 'url(/backgrounds/background-splash.png)' }}
       />
       <div className="title-content">
         <p className="title-eyebrow">A Chronicle of Darkness</p>

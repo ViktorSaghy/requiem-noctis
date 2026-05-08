@@ -1,6 +1,6 @@
 // AudioContext must be resumed inside a user-gesture handler on first call.
 
-export type Mood = 'exploration' | 'tension' | 'combat' | 'ending';
+export type Mood = 'title' | 'exploration' | 'tension' | 'combat' | 'ending';
 
 interface NoteSpec {
   freq: number;
@@ -68,6 +68,22 @@ class AudioEngineClass {
   private bgControlGain: GainNode | null = null;
   private sfxGain: GainNode | null = null;
   private sfxControlGain: GainNode | null = null;
+  private musicBuffers: Map<string, AudioBuffer> = new Map();
+  private bgSource: AudioBufferSourceNode | null = null;
+  private nextBgSource: AudioBufferSourceNode | null = null;
+  private fadeGain: GainNode | null = null;
+  private nextFadeGain: GainNode | null = null;
+  private musicLoading: Map<string, Promise<void>> = new Map();
+  private currentMusicUrl: string | null = null;
+  private nextMusicUrl: string | null = null;
+
+  private musicUrls: Record<Mood, string> = {
+    title: '/audio/velvet-hunger.mp3',
+    exploration: '/audio/black-chapel-veil.mp3',
+    tension: '/audio/black-chapel-veil.mp3',
+    combat: '/audio/blackwater-alley-duel.mp3',
+    ending: '/audio/velvet-hunger.mp3',
+  };
   private moodGen = 0;
   private tensionPhase = 0;
 
@@ -105,9 +121,149 @@ class AudioEngineClass {
     return this.ctx;
   }
 
+  private stopMusicLoop(): void {
+    if (this.bgSource) {
+      try {
+        this.bgSource.stop();
+      } catch {
+        // ignore stop errors if already ended
+      }
+      this.bgSource.disconnect();
+      this.bgSource = null;
+    }
+    if (this.nextBgSource) {
+      try {
+        this.nextBgSource.stop();
+      } catch {
+        // ignore stop errors if already ended
+      }
+      this.nextBgSource.disconnect();
+      this.nextBgSource = null;
+    }
+    if (this.fadeGain) {
+      this.fadeGain.disconnect();
+      this.fadeGain = null;
+    }
+    if (this.nextFadeGain) {
+      this.nextFadeGain.disconnect();
+      this.nextFadeGain = null;
+    }
+  }
+
+  private playMusicLoop(url: string): void {
+    const buffer = this.musicBuffers.get(url);
+    if (!buffer) return;
+
+    this.stopMusicLoop();
+
+    const ctx = this.getCtx();
+    const source = ctx.createBufferSource();
+    const gain = ctx.createGain();
+
+    source.buffer = buffer;
+    source.loop = true;
+    gain.gain.value = 0;
+
+    source.connect(gain);
+    gain.connect(this.bgGain!);
+
+    source.start();
+    this.bgSource = source;
+    this.fadeGain = gain;
+    this.currentMusicUrl = url;
+
+    // Fade in
+    const now = ctx.currentTime;
+    gain.gain.setValueAtTime(0, now);
+    gain.gain.linearRampToValueAtTime(1, now + 2.0);
+  }
+
+  private crossfadeToMusic(url: string): void {
+    const buffer = this.musicBuffers.get(url);
+    if (!buffer || this.currentMusicUrl === url) return;
+
+    const ctx = this.getCtx();
+
+    // Create next source
+    const nextSource = ctx.createBufferSource();
+    const nextGain = ctx.createGain();
+
+    nextSource.buffer = buffer;
+    nextSource.loop = true;
+    nextGain.gain.value = 0;
+
+    nextSource.connect(nextGain);
+    nextGain.connect(this.bgGain!);
+
+    nextSource.start();
+    this.nextBgSource = nextSource;
+    this.nextFadeGain = nextGain;
+    this.nextMusicUrl = url;
+
+    const now = ctx.currentTime;
+
+    // Fade out current
+    if (this.fadeGain) {
+      this.fadeGain.gain.setValueAtTime(this.fadeGain.gain.value, now);
+      this.fadeGain.gain.linearRampToValueAtTime(0, now + 3.0);
+    }
+
+    // Fade in next
+    nextGain.gain.setValueAtTime(0, now);
+    nextGain.gain.linearRampToValueAtTime(1, now + 3.0);
+
+    // Clean up after fade
+    setTimeout(() => {
+      if (this.bgSource && this.bgSource !== this.nextBgSource) {
+        try {
+          this.bgSource.stop();
+        } catch {
+          // ignore
+        }
+        this.bgSource.disconnect();
+      }
+      if (this.fadeGain && this.fadeGain !== this.nextFadeGain) {
+        this.fadeGain.disconnect();
+      }
+
+      this.bgSource = this.nextBgSource;
+      this.fadeGain = this.nextFadeGain;
+      this.currentMusicUrl = this.nextMusicUrl;
+
+      this.nextBgSource = null;
+      this.nextFadeGain = null;
+      this.nextMusicUrl = null;
+    }, 3000);
+  }
+
+  private async loadMusic(url: string): Promise<void> {
+    if (this.musicBuffers.has(url)) return;
+    if (this.musicLoading.has(url)) return this.musicLoading.get(url)!;
+
+    const loading = fetch(url)
+      .then(async response => {
+        if (!response.ok) throw new Error(`Failed to load music: ${response.status}`);
+        const arrayBuffer = await response.arrayBuffer();
+        const buffer = await this.getCtx().decodeAudioData(arrayBuffer);
+        this.musicBuffers.set(url, buffer);
+        this.musicLoading.delete(url);
+      })
+      .catch(err => {
+        console.warn('Audio music load failed:', err);
+        this.musicLoading.delete(url);
+      });
+
+    this.musicLoading.set(url, loading);
+    return loading;
+  }
+
   unlock(): void {
     const ctx = this.getCtx();
     if (ctx.state === 'suspended') ctx.resume();
+    // Preload all music tracks
+    for (const url of Object.values(this.musicUrls)) {
+      void this.loadMusic(url);
+    }
   }
 
   applySettings(s: { masterVolume: number; musicVolume: number; sfxVolume: number; musicEnabled: boolean; sfxEnabled: boolean }): void {
@@ -244,20 +400,33 @@ class AudioEngineClass {
 
     const target =
       mood === 'combat'  ? 0.50 :
-      mood === 'ending'  ? 0.20 : 0.35;
+      mood === 'ending'  ? 0.20 :
+      mood === 'title'   ? 0.40 : 0.35;
 
     setTimeout(() => {
       if (gen !== this.moodGen) return;
       const t = ctx.currentTime;
       bg.gain.setValueAtTime(0, t);
       bg.gain.linearRampToValueAtTime(target, t + 0.5);
-      this.loopMood(mood, gen);
+
+      const musicUrl = this.musicUrls[mood];
+      if (this.musicBuffers.has(musicUrl)) {
+        this.crossfadeToMusic(musicUrl);
+      } else {
+        void this.loadMusic(musicUrl).then(() => {
+          if (gen === this.moodGen && this.musicBuffers.has(musicUrl)) {
+            this.crossfadeToMusic(musicUrl);
+          }
+        });
+        this.loopMood(mood, gen);
+      }
     }, 450);
   }
 
   stopMood(): void {
     const ctx = this.getCtx();
     this.moodGen++;
+    this.stopMusicLoop();
     const now = ctx.currentTime;
     const bg = this.bgGain!;
     bg.gain.cancelScheduledValues(now);

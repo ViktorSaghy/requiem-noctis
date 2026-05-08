@@ -6,9 +6,10 @@ interface Props {
   settings: AppSettings;
   onChange: (s: AppSettings) => void;
   onBack: () => void;
+  onCredits: () => void;
 }
 
-export function SettingsPanel({ settings, onChange, onBack }: Props) {
+export function SettingsPanel({ settings, onChange, onBack, onCredits }: Props) {
   function update(patch: Partial<AppSettings>) {
     const next = { ...settings, ...patch };
     onChange(next);
@@ -105,6 +106,12 @@ export function SettingsPanel({ settings, onChange, onBack }: Props) {
               Scene IDs and active flags are visible in the Story tab.
             </p>
           )}
+        </div>
+
+        <div className="settings-section">
+          <button className="btn btn-primary btn-full" onClick={onCredits}>
+            Credits
+          </button>
         </div>
       </div>
     </div>

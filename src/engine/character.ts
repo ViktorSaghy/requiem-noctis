@@ -1,7 +1,7 @@
 // src/engine/character.ts
 // VTM5e Character System
 
-export type ClanName = 'Ventrue' | 'Toreador' | 'Malkavian' | 'Nosferatu' | 'Brujah' | 'Tremere' | 'Gangrel' | 'Lasombra';
+export type ClanName = 'Ventrue' | 'Toreador' | 'Malkavian' | 'Nosferatu' | 'Brujah' | 'Tremere' | 'Gangrel' | 'Lasombra' | 'Tzimisce';
 
 export interface Attributes {
   Strength: number; Dexterity: number; Stamina: number;
@@ -44,6 +44,8 @@ export interface Character {
   skillSpecialties: Record<string, string>;
   disciplines: Disciplines;
   health: number;
+  superficialDmg: number;
+  aggravatedDmg: number;
   willpower: number;
   humanity: number;
   hunger: number;
@@ -104,6 +106,12 @@ export const CLANS: Record<ClanName, {
     bane: 'Appear with difficulty in mirrors and recordings. Mortals feel uneasy around them.',
     compulsion: 'Ruthlessness — must dominate every situation. Cannot accept a subordinate role.',
     description: 'Shadow lords. They cast no reflection because they have discarded their humanity.'
+  },
+  Tzimisce: {
+    disciplines: ['Animalism', 'Dominate', 'Protean'],
+    bane: 'Must sleep with at least two handfuls of native soil. Failing this causes Aggravated damage each night.',
+    compulsion: 'Covetousness — must possess and control everything in their domain. Cannot leave a room without claiming something.',
+    description: 'Fleshcrafters and lords of old Europe. They reshape flesh as art, and consider their domain an extension of themselves.'
   }
 };
 
@@ -139,6 +147,8 @@ export function createCharacter(partial: Partial<Character>): Character {
     skillSpecialties: {},
     disciplines: {},
     health: 6,
+    superficialDmg: 0,
+    aggravatedDmg: 0,
     willpower: 5,
     humanity: 7,
     hunger: 1,

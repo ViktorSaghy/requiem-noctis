@@ -237,15 +237,15 @@ export function useGame() {
       if (!prev) return prev;
       const scene = currentScene(prev);
       if (!scene?.check) return prev;
-      Audio.diceRoll();
+      void Audio.diceRoll();
       const result = rollDice(
         scene.check.pool(prev.character),
         scene.check.hunger(prev.character),
       );
       const passed = difficultyCheck(result, scene.check.difficulty);
-      if (result.bestialFailure) Audio.bestialFailure();
-      else if (passed) Audio.success();
-      else Audio.failure();
+      if (result.bestialFailure) void Audio.bestialFailure();
+      else if (passed) void Audio.success();
+      else void Audio.failure();
       return {
         ...prev,
         diceState: { phase: 'rolling', check: scene.check, result, passed },

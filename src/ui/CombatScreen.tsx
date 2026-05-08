@@ -164,8 +164,8 @@ export function CombatScreen({ scenario, character, onEnd }: Props) {
   useEffect(() => {
     if (cs.outcome === 'ongoing') return;
     setMode('ended');
-    if (cs.outcome === 'victory') Audio.success();
-    else if (cs.outcome === 'defeat') Audio.bestialFailure();
+    if (cs.outcome === 'victory') void Audio.success();
+    else if (cs.outcome === 'defeat') void Audio.bestialFailure();
     const t = setTimeout(() => setEndDelay(true), 1500);
     return () => clearTimeout(t);
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -186,7 +186,7 @@ export function CombatScreen({ scenario, character, onEnd }: Props) {
   }, [cs.player.isFrenzy, mode]);
 
   function dispatch(action: Parameters<typeof processCombatRound>[1]) {
-    Audio.buttonTap();
+    void Audio.buttonTap();
     setCs(prev => processCombatRound(prev, action, character));
     setMode('actions');
     setPendingDiscId(null);

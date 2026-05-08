@@ -1,4 +1,4 @@
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import './App.css';
 import { useGame } from './engine';
 import type { Character } from './engine';
@@ -29,22 +29,24 @@ export default function App() {
   const [endingId, setEndingId] = useState<string | null>(null);
   const [settings, setSettings] = useState<AppSettings>(() => loadSettings());
 
-  const audioUnlocked = useRef(false);
+  const [audioUnlocked, setAudioUnlocked] = useState(false);
   const game = useGame();
 
-  // Apply saved settings to audio engine on first render
+  // Apply settings and attempt auto-start (works when browser allows autoplay)
   useEffect(() => {
     Audio.applySettings(settings);
+    void Audio.unlock().then(running => {
+      if (running) setAudioUnlocked(true);
+    });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Unlock AudioContext on first user interaction, then start title music
+  // Fallback: unlock AudioContext on first user gesture
   useEffect(() => {
-    const unlock = () => {
-      if (audioUnlocked.current) return;
-      audioUnlocked.current = true;
-      Audio.unlock();
-      Audio.setMood('title');
+    if (audioUnlocked) return;
+    const unlock = async () => {
+      await Audio.unlock();
+      setAudioUnlocked(true);
     };
     document.addEventListener('click', unlock, { once: true, capture: true });
     document.addEventListener('touchstart', unlock, { once: true, capture: true });
@@ -52,11 +54,11 @@ export default function App() {
       document.removeEventListener('click', unlock, true);
       document.removeEventListener('touchstart', unlock, true);
     };
-  }, []);
+  }, [audioUnlocked]);
 
-  // Set appropriate music for each screen
+  // Set appropriate music for each screen (re-runs when screen or unlock state changes)
   useEffect(() => {
-    if (!audioUnlocked.current) return;
+    if (!audioUnlocked) return;
     if (screen === 'title' || screen === 'credits') {
       Audio.setMood('title');
     } else if (screen === 'story' || screen === 'create' || screen === 'settings' || screen === 'game') {
@@ -64,7 +66,7 @@ export default function App() {
     } else if (screen === 'ending') {
       Audio.setMood('ending');
     }
-  }, [screen]);
+  }, [screen, audioUnlocked]);
 
   const handleNewGame = useCallback(() => {
     setScreen('story');

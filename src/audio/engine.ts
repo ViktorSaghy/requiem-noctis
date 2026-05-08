@@ -93,7 +93,7 @@ class AudioEngineClass {
   private _musicEnabled = true;
   private _sfxEnabled = true;
 
-  private getCtx(): AudioContext {
+  private async getCtx(): Promise<AudioContext> {
     if (!this.ctx) {
       this.ctx = new AudioContext();
 
@@ -117,7 +117,9 @@ class AudioEngineClass {
       this.sfxGain.connect(this.sfxControlGain);
       this.sfxControlGain.connect(this.masterGain);
     }
-    if (this.ctx.state === 'suspended') this.ctx.resume();
+    if (this.ctx.state === 'suspended') {
+      await this.ctx.resume();
+    }
     return this.ctx;
   }
 
@@ -150,11 +152,11 @@ class AudioEngineClass {
     }
   }
 
-  private crossfadeToMusic(url: string): void {
+  private async crossfadeToMusic(url: string): Promise<void> {
     const buffer = this.musicBuffers.get(url);
     if (!buffer || this.currentMusicUrl === url) return;
 
-    const ctx = this.getCtx();
+    const ctx = await this.getCtx();
 
     // Create next source
     const nextSource = ctx.createBufferSource();
@@ -216,7 +218,8 @@ class AudioEngineClass {
       .then(async response => {
         if (!response.ok) throw new Error(`Failed to load music: ${response.status}`);
         const arrayBuffer = await response.arrayBuffer();
-        const buffer = await this.getCtx().decodeAudioData(arrayBuffer);
+        const ctx = await this.getCtx();
+        const buffer = await ctx.decodeAudioData(arrayBuffer);
         this.musicBuffers.set(url, buffer);
         this.musicLoading.delete(url);
       })
@@ -229,13 +232,12 @@ class AudioEngineClass {
     return loading;
   }
 
-  unlock(): void {
-    const ctx = this.getCtx();
-    if (ctx.state === 'suspended') ctx.resume();
-    // Preload all music tracks
+  async unlock(): Promise<boolean> {
+    const ctx = await this.getCtx();
     for (const url of Object.values(this.musicUrls)) {
       void this.loadMusic(url);
     }
+    return ctx.state === 'running';
   }
 
   applySettings(s: { masterVolume: number; musicVolume: number; sfxVolume: number; musicEnabled: boolean; sfxEnabled: boolean }): void {
@@ -274,15 +276,15 @@ class AudioEngineClass {
     if (this.sfxControlGain) this.sfxControlGain.gain.value = enabled ? this._sfxVol : 0;
   }
 
-  private scheduleNote(
+  private async scheduleNote(
     type: OscillatorType,
     freq: number,
     start: number,
     duration: number,
     peak: number,
     dest: AudioNode,
-  ): void {
-    const ctx = this.getCtx();
+  ): Promise<void> {
+    const ctx = await this.getCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 
@@ -304,23 +306,23 @@ class AudioEngineClass {
     osc.onended = () => { osc.disconnect(); gain.disconnect(); };
   }
 
-  private playMotif(
+  private async playMotif(
     notes: NoteSpec[],
     type: OscillatorType,
     startTime: number,
     peak: number,
     dest: AudioNode,
-  ): number {
+  ): Promise<number> {
     let t = startTime;
     for (const n of notes) {
-      this.scheduleNote(type, n.freq, t, n.dur, peak, dest);
+      await this.scheduleNote(type, n.freq, t, n.dur, peak, dest);
       t += n.dur;
     }
     return t - startTime;
   }
 
-  private noiseBuffer(duration: number): AudioBuffer {
-    const ctx = this.getCtx();
+  private async noiseBuffer(duration: number): Promise<AudioBuffer> {
+    const ctx = await this.getCtx();
     const len = Math.floor(ctx.sampleRate * duration);
     const buf = ctx.createBuffer(1, len, ctx.sampleRate);
     const data = buf.getChannelData(0);
@@ -328,16 +330,16 @@ class AudioEngineClass {
     return buf;
   }
 
-  private playNoise(
+  private async playNoise(
     start: number,
     duration: number,
     peak: number,
     filterFreq: number,
     dest: AudioNode,
-  ): void {
-    const ctx = this.getCtx();
+  ): Promise<void> {
+    const ctx = await this.getCtx();
     const src = ctx.createBufferSource();
-    src.buffer = this.noiseBuffer(duration);
+    src.buffer = await this.noiseBuffer(duration);
 
     const filter = ctx.createBiquadFilter();
     filter.type = 'bandpass';
@@ -360,43 +362,44 @@ class AudioEngineClass {
   // ── Mood system ───────────────────────────────────────────────────────────
 
   setMood(mood: Mood): void {
-    const ctx = this.getCtx();
-    const gen = ++this.moodGen;
-    this.tensionPhase = 0;
+    void this.getCtx().then(ctx => {
+      const gen = ++this.moodGen;
+      this.tensionPhase = 0;
 
-    const bg = this.bgGain!;
-    const now = ctx.currentTime;
-    bg.gain.cancelScheduledValues(now);
-    bg.gain.setValueAtTime(bg.gain.value, now);
-    bg.gain.linearRampToValueAtTime(0, now + 0.4);
+      const bg = this.bgGain!;
+      const now = ctx.currentTime;
+      bg.gain.cancelScheduledValues(now);
+      bg.gain.setValueAtTime(bg.gain.value, now);
+      bg.gain.linearRampToValueAtTime(0, now + 0.4);
 
-    const target =
-      mood === 'combat'  ? 0.50 :
-      mood === 'ending'  ? 0.20 :
-      mood === 'title'   ? 0.40 : 0.35;
+      const target =
+        mood === 'combat'  ? 0.50 :
+        mood === 'ending'  ? 0.20 :
+        mood === 'title'   ? 0.40 : 0.35;
 
-    setTimeout(() => {
-      if (gen !== this.moodGen) return;
-      const t = ctx.currentTime;
-      bg.gain.setValueAtTime(0, t);
-      bg.gain.linearRampToValueAtTime(target, t + 0.5);
+      setTimeout(async () => {
+        if (gen !== this.moodGen) return;
+        const t = ctx.currentTime;
+        bg.gain.setValueAtTime(0, t);
+        bg.gain.linearRampToValueAtTime(target, t + 0.5);
 
-      const musicUrl = this.musicUrls[mood];
-      if (this.musicBuffers.has(musicUrl)) {
-        this.crossfadeToMusic(musicUrl);
-      } else {
-        void this.loadMusic(musicUrl).then(() => {
-          if (gen === this.moodGen && this.musicBuffers.has(musicUrl)) {
-            this.crossfadeToMusic(musicUrl);
-          }
-        });
-        this.loopMood(mood, gen);
-      }
-    }, 450);
+        const musicUrl = this.musicUrls[mood];
+        if (this.musicBuffers.has(musicUrl)) {
+          await this.crossfadeToMusic(musicUrl);
+        } else {
+          void this.loadMusic(musicUrl).then(async () => {
+            if (gen === this.moodGen && this.musicBuffers.has(musicUrl)) {
+              await this.crossfadeToMusic(musicUrl);
+            }
+          });
+          this.loopMood(mood, gen);
+        }
+      }, 450);
+    });
   }
 
-  stopMood(): void {
-    const ctx = this.getCtx();
+  async stopMood(): Promise<void> {
+    const ctx = await this.getCtx();
     this.moodGen++;
     this.stopMusicLoop();
     const now = ctx.currentTime;
@@ -406,10 +409,10 @@ class AudioEngineClass {
     bg.gain.linearRampToValueAtTime(0, now + 0.8);
   }
 
-  private loopMood(mood: Mood, gen: number): void {
+  private async loopMood(mood: Mood, gen: number): Promise<void> {
     if (gen !== this.moodGen) return;
 
-    const ctx = this.getCtx();
+    const ctx = await this.getCtx();
     const bg = this.bgGain!;
     const start = ctx.currentTime + 0.05;
     let duration = 0;
@@ -417,72 +420,72 @@ class AudioEngineClass {
 
     switch (mood) {
       case 'exploration':
-        duration = this.playMotif(MORTAL, 'sine', start, 1, bg);
+        duration = await this.playMotif(MORTAL, 'sine', start, 1, bg);
         gap = 2.5;
         break;
 
       case 'tension':
         if (this.tensionPhase % 2 === 0) {
-          duration = this.playMotif(MASQUERADE, 'triangle', start, 1, bg);
+          duration = await this.playMotif(MASQUERADE, 'triangle', start, 1, bg);
         } else {
-          duration = this.playMotif(BEAST, 'sawtooth', start, 1, bg);
+          duration = await this.playMotif(BEAST, 'sawtooth', start, 1, bg);
         }
         this.tensionPhase++;
         gap = 0.6;
         break;
 
       case 'combat':
-        duration = this.playMotif(BEAST, 'sawtooth', start, 1, bg);
+        duration = await this.playMotif(BEAST, 'sawtooth', start, 1, bg);
         gap = 0.2;
         break;
 
       case 'ending': {
         const slowMasquerade = MASQUERADE.map(n => ({ freq: n.freq, dur: n.dur * 2.5 }));
-        duration = this.playMotif(slowMasquerade, 'triangle', start, 1, bg);
+        duration = await this.playMotif(slowMasquerade, 'triangle', start, 1, bg);
         gap = 4.0;
         break;
       }
     }
 
-    setTimeout(() => this.loopMood(mood, gen), (duration + gap) * 1000);
+    setTimeout(() => void this.loopMood(mood, gen), (duration + gap) * 1000);
   }
 
   // ── SFX ──────────────────────────────────────────────────────────────────
 
-  diceRoll(): void {
-    const ctx = this.getCtx();
+  async diceRoll(): Promise<void> {
+    const ctx = await this.getCtx();
     const dest = this.sfxGain!;
     const now = ctx.currentTime;
 
-    this.playNoise(now, 0.35, 0.4, 1500, dest);
+    await this.playNoise(now, 0.35, 0.4, 1500, dest);
 
     for (let i = 0; i < 5; i++) {
       const t = now + 0.04 + i * 0.055 + Math.random() * 0.015;
-      this.scheduleNote('sine', 700 + Math.random() * 500, t, 0.03, 0.35, dest);
+      await this.scheduleNote('sine', 700 + Math.random() * 500, t, 0.03, 0.35, dest);
     }
   }
 
-  success(): void {
-    const ctx = this.getCtx();
+  async success(): Promise<void> {
+    const ctx = await this.getCtx();
     const dest = this.sfxGain!;
     const now = ctx.currentTime;
-    [N.E4, N.G4, N.A4, N.E5].forEach((freq, i) => {
-      this.scheduleNote('sine', freq, now + i * 0.10, 0.15, 0.45, dest);
-    });
+    for (const [i, freq] of [N.E4, N.G4, N.A4, N.E5].entries()) {
+      await this.scheduleNote('sine', freq, now + i * 0.10, 0.15, 0.45, dest);
+    }
   }
 
-  failure(): void {
-    const ctx = this.getCtx();
+  async failure(): Promise<void> {
+    const ctx = await this.getCtx();
     const dest = this.sfxGain!;
     const now = ctx.currentTime;
     // Descending diminished: A4 Eb4 C4 A3
-    [N.A4, 311.13, 261.63, N.A3].forEach((freq, i) => {
-      this.scheduleNote('sine', freq, now + i * 0.13, 0.22, 0.35, dest);
-    });
+    for (const [i, freq] of [N.A4, 311.13, 261.63, N.A3].entries()) {
+      await this.scheduleNote('sine', freq, now + i * 0.13, 0.22, 0.35, dest);
+    }
   }
 
-  bestialFailure(): void {
-    const ctx = this.getCtx();
+  async bestialFailure(): Promise<void> {
+    const ctx = await this.getCtx();
     const dest = this.sfxGain!;
     const now = ctx.currentTime;
     const dur = 1.2;
@@ -508,13 +511,13 @@ class AudioEngineClass {
     osc.onended = () => { osc.disconnect(); dist.disconnect(); gain.disconnect(); };
   }
 
-  buttonTap(): void {
-    const ctx = this.getCtx();
-    this.scheduleNote('sine', 1000, ctx.currentTime, 0.04, 0.2, this.sfxGain!);
+  async buttonTap(): Promise<void> {
+    const ctx = await this.getCtx();
+    await this.scheduleNote('sine', 1000, ctx.currentTime, 0.04, 0.2, this.sfxGain!);
   }
 
-  sceneTransition(): void {
-    const ctx = this.getCtx();
+  async sceneTransition(): Promise<void> {
+    const ctx = await this.getCtx();
     const dest = this.sfxGain!;
     const now = ctx.currentTime;
     const dur = 1.8;
@@ -537,24 +540,24 @@ class AudioEngineClass {
     osc.stop(now + dur);
     osc.onended = () => { osc.disconnect(); gain.disconnect(); };
 
-    this.playNoise(now, 1.0, 0.2, 3000, dest);
+    await this.playNoise(now, 1.0, 0.2, 3000, dest);
   }
 
-  heartbeat(): void {
-    const ctx = this.getCtx();
+  async heartbeat(): Promise<void> {
+    const ctx = await this.getCtx();
     const dest = this.sfxGain!;
     const now = ctx.currentTime;
 
     // lub
-    this.scheduleNote('sine', 60, now,        0.09, 0.7, dest);
-    this.scheduleNote('sine', 80, now,        0.07, 0.3, dest);
+    await this.scheduleNote('sine', 60, now,        0.09, 0.7, dest);
+    await this.scheduleNote('sine', 80, now,        0.07, 0.3, dest);
     // dub (120 ms later, slightly softer)
-    this.scheduleNote('sine', 55, now + 0.12, 0.08, 0.5, dest);
-    this.scheduleNote('sine', 70, now + 0.12, 0.06, 0.2, dest);
+    await this.scheduleNote('sine', 55, now + 0.12, 0.08, 0.5, dest);
+    await this.scheduleNote('sine', 70, now + 0.12, 0.06, 0.2, dest);
   }
 
-  doorCreak(): void {
-    const ctx = this.getCtx();
+  async doorCreak(): Promise<void> {
+    const ctx = await this.getCtx();
     const dest = this.sfxGain!;
     const now = ctx.currentTime;
     const dur = 1.8;
@@ -586,7 +589,7 @@ class AudioEngineClass {
     osc.stop(now + dur);
     osc.onended = () => { osc.disconnect(); filter.disconnect(); gain.disconnect(); };
 
-    this.playNoise(now, dur, 0.08, 600, dest);
+    await this.playNoise(now, dur, 0.08, 600, dest);
   }
 }
 

@@ -286,7 +286,7 @@ export function GameScreen({
   }, [endingId, onEndingReady]);
 
   useEffect(() => {
-    if (scene) Audio.sceneTransition();
+    if (scene) void Audio.sceneTransition();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sceneId]);
 
@@ -312,12 +312,12 @@ export function GameScreen({
   const showDice = diceState.phase !== 'idle' && diceState.result !== null;
 
   function handleChoice(nextId: string) {
-    Audio.buttonTap();
+    void Audio.buttonTap();
     onGoTo(nextId);
   }
 
   function handleNext() {
-    Audio.buttonTap();
+    void Audio.buttonTap();
     if (scene.next) onGoTo(scene.next);
   }
 

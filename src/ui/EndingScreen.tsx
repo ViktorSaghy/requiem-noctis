@@ -17,7 +17,7 @@ interface Props {
 export function EndingScreen({ ending, onPlayAgain }: Props) {
   useEffect(() => {
     Audio.setMood('ending');
-    return () => Audio.stopMood();
+    return () => void Audio.stopMood();
   }, []);
 
   return (

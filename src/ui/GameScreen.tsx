@@ -4,7 +4,15 @@ import { listSaves, CLANS, portraitPath, getSceneImage, preloadImages } from '..
 import type { SaveSlot, JournalEntry } from '../engine';
 import { Audio } from '../audio';
 import { DiceOverlay } from './DiceOverlay';
-import { CombatScreen } from './CombatScreen';
+import { useCombat } from './useCombat';
+import {
+  CombatStatusPanel,
+  CombatActionsPanel,
+  CombatLogPanel,
+  HpTrack,
+  HungerPips,
+  WpDots,
+} from './CombatScreen';
 import type { PlayerCombatState } from '../engine/combat';
 
 type GameTab = 'story' | 'character' | 'journal' | 'menu';
@@ -24,31 +32,13 @@ interface Props {
   devMode?: boolean;
 }
 
-function HungerPips({ hunger }: { hunger: number }) {
-  return (
-    <div className="status-hunger">
-      {Array.from({ length: 5 }, (_, i) => (
-        <div
-          key={i}
-          className={`hunger-dot ${i < hunger ? (hunger >= 5 ? 'bestial' : 'full') : ''}`}
-        />
-      ))}
-    </div>
-  );
-}
+// ─────────────── CHARACTER PANE ───────────────
 
-function HealthTrack({ superficial, aggravated, max }: { superficial: number; aggravated: number; max: number }) {
-  return (
-    <div className="track-group">
-      <span className="track-label">HP</span>
-      {Array.from({ length: max }, (_, i) => {
-        const isAgg = i >= max - aggravated;
-        const isSup = !isAgg && i < superficial;
-        return <div key={i} className={`track-box ${isAgg ? 'agg-dmg' : isSup ? 'sup-dmg' : ''}`} />;
-      })}
-    </div>
-  );
-}
+const SKILL_DISPLAY_CATS: Record<string, string[]> = {
+  Physical: ['Athletics', 'Brawl', 'Craft', 'Drive', 'Firearms', 'Larceny', 'Melee', 'Stealth', 'Survival'],
+  Social:   ['AnimalKen', 'Etiquette', 'Insight', 'Intimidation', 'Leadership', 'Performance', 'Persuasion', 'Streetwise', 'Subterfuge'],
+  Mental:   ['Academics', 'Awareness', 'Finance', 'Investigation', 'Medicine', 'Occult', 'Politics', 'Science', 'Technology'],
+};
 
 function DotTrack({ value, max, label }: { value: number; max: number; label: string }) {
   return (
@@ -62,12 +52,6 @@ function DotTrack({ value, max, label }: { value: number; max: number; label: st
     </div>
   );
 }
-
-const SKILL_DISPLAY_CATS: Record<string, string[]> = {
-  Physical: ['Athletics', 'Brawl', 'Craft', 'Drive', 'Firearms', 'Larceny', 'Melee', 'Stealth', 'Survival'],
-  Social:   ['AnimalKen', 'Etiquette', 'Insight', 'Intimidation', 'Leadership', 'Performance', 'Persuasion', 'Streetwise', 'Subterfuge'],
-  Mental:   ['Academics', 'Awareness', 'Finance', 'Investigation', 'Medicine', 'Occult', 'Politics', 'Science', 'Technology'],
-};
 
 function CharacterPane({ game }: { game: GameState }) {
   const { character } = game;
@@ -92,12 +76,18 @@ function CharacterPane({ game }: { game: GameState }) {
           </div>
         </div>
       </div>
-
       <div className="char-pane-section">
         <div className="char-pane-label">Status</div>
         <div className="char-status-row">
           <HungerPips hunger={character.hunger} />
-          <HealthTrack superficial={character.superficialDmg} aggravated={character.aggravatedDmg} max={character.health} />
+          <div className="track-group">
+            <span className="track-label">HP</span>
+            {Array.from({ length: character.health }, (_, i) => {
+              const isAgg = i >= character.health - character.aggravatedDmg;
+              const isSup = !isAgg && i < character.superficialDmg;
+              return <div key={i} className={`track-box ${isAgg ? 'agg-dmg' : isSup ? 'sup-dmg' : ''}`} />;
+            })}
+          </div>
           <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginLeft: '0.25rem' }}>{Math.max(0, currentHp)}/{character.health}</span>
         </div>
         <div className="char-vitals">
@@ -105,7 +95,6 @@ function CharacterPane({ game }: { game: GameState }) {
           <DotTrack value={character.humanity} max={10} label="Humanity" />
         </div>
       </div>
-
       <div className="char-pane-section">
         <div className="char-pane-label">Attributes</div>
         <div className="char-attr-grid">
@@ -117,7 +106,6 @@ function CharacterPane({ game }: { game: GameState }) {
           ))}
         </div>
       </div>
-
       {nonZeroSkills.length > 0 && (
         <div className="char-pane-section">
           <div className="char-pane-label">Skills</div>
@@ -140,7 +128,6 @@ function CharacterPane({ game }: { game: GameState }) {
           </div>
         </div>
       )}
-
       {discs.length > 0 && (
         <div className="char-pane-section">
           <div className="char-pane-label">Disciplines</div>
@@ -154,21 +141,16 @@ function CharacterPane({ game }: { game: GameState }) {
           </div>
         </div>
       )}
-
       {clanData && (
         <div className="char-pane-section">
           <div className="char-pane-label">Clan Bane</div>
-          <div className="card" style={{ fontSize: '0.78rem', fontStyle: 'italic', color: 'var(--text-dim)' }}>
-            {clanData.bane}
-          </div>
+          <div className="card" style={{ fontSize: '0.78rem', fontStyle: 'italic', color: 'var(--text-dim)' }}>{clanData.bane}</div>
         </div>
       )}
       {clanData && (
         <div className="char-pane-section">
           <div className="char-pane-label">Compulsion</div>
-          <div className="card" style={{ fontSize: '0.78rem', fontStyle: 'italic', color: 'var(--text-dim)' }}>
-            {clanData.compulsion}
-          </div>
+          <div className="card" style={{ fontSize: '0.78rem', fontStyle: 'italic', color: 'var(--text-dim)' }}>{clanData.compulsion}</div>
         </div>
       )}
     </div>
@@ -177,20 +159,14 @@ function CharacterPane({ game }: { game: GameState }) {
 
 function JournalPane({ journal }: { journal: JournalEntry[] }) {
   if (journal.length === 0) {
-    return (
-      <div className="journal-pane">
-        <div className="journal-empty">No entries yet. Explore to begin your chronicle.</div>
-      </div>
-    );
+    return <div className="journal-pane"><div className="journal-empty">No entries yet. Explore to begin your chronicle.</div></div>;
   }
   return (
     <div className="journal-pane">
       {journal.map((e, i) => (
         <div key={i} className="journal-entry">
           <div className="journal-entry-text">{e.entry}</div>
-          <div className="journal-entry-time">
-            {new Date(e.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-          </div>
+          <div className="journal-entry-time">{new Date(e.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
         </div>
       ))}
     </div>
@@ -208,9 +184,7 @@ function MenuPane({
   const [saves, setSaves] = useState<Record<string, SaveSlot>>({});
   const [busy, setBusy] = useState(false);
 
-  useEffect(() => {
-    listSaves().then(setSaves);
-  }, []);
+  useEffect(() => { listSaves().then(setSaves); }, []);
 
   const SLOTS = [
     { id: 'slot1', label: 'Slot I' },
@@ -221,8 +195,7 @@ function MenuPane({
   async function handleSave(slot: string) {
     setBusy(true);
     await onSaveSlot(slot);
-    const refreshed = await listSaves();
-    setSaves(refreshed);
+    setSaves(await listSaves());
     setBusy(false);
   }
 
@@ -253,15 +226,12 @@ function MenuPane({
               </div>
               <div className="save-actions">
                 <button className="btn btn-sm btn-gold" disabled={busy} onClick={() => handleSave(id)}>Save</button>
-                {save && (
-                  <button className="btn btn-sm" disabled={busy} onClick={() => handleLoad(id)}>Load</button>
-                )}
+                {save && <button className="btn btn-sm" disabled={busy} onClick={() => handleLoad(id)}>Load</button>}
               </div>
             </div>
           );
         })}
       </div>
-
       <div className="menu-section">
         <button className="btn btn-full" style={{ marginBottom: '0.5rem' }} onClick={onSettings}>Settings</button>
         <button className="btn btn-danger btn-full" onClick={onBackToTitle}>Back to Title</button>
@@ -269,6 +239,183 @@ function MenuPane({
     </div>
   );
 }
+
+// ─────────────── STORY ACTIONS ───────────────
+
+function StoryActionsPanel({ scene, character, diceState, onGoTo, onBeginRoll }: {
+  scene: NonNullable<GameState['chronicle']['scenes'][string]>;
+  character: GameState['character'];
+  diceState: GameState['diceState'];
+  onGoTo: (id: string) => void;
+  onBeginRoll: () => void;
+}) {
+  function handleChoice(nextId: string) {
+    void Audio.buttonTap();
+    onGoTo(nextId);
+  }
+  function handleNext() {
+    void Audio.buttonTap();
+    if (scene.next) onGoTo(scene.next);
+  }
+
+  return (
+    <div className="gs-actions-inner">
+      {scene.choices && scene.choices.length > 0 && (
+        <div className="choice-list">
+          {scene.choices.map((choice, i) => (
+            <button key={i} className="choice-btn" onClick={() => handleChoice(choice.next)}>
+              {choice.icon && <span className="choice-icon">{choice.icon}</span>}
+              {choice.text}
+            </button>
+          ))}
+        </div>
+      )}
+      {scene.check && diceState.phase === 'idle' && (
+        <div className="check-card">
+          <div className="check-header">
+            <span className="check-icon">🎲</span>
+            <h3 className="check-title">Dice Check</h3>
+          </div>
+          <p className="check-description">{scene.check.label}</p>
+          <div className="check-stats">
+            <div className="check-stat">
+              <div className="check-stat-label">Pool</div>
+              <div className="check-stat-value">{scene.check.pool(character)}</div>
+            </div>
+            <div className="check-stat">
+              <div className="check-stat-label">Difficulty</div>
+              <div className="check-stat-value">{scene.check.difficulty}</div>
+            </div>
+          </div>
+          <button className="roll-btn" onClick={onBeginRoll}>
+            <span>🎲</span> Roll the Dice
+          </button>
+        </div>
+      )}
+      {scene.next && !scene.choices && !scene.check && (
+        <button className="continue-btn" onClick={handleNext}>Continue</button>
+      )}
+      {scene.resolution && (
+        <div style={{ color: 'var(--text-dim)', fontSize: 'var(--text-sm)', textAlign: 'center', padding: '1rem' }}>
+          Resolving…
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────── SCENE CARD (left column top for story mode) ───────────────
+
+function SceneCard({ scene, character }: {
+  scene: NonNullable<GameState['chronicle']['scenes'][string]>;
+  character: GameState['character'];
+}) {
+  const currentHp = character.health - character.superficialDmg - character.aggravatedDmg;
+  return (
+    <div className="gs-scene-card">
+      {scene.act && (
+        <div className="gs-scene-act">Act {scene.act}</div>
+      )}
+      {scene.title && (
+        <h2 className="gs-scene-title">{scene.title}</h2>
+      )}
+      <div className="gs-char-vitals">
+        <div className="gs-char-name">{character.name} · {character.clan}</div>
+        <div className="gs-vital-row">
+          <span className="gs-vital-label">HP</span>
+          <HpTrack superficial={character.superficialDmg} aggravated={character.aggravatedDmg} max={character.health} compact />
+          <span className="gs-vital-val">{Math.max(0, currentHp)}/{character.health}</span>
+        </div>
+        <div className="gs-vital-row">
+          <span className="gs-vital-label">WP</span>
+          <WpDots current={character.willpower} max={character.willpower} />
+          <span className="gs-vital-val">{character.willpower}</span>
+        </div>
+        <div className="gs-vital-row">
+          <span className="gs-vital-label">Hunger</span>
+          <HungerPips hunger={character.hunger} />
+          <span className="gs-vital-val">{character.hunger}/5</span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─────────────── COMBAT WRAPPER (manages combat state for 3-col layout) ───────────────
+
+function CombatLayout({ game, sceneId, onApplyPostCombatDamage, onGoTo, activeTab, onTabChange, onSaveSlot, onLoadSlot, onSettings, onBackToTitle, bg }: {
+  game: GameState;
+  sceneId: string;
+  onApplyPostCombatDamage: (player: PlayerCombatState) => void;
+  onGoTo: (id: string) => void;
+  activeTab: GameTab;
+  onTabChange: (tab: GameTab) => void;
+  onSaveSlot: (slot: string) => Promise<void>;
+  onLoadSlot: (slot: string) => Promise<boolean>;
+  onSettings: () => void;
+  onBackToTitle: () => void;
+  bg: string;
+}) {
+  const { character } = game;
+  const scene = game.chronicle.scenes[sceneId]!;
+  const scenario = scene.combat!;
+
+  const combat = useCombat(character, scenario, (nextSceneId, finalPlayer) => {
+    onApplyPostCombatDamage(finalPlayer);
+    onGoTo(nextSceneId);
+  });
+
+  useEffect(() => {
+    Audio.setMood('combat');
+    return () => { Audio.setMood('exploration'); };
+  }, []);
+
+  const TABS: { id: GameTab; label: string }[] = [
+    { id: 'story', label: 'Combat Log' },
+    { id: 'character', label: 'Sheet' },
+    { id: 'journal', label: 'Journal' },
+    { id: 'menu', label: 'Menu' },
+  ];
+
+  return (
+    <>
+      {/* LEFT: enemy/player status (top) + combat actions (bottom) */}
+      <div className="gs-left" style={{ display: 'contents' }}>
+        <div className="gs-scene-card-wrap">
+          <CombatStatusPanel combat={combat} character={character} scenario={scenario} />
+        </div>
+        <div className="gs-actions">
+          <CombatActionsPanel combat={combat} scenario={scenario} />
+        </div>
+      </div>
+
+      {/* CENTER: illustration */}
+      <div className="gs-center">
+        <img key={bg} src={bg} alt="" className="gs-illus" />
+        <div className="gs-illus-overlay" />
+      </div>
+
+      {/* RIGHT: tabs */}
+      <div className="gs-right">
+        <div className="gs-tab-strip">
+          {TABS.map(t => (
+            <button key={t.id} className={`gs-tab-btn ${activeTab === t.id ? 'active' : ''}`} onClick={() => onTabChange(t.id)}>
+              {t.label}
+            </button>
+          ))}
+        </div>
+        <div className="gs-tab-content">
+          {activeTab === 'story' && <CombatLogPanel combat={combat} />}
+          {activeTab === 'character' && <CharacterPane game={game} />}
+          {activeTab === 'journal' && <JournalPane journal={game.journal} />}
+          {activeTab === 'menu' && <MenuPane onSaveSlot={onSaveSlot} onLoadSlot={onLoadSlot} onSettings={onSettings} onBackToTitle={onBackToTitle} />}
+        </div>
+      </div>
+    </>
+  );
+}
+
+// ─────────────── MAIN GAME SCREEN ───────────────
 
 export function GameScreen({
   game, onGoTo, onBeginRoll, onRevealRoll, onConfirmRoll, onEndingReady,
@@ -278,7 +425,6 @@ export function GameScreen({
   const scene = chronicle.scenes[sceneId];
   const [activeTab, setActiveTab] = useState<GameTab>('story');
 
-  // Preload all catalogue images once so transitions are instant
   useEffect(() => { preloadImages(); }, []);
 
   useEffect(() => {
@@ -290,16 +436,10 @@ export function GameScreen({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sceneId]);
 
-  // Always bring combat/story into view when navigating to a new scene
-  useEffect(() => {
-    setActiveTab('story');
-  }, [sceneId]);
+  useEffect(() => { setActiveTab('story'); }, [sceneId]);
 
   if (!scene) return null;
 
-  // Stable per-scene: recompute only when the scene changes, not on every render.
-  // Random selection within the candidate pool is intentional — same scene type
-  // shows different illustrations on repeat playthroughs.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   const bg = useMemo(() => getSceneImage({
     sceneId,
@@ -309,22 +449,17 @@ export function GameScreen({
     hunger: character.hunger,
     intensity: scene.combat ? 4 : scene.check ? 3 : 2,
   }), [sceneId]);
+
   const showDice = diceState.phase !== 'idle' && diceState.result !== null;
 
-  function handleChoice(nextId: string) {
-    void Audio.buttonTap();
-    onGoTo(nextId);
-  }
+  const STORY_TABS: { id: GameTab; label: string }[] = [
+    { id: 'story',     label: 'Story' },
+    { id: 'character', label: 'Sheet' },
+    { id: 'journal',   label: 'Journal' },
+    { id: 'menu',      label: 'Menu' },
+  ];
 
-  function handleNext() {
-    void Audio.buttonTap();
-    if (scene.next) onGoTo(scene.next);
-  }
-
-  // On desktop the side panel is always visible; default to character when story is active
-  const sideContent = (activeTab === 'story' ? 'character' : activeTab) as 'character' | 'journal' | 'menu';
-
-  const TABS: { id: GameTab; icon: string; label: string }[] = [
+  const MOBILE_TABS: { id: GameTab; icon: string; label: string }[] = [
     { id: 'story',     icon: '◈', label: 'Story' },
     { id: 'character', icon: '♦', label: 'Sheet' },
     { id: 'journal',   icon: '✦', label: 'Journal' },
@@ -332,7 +467,7 @@ export function GameScreen({
   ];
 
   return (
-    <div className="game-screen">
+    <div className="gs-layout">
       {showDice && diceState.result && diceState.check && (
         <DiceOverlay
           result={diceState.result}
@@ -345,61 +480,63 @@ export function GameScreen({
         />
       )}
 
-      {/* Viewport wrapper: story (left) + side panel (right) */}
-      <div className="game-area">
-
-        {/* ── Story / Main column ── */}
-        <div className={`game-content${activeTab !== 'story' ? ' content-hidden' : ''}`}>
-          {/* Status bar */}
-          <div className="game-status-bar">
-            <div className="status-left">
-              <div className="status-character">{character.name}</div>
-              <div className="status-vitals">
-                <HungerPips hunger={character.hunger} />
-                <div className="status-health">
-                  {Math.max(0, character.health - character.superficialDmg - character.aggravatedDmg)}/{character.health}
-                </div>
-              </div>
+      {scene.combat ? (
+        <CombatLayout
+          game={game}
+          sceneId={sceneId}
+          onApplyPostCombatDamage={onApplyPostCombatDamage}
+          onGoTo={onGoTo}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          onSaveSlot={onSaveSlot}
+          onLoadSlot={onLoadSlot}
+          onSettings={onSettings}
+          onBackToTitle={onBackToTitle}
+          bg={bg}
+        />
+      ) : (
+        <>
+          {/* LEFT column: scene card (top) + actions (bottom) */}
+          <div className="gs-left">
+            <div className="gs-scene-card-wrap">
+              <SceneCard scene={scene} character={character} />
+            </div>
+            <div className="gs-actions">
+              <StoryActionsPanel
+                scene={scene}
+                character={character}
+                diceState={diceState}
+                onGoTo={onGoTo}
+                onBeginRoll={onBeginRoll}
+              />
             </div>
           </div>
 
-          {/* Background */}
-          <div className="game-bg-container">
-            <img key={bg} src={bg} alt="" className="game-bg" />
-            <div className="game-bg-overlay" />
+          {/* CENTER column: illustration */}
+          <div className="gs-center">
+            <img key={bg} src={bg} alt="" className="gs-illus" />
+            <div className="gs-illus-overlay" />
           </div>
 
-          {/* Story or Combat — share the same visual frame */}
-          <div className="story-container">
-            {scene.combat ? (
-              <>
-                {scene.title && (
-                  <div className="combat-context-bar">
-                    <span className="combat-act-label">Act {scene.act}</span>
-                    <span className="combat-scene-title">{scene.title}</span>
-                  </div>
-                )}
-                <CombatScreen
-                  scenario={scene.combat}
-                  character={character}
-                  onEnd={(nextSceneId, finalPlayer) => {
-                    onApplyPostCombatDamage(finalPlayer);
-                    onGoTo(nextSceneId);
-                  }}
-                />
-              </>
-            ) : (
-              <>
-                <div className="story-scroll">
+          {/* RIGHT column: tabs + content */}
+          <div className="gs-right">
+            <div className="gs-tab-strip">
+              {STORY_TABS.map(t => (
+                <button key={t.id} className={`gs-tab-btn ${activeTab === t.id ? 'active' : ''}`} onClick={() => setActiveTab(t.id)}>
+                  {t.label}
+                </button>
+              ))}
+            </div>
+            <div className="gs-tab-content">
+              {activeTab === 'story' && (
+                <div className="gs-narrative">
                   {scene.title && (
-                    <div className="scene-header">
+                    <div className="gs-narrative-header">
                       <div className="scene-act">Act {scene.act}</div>
                       <h2 className="scene-title">{scene.title}</h2>
                     </div>
                   )}
-                  <div className="narrative-container">
-                    <p className="narrative-text">{scene.narrative}</p>
-                  </div>
+                  <p className="narrative-text">{scene.narrative}</p>
                   {devMode && (
                     <div className="dev-panel">
                       <div className="dev-row"><span>Scene</span><code>{sceneId}</code></div>
@@ -409,112 +546,26 @@ export function GameScreen({
                     </div>
                   )}
                 </div>
-
-                {/* Interaction */}
-                <div className="interaction-container">
-                  <div className="interaction-content">
-                    {scene.choices && scene.choices.length > 0 && (
-                      <div className="choice-list">
-                        {scene.choices.map((choice, i) => (
-                          <button key={i} className="choice-btn" onClick={() => handleChoice(choice.next)}>
-                            {choice.icon && <span className="choice-icon">{choice.icon}</span>}
-                            {choice.text}
-                          </button>
-                        ))}
-                      </div>
-                    )}
-
-                    {scene.check && diceState.phase === 'idle' && (
-                      <div className="check-card">
-                        <div className="check-header">
-                          <span className="check-icon">🎲</span>
-                          <h3 className="check-title">Dice Check</h3>
-                        </div>
-                        <p className="check-description">{scene.check.label}</p>
-                        <div className="check-stats">
-                          <div className="check-stat">
-                            <div className="check-stat-label">Pool</div>
-                            <div className="check-stat-value">{scene.check.pool(character)}</div>
-                          </div>
-                          <div className="check-stat">
-                            <div className="check-stat-label">Difficulty</div>
-                            <div className="check-stat-value">{scene.check.difficulty}</div>
-                          </div>
-                        </div>
-                        <button className="roll-btn" onClick={onBeginRoll}>
-                          <span>🎲</span>
-                          Roll the Dice
-                        </button>
-                      </div>
-                    )}
-
-                    {scene.next && !scene.choices && !scene.check && (
-                      <button className="continue-btn" onClick={handleNext}>
-                        Continue
-                      </button>
-                    )}
-
-                    {scene.resolution && (
-                      <div style={{ color: 'var(--text-dim)', fontSize: 'var(--text-sm)', textAlign: 'center', padding: '1rem' }}>
-                        Resolving…
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </>
-            )}
+              )}
+              {activeTab === 'character' && <CharacterPane game={game} />}
+              {activeTab === 'journal' && <JournalPane journal={game.journal} />}
+              {activeTab === 'menu' && (
+                <MenuPane onSaveSlot={onSaveSlot} onLoadSlot={onLoadSlot} onSettings={onSettings} onBackToTitle={onBackToTitle} />
+              )}
+            </div>
           </div>
-        </div>
+        </>
+      )}
 
-        {/* ── Side panel: overlay on mobile, fixed column on desktop ── */}
-        <div className={`game-side${activeTab !== 'story' ? ' side-open' : ''}`}>
-          <div className="side-tabs">
-            <button
-              className={`side-tab${sideContent === 'character' ? ' active' : ''}`}
-              onClick={() => setActiveTab('character')}
-            >
-              <span className="side-tab-icon">♦</span>
-              Sheet
-            </button>
-            <button
-              className={`side-tab${sideContent === 'journal' ? ' active' : ''}`}
-              onClick={() => setActiveTab('journal')}
-            >
-              <span className="side-tab-icon">✦</span>
-              Journal
-            </button>
-            <button
-              className={`side-tab${sideContent === 'menu' ? ' active' : ''}`}
-              onClick={() => setActiveTab('menu')}
-            >
-              <span className="side-tab-icon">≡</span>
-              Menu
-            </button>
-          </div>
-          <div className="side-content">
-            {sideContent === 'character' && <CharacterPane game={game} />}
-            {sideContent === 'journal' && <JournalPane journal={game.journal} />}
-            {sideContent === 'menu' && (
-              <MenuPane
-                onSaveSlot={onSaveSlot}
-                onLoadSlot={onLoadSlot}
-                onSettings={onSettings}
-                onBackToTitle={onBackToTitle}
-              />
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* ── Mobile bottom tab bar ── */}
-      <nav className="game-tab-bar">
-        {TABS.map(t => (
+      {/* Mobile bottom tab bar */}
+      <nav className="gs-mobile-bar">
+        {MOBILE_TABS.map(t => (
           <button
             key={t.id}
-            className={`tab-btn${activeTab === t.id ? ' active' : ''}`}
+            className={`gs-tab-mobile-btn ${activeTab === t.id ? 'active' : ''}`}
             onClick={() => setActiveTab(t.id)}
           >
-            <span className="tab-btn-icon">{t.icon}</span>
+            <span className="gs-tab-mobile-icon">{t.icon}</span>
             <span>{t.label}</span>
           </button>
         ))}

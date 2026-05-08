@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import type { GameState } from '../engine';
-import { listSaves } from '../engine';
+import { listSaves, CLANS, portraitPath } from '../engine';
 import type { SaveSlot, JournalEntry } from '../engine';
 import { Audio } from '../audio';
 import { DiceOverlay } from './DiceOverlay';
 import { CombatScreen } from './CombatScreen';
+import type { PlayerCombatState } from '../engine/combat';
 
 type GameTab = 'story' | 'character' | 'journal' | 'menu';
 
@@ -19,6 +20,7 @@ interface Props {
   onLoadSlot: (slot: string) => Promise<boolean>;
   onSettings: () => void;
   onBackToTitle: () => void;
+  onApplyPostCombatDamage: (player: PlayerCombatState) => void;
   devMode?: boolean;
 }
 
@@ -35,13 +37,15 @@ function HungerPips({ hunger }: { hunger: number }) {
   );
 }
 
-function HealthTrack({ current, max }: { current: number; max: number }) {
+function HealthTrack({ superficial, aggravated, max }: { superficial: number; aggravated: number; max: number }) {
   return (
     <div className="track-group">
       <span className="track-label">HP</span>
-      {Array.from({ length: max }, (_, i) => (
-        <div key={i} className={`track-box ${i >= current ? 'dmg' : ''}`} />
-      ))}
+      {Array.from({ length: max }, (_, i) => {
+        const isAgg = i >= max - aggravated;
+        const isSup = !isAgg && i < superficial;
+        return <div key={i} className={`track-box ${isAgg ? 'agg-dmg' : isSup ? 'sup-dmg' : ''}`} />;
+      })}
     </div>
   );
 }
@@ -147,16 +151,34 @@ function StoryPane({
   );
 }
 
+const SKILL_DISPLAY_CATS: Record<string, string[]> = {
+  Physical: ['Athletics', 'Brawl', 'Craft', 'Drive', 'Firearms', 'Larceny', 'Melee', 'Stealth', 'Survival'],
+  Social:   ['AnimalKen', 'Etiquette', 'Insight', 'Intimidation', 'Leadership', 'Performance', 'Persuasion', 'Streetwise', 'Subterfuge'],
+  Mental:   ['Academics', 'Awareness', 'Finance', 'Investigation', 'Medicine', 'Occult', 'Politics', 'Science', 'Technology'],
+};
+
 function CharacterPane({ game }: { game: GameState }) {
   const { character } = game;
   const discs = Object.entries(character.disciplines).filter(([, v]) => v > 0);
+  const clanData = CLANS[character.clan];
+  const currentHp = character.health - character.superficialDmg - character.aggravatedDmg;
+
+  const nonZeroSkills = Object.entries(character.skills ?? {}).filter(([, v]) => (v ?? 0) > 0) as [string, number][];
 
   return (
     <div className="char-pane">
       <div className="char-identity">
-        <div className="char-pane-name">{character.name}</div>
-        <div className="char-pane-sub">
-          {character.clan} · {character.gender === 'male' ? 'Male' : 'Female'} · Gen. {character.generation}
+        <img
+          className="char-portrait"
+          src={portraitPath(game.chronicle.era, character.clan)}
+          alt={character.clan}
+          onError={e => { e.currentTarget.style.display = 'none'; }}
+        />
+        <div className="char-identity-text">
+          <div className="char-pane-name">{character.name}</div>
+          <div className="char-pane-sub">
+            {character.clan} · {character.gender === 'male' ? 'Male' : 'Female'} · Gen. {character.generation}
+          </div>
         </div>
       </div>
 
@@ -164,7 +186,8 @@ function CharacterPane({ game }: { game: GameState }) {
         <div className="char-pane-label">Status</div>
         <div className="char-status-row">
           <HungerPips hunger={character.hunger} />
-          <HealthTrack current={character.health} max={character.health} />
+          <HealthTrack superficial={character.superficialDmg} aggravated={character.aggravatedDmg} max={character.health} />
+          <span style={{ fontSize: '0.7rem', color: 'var(--text-dim)', marginLeft: '0.25rem' }}>{Math.max(0, currentHp)}/{character.health}</span>
         </div>
         <div className="char-vitals">
           <DotTrack value={character.willpower} max={10} label="Willpower" />
@@ -184,6 +207,29 @@ function CharacterPane({ game }: { game: GameState }) {
         </div>
       </div>
 
+      {nonZeroSkills.length > 0 && (
+        <div className="char-pane-section">
+          <div className="char-pane-label">Skills</div>
+          <div className="char-skills-list">
+            {(Object.keys(SKILL_DISPLAY_CATS) as string[]).map(cat => {
+              const catSkills = nonZeroSkills.filter(([k]) => SKILL_DISPLAY_CATS[cat].includes(k));
+              if (catSkills.length === 0) return null;
+              return (
+                <div key={cat} className="char-skills-cat">
+                  <div className="char-skills-cat-label">{cat}</div>
+                  {catSkills.map(([k, v]) => (
+                    <div key={k} className="char-skill-row">
+                      <span className="char-skill-name">{k}</span>
+                      <span className="char-skill-dots">{'●'.repeat(v)}{'○'.repeat(5 - v)}</span>
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {discs.length > 0 && (
         <div className="char-pane-section">
           <div className="char-pane-label">Disciplines</div>
@@ -200,15 +246,22 @@ function CharacterPane({ game }: { game: GameState }) {
         </div>
       )}
 
-      <div className="char-pane-section">
-        <div className="char-pane-label">Clan</div>
-        <div className="card" style={{ fontSize: '0.8rem' }}>
-          <div style={{ fontStyle: 'italic', color: 'var(--text-dim)', marginBottom: '0.4rem' }}>
-            {(game.chronicle as any).npcs && null}
-            Bane: {(character as any)._bane ?? `See ${character.clan} clan rules`}
+      {clanData && (
+        <div className="char-pane-section">
+          <div className="char-pane-label">Clan Bane</div>
+          <div className="card" style={{ fontSize: '0.78rem', fontStyle: 'italic', color: 'var(--text-dim)' }}>
+            {clanData.bane}
           </div>
         </div>
-      </div>
+      )}
+      {clanData && (
+        <div className="char-pane-section">
+          <div className="char-pane-label">Compulsion</div>
+          <div className="card" style={{ fontSize: '0.78rem', fontStyle: 'italic', color: 'var(--text-dim)' }}>
+            {clanData.compulsion}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
@@ -326,7 +379,7 @@ function MenuPane({
 
 export function GameScreen({
   game, onGoTo, onBeginRoll, onRevealRoll, onConfirmRoll, onEndingReady,
-  onSaveSlot, onLoadSlot, onSettings, onBackToTitle, devMode,
+  onSaveSlot, onLoadSlot, onSettings, onBackToTitle, onApplyPostCombatDamage, devMode,
 }: Props) {
   const { character, chronicle, sceneId, diceState, endingId } = game;
   const scene = chronicle.scenes[sceneId];
@@ -350,7 +403,10 @@ export function GameScreen({
         <CombatScreen
           scenario={scene.combat}
           character={character}
-          onEnd={onGoTo}
+          onEnd={(nextSceneId, finalPlayer) => {
+            onApplyPostCombatDamage(finalPlayer);
+            onGoTo(nextSceneId);
+          }}
         />
       </div>
     );
@@ -358,11 +414,11 @@ export function GameScreen({
 
   const ACT_BG: Record<number, string> = {
     1: '/backgrounds/ash-cafe.png',
-    2: '/backgrounds/ash-brandt.png',
+    2: '/backgrounds/ash-cafe.png',
     3: '/backgrounds/ash-kessler.png',
-    4: '/backgrounds/ash-train.png',
+    4: '/backgrounds/ash-cafe.png',
   };
-  const bg = ACT_BG[scene.act] ?? '/backgrounds/ash-cafe.png';
+  const bg = scene.image ?? ACT_BG[scene.act] ?? '/backgrounds/ash-cafe.png';
   const showDice = diceState.phase !== 'idle' && diceState.result !== null;
 
   const TABS: { id: GameTab; icon: string; label: string }[] = [
@@ -380,6 +436,7 @@ export function GameScreen({
           phase={diceState.phase as 'rolling' | 'revealed'}
           difficulty={diceState.check.difficulty}
           label={diceState.check.label}
+          clanCompulsion={diceState.result.messyCritical ? CLANS[character.clan]?.compulsion : undefined}
           onReveal={onRevealRoll}
           onConfirm={onConfirmRoll}
         />
@@ -387,12 +444,12 @@ export function GameScreen({
 
       <div className="game-left">
         <div className="game-bg-wrap">
-          <img src={bg} alt="" className="game-bg" />
+          <img key={bg} src={bg} alt="" className="game-bg" />
           <div className="game-bg-overlay" />
           <div className="hud">
             <div className="hud-name">{character.name} · {character.clan}</div>
             <HungerPips hunger={character.hunger} />
-            <HealthTrack current={character.health} max={character.health} />
+            <HealthTrack superficial={character.superficialDmg} aggravated={character.aggravatedDmg} max={character.health} />
           </div>
         </div>
       </div>

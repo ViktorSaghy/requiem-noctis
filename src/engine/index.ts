@@ -6,6 +6,7 @@ import type { DiceResult } from './dice';
 import { saveGame, loadGame } from './saves';
 import type { JournalEntry } from './saves';
 import { Audio } from '../audio';
+import type { PlayerCombatState } from './combat';
 
 export type { Character } from './character';
 export type { Chronicle, Scene, Ending } from './story';
@@ -13,6 +14,10 @@ export type { DiceResult } from './dice';
 export { CLANS, createCharacter, defaultAttributes, deriveHealth, deriveWillpower } from './character';
 export { rollDice, difficultyCheck } from './dice';
 export { saveGame, loadGame, listSaves } from './saves';
+export function portraitPath(era: 'modern' | 'historical', clan: string): string {
+  const folder = era === 'modern' ? 'modern' : 'medieval';
+  return `/characters/${folder}/${clan.toLowerCase()}.png`;
+}
 export type { SaveSlot, JournalEntry } from './saves';
 
 type DicePhase = 'idle' | 'rolling' | 'revealed';
@@ -101,8 +106,12 @@ export function useGame() {
       const journal = scene.title
         ? [{ entry: `Act ${scene.act} — ${scene.title}`, time: Date.now() }, ...prev.journal]
         : prev.journal;
+      const character = scene.hunger_change != null
+        ? { ...prev.character, hunger: Math.max(0, Math.min(5, prev.character.hunger + scene.hunger_change)) }
+        : prev.character;
       const next: GameState = {
         ...prev,
+        character,
         sceneId,
         flags,
         journal,
@@ -179,6 +188,22 @@ export function useGame() {
     });
   }, [autoSave]);
 
+  const applyPostCombatDamage = useCallback((player: PlayerCombatState) => {
+    setState(prev => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        character: {
+          ...prev.character,
+          superficialDmg: player.superficialDmg,
+          aggravatedDmg: player.aggravatedDmg,
+          hunger: player.hunger,
+          willpower: player.willpower,
+        },
+      };
+    });
+  }, []);
+
   const hasFlag = useCallback((flag: string): boolean => {
     return !!state?.flags[flag];
   }, [state]);
@@ -231,5 +256,5 @@ export function useGame() {
     return true;
   }, [state]);
 
-  return { state, start, goTo, beginRoll, revealRoll, confirmRoll, hasFlag, resume, saveToSlot, loadFromSlot, currentScene: state ? currentScene(state) : null };
+  return { state, start, goTo, beginRoll, revealRoll, confirmRoll, hasFlag, resume, saveToSlot, loadFromSlot, applyPostCombatDamage, currentScene: state ? currentScene(state) : null };
 }

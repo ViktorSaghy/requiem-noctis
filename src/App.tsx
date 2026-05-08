@@ -127,6 +127,7 @@ export default function App() {
 
       {screen === 'create' && (
         <CharacterCreation
+          chronicle={selectedChronicle}
           onComplete={handleCharacterComplete}
           onBack={() => setScreen('story')}
         />
@@ -144,6 +145,7 @@ export default function App() {
           onLoadSlot={handleLoadSlot}
           onSettings={handleSettings}
           onBackToTitle={handleBackToTitle}
+          onApplyPostCombatDamage={game.applyPostCombatDamage}
           devMode={settings.devMode}
         />
       )}

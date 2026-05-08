@@ -64,6 +64,7 @@ export interface Scene {
   combat?: CombatScenario;
   next?: string;
   flags_set?: string[];
+  hunger_change?: number;
   resolution?: boolean;
   ending?: string;
 }
@@ -104,6 +105,7 @@ export interface Chronicle {
   title: string;
   subtitle?: string;
   setting: string;
+  era: 'modern' | 'historical';
   acts: Record<number, string>;
   npcs: Record<string, NPC>;
   endings: Record<string, Ending>;

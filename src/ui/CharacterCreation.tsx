@@ -5,11 +5,14 @@ import {
   defaultAttributes,
   deriveHealth,
   deriveWillpower,
+  portraitPath,
 } from '../engine';
 import type { Character, ClanName } from '../engine/character';
 import type { Attributes } from '../engine/character';
+import type { Chronicle } from '../engine';
 
 interface Props {
+  chronicle: Chronicle;
   onComplete: (c: Character) => void;
   onBack: () => void;
 }
@@ -37,7 +40,7 @@ const SKILL_CATS: Record<SkillCat, string[]> = {
   Social:   ['AnimalKen', 'Etiquette', 'Insight', 'Intimidation', 'Leadership', 'Performance', 'Persuasion', 'Streetwise', 'Subterfuge'],
   Mental:   ['Academics', 'Awareness', 'Finance', 'Investigation', 'Medicine', 'Occult', 'Politics', 'Science', 'Technology'],
 };
-const SKILL_BUDGET = 11;
+const SKILL_CAT_BUDGETS = [8, 6, 4]; // primary, secondary, tertiary
 
 const PRIORITY_LABELS = ['Primary (+5)', 'Secondary (+4)', 'Tertiary (+3)'];
 
@@ -52,6 +55,7 @@ const CLAN_NAMES: Record<ClanName, string[]> = {
   Tremere:  ['Albrecht', 'Hildegard', 'Gottfried', 'Mathilde', 'Konrad', 'Sigismund', 'Adalberta', 'Wolfram', 'Irmgard', 'Burkhard', 'Mechthild', 'Dietrich', 'Kunigunde', 'Hartmann'],
   Gangrel:  ['Ulf', 'Saoirse', 'Thorvald', 'Morwenna', 'Ragnar', 'Fionnuala', 'Gunnar', 'Aoife', 'Skadi', 'Eamon', 'Astrid', 'Conchobar', 'Freydís', 'Donnchad'],
   Lasombra: ['Rodrigo', 'Constanza', 'Iago', 'Beatriz', 'Álvaro', 'Soledad', 'Ramiro', 'Esperanza', 'Ferrante', 'Vittoria', 'Ignacio', 'Catalina', 'Baldassare', 'Lucrezia'],
+  Tzimisce: ['Vlad', 'Mirela', 'Bogdan', 'Ecaterina', 'Radu', 'Ioana', 'Dragoș', 'Luminița', 'Ștefan', 'Doina', 'Andrei', 'Viorica', 'Mihai', 'Teodora'],
 };
 
 function generateName(clan: ClanName): string {
@@ -68,6 +72,7 @@ interface TemplateChar {
   concept: string;
   attrs: Attributes;
   priorities: Partial<Record<AttrCategory, number>>;
+  skillPriorities: Partial<Record<SkillCat, number>>;
   skills: Record<string, number>;
   discPowers: string[];
 }
@@ -78,10 +83,11 @@ const TEMPLATES: TemplateChar[] = [
     clan: 'Ventrue',
     gender: 'male',
     concept: 'Fallen Industrialist',
-    // Social primary (+5): Cha+2 Man+3 | Mental secondary (+4): Int+2 Wit+1 Res+1 | Physical tertiary (+3): Str+1 Dex+1 Sta+1
     attrs: { Strength:2, Dexterity:2, Stamina:2, Charisma:3, Manipulation:4, Composure:2, Intelligence:3, Wits:2, Resolve:2 },
     priorities: { Social: 0, Mental: 1, Physical: 2 },
-    skills: { Finance:3, Politics:2, Persuasion:2, Etiquette:2, Subterfuge:2 },
+    // Social primary (8): Persuasion 3, Etiquette 2, Subterfuge 3 = 8 | Mental secondary (6): Finance 3, Politics 2, Investigation 1 = 6 | Physical tertiary (4): Stealth 2, Drive 2 = 4
+    skillPriorities: { Social: 0, Mental: 1, Physical: 2 },
+    skills: { Persuasion:3, Etiquette:2, Subterfuge:3, Finance:3, Politics:2, Investigation:1, Stealth:2, Drive:2 },
     discPowers: ['Dominate', 'Presence', 'Fortitude'],
   },
   {
@@ -89,10 +95,11 @@ const TEMPLATES: TemplateChar[] = [
     clan: 'Toreador',
     gender: 'female',
     concept: 'Forgotten Muse',
-    // Social primary (+5): Cha+3 Man+1 Com+1 | Physical secondary (+4): Str+1 Dex+2 Sta+1 | Mental tertiary (+3): Int+1 Wit+1 Res+1
     attrs: { Strength:2, Dexterity:3, Stamina:2, Charisma:4, Manipulation:2, Composure:2, Intelligence:2, Wits:2, Resolve:2 },
     priorities: { Social: 0, Physical: 1, Mental: 2 },
-    skills: { Performance:3, Persuasion:2, Insight:2, Awareness:2, Etiquette:2 },
+    // Social primary (8): Performance 3, Persuasion 3, Etiquette 2 = 8 | Mental secondary (6): Insight 3, Awareness 2, Occult 1 = 6 | Physical tertiary (4): Stealth 2, Athletics 2 = 4
+    skillPriorities: { Social: 0, Mental: 1, Physical: 2 },
+    skills: { Performance:3, Persuasion:3, Etiquette:2, Insight:3, Awareness:2, Occult:1, Stealth:2, Athletics:2 },
     discPowers: ['Auspex', 'Presence', 'Celerity'],
   },
   {
@@ -100,10 +107,11 @@ const TEMPLATES: TemplateChar[] = [
     clan: 'Malkavian',
     gender: 'male',
     concept: 'Penitent Prophet',
-    // Mental primary (+5): Int+2 Wit+2 Res+1 | Social secondary (+4): Cha+1 Man+2 Com+1 | Physical tertiary (+3): Str+1 Dex+1 Sta+1
     attrs: { Strength:2, Dexterity:2, Stamina:2, Charisma:2, Manipulation:3, Composure:2, Intelligence:3, Wits:3, Resolve:2 },
     priorities: { Mental: 0, Social: 1, Physical: 2 },
-    skills: { Occult:3, Academics:2, Awareness:2, Intimidation:2, Insight:2 },
+    // Mental primary (8): Occult 3, Academics 2, Awareness 2, Investigation 1 = 8 | Social secondary (6): Intimidation 3, Insight 2, Subterfuge 1 = 6 | Physical tertiary (4): Stealth 2, Survival 2 = 4
+    skillPriorities: { Mental: 0, Social: 1, Physical: 2 },
+    skills: { Occult:3, Academics:2, Awareness:2, Investigation:1, Intimidation:3, Insight:2, Subterfuge:1, Stealth:2, Survival:2 },
     discPowers: ['Auspex', 'Dominate', 'Obfuscate'],
   },
   {
@@ -111,17 +119,30 @@ const TEMPLATES: TemplateChar[] = [
     clan: 'Nosferatu',
     gender: 'female',
     concept: 'Spymaster Without a Court',
-    // Mental primary (+5): Int+3 Wit+1 Res+1 | Physical secondary (+4): Str+1 Dex+2 Sta+1 | Social tertiary (+3): Man+2 Com+1
     attrs: { Strength:2, Dexterity:3, Stamina:2, Charisma:1, Manipulation:3, Composure:2, Intelligence:4, Wits:2, Resolve:2 },
     priorities: { Mental: 0, Physical: 1, Social: 2 },
-    skills: { Stealth:3, Larceny:2, Subterfuge:3, Investigation:2, Awareness:1 },
+    // Mental primary (8): Investigation 3, Awareness 2, Occult 2, Technology 1 = 8 | Physical secondary (6): Stealth 3, Larceny 2, Athletics 1 = 6 | Social tertiary (4): Subterfuge 3, Insight 1 = 4
+    skillPriorities: { Mental: 0, Physical: 1, Social: 2 },
+    skills: { Investigation:3, Awareness:2, Occult:2, Technology:1, Stealth:3, Larceny:2, Athletics:1, Subterfuge:3, Insight:1 },
     discPowers: ['Obfuscate', 'Animalism', 'Potence'],
+  },
+  {
+    name: 'Cormac the Red',
+    clan: 'Brujah',
+    gender: 'male',
+    concept: 'Blood Games Champion',
+    attrs: { Strength:4, Dexterity:2, Stamina:2, Charisma:2, Manipulation:2, Composure:3, Intelligence:2, Wits:2, Resolve:2 },
+    priorities: { Physical: 0, Social: 1, Mental: 2 },
+    // Physical primary (8): Brawl 3, Athletics 3, Survival 2 = 8 | Social secondary (6): Intimidation 3, Streetwise 2, Leadership 1 = 6 | Mental tertiary (4): Awareness 2, Investigation 2 = 4
+    skillPriorities: { Physical: 0, Social: 1, Mental: 2 },
+    skills: { Brawl:3, Athletics:3, Survival:2, Intimidation:3, Streetwise:2, Leadership:1, Awareness:2, Investigation:2 },
+    discPowers: ['Celerity', 'Potence', 'Presence'],
   },
 ];
 
 // ── Component ──────────────────────────────────────────────────────────────
 
-export function CharacterCreation({ onComplete, onBack }: Props) {
+export function CharacterCreation({ chronicle, onComplete, onBack }: Props) {
   const [step, setStep] = useState<Step>('identity');
   const [name, setName] = useState('');
   const [clan, setClan] = useState<ClanName>('Ventrue');
@@ -132,6 +153,7 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
 
   const [skills, setSkills] = useState<Record<string, number>>({});
   const [skillTab, setSkillTab] = useState<SkillCat>('Physical');
+  const [skillPriorities, setSkillPriorities] = useState<Partial<Record<SkillCat, number>>>({});
 
   const [discPowers, setDiscPowers] = useState<string[]>([]);
 
@@ -154,8 +176,29 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
   const attrBudget = (cat: AttrCategory) => priorityFor(cat);
   const attrRemaining = (cat: AttrCategory) => attrBudget(cat) - attrSpend(cat);
 
-  const skillSpent = Object.values(skills).reduce((s, v) => s + v, 0);
-  const skillRemaining = SKILL_BUDGET - skillSpent;
+  function skillPriorityFor(cat: SkillCat): number {
+    const order = Object.entries(skillPriorities).sort((a, b) => a[1] - b[1]);
+    const idx = order.findIndex(([k]) => k === cat);
+    return idx >= 0 ? SKILL_CAT_BUDGETS[idx] : 0;
+  }
+
+  function skillSpentInCat(cat: SkillCat): number {
+    return SKILL_CATS[cat].reduce((s, sk) => s + (skills[sk] ?? 0), 0);
+  }
+
+  function skillRemainingInCat(cat: SkillCat): number {
+    return skillPriorityFor(cat) - skillSpentInCat(cat);
+  }
+
+  function setSkillPriority(cat: SkillCat, rank: number) {
+    const existing = Object.entries(skillPriorities).find(([, v]) => v === rank)?.[0] as SkillCat | undefined;
+    setSkillPriorities(prev => {
+      const next = { ...prev };
+      if (existing && existing !== cat) delete next[existing];
+      next[cat] = rank;
+      return next;
+    });
+  }
 
   function setAttr(key: keyof Attributes, delta: number) {
     const cat = (Object.entries(ATTR_CATS) as [AttrCategory, (keyof Attributes)[]][]).find(([, ks]) => ks.includes(key))?.[0];
@@ -166,11 +209,11 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
     setAttrs(prev => ({ ...prev, [key]: next }));
   }
 
-  function setSkill(key: string, delta: number) {
+  function setSkill(key: string, delta: number, cat: SkillCat) {
     const cur = skills[key] ?? 0;
     const next = cur + delta;
     if (next < 0 || next > 5) return;
-    if (delta > 0 && skillRemaining <= 0) return;
+    if (delta > 0 && skillRemainingInCat(cat) <= 0) return;
     setSkills(prev => ({ ...prev, [key]: next }));
   }
 
@@ -198,6 +241,7 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
     setGender(t.gender);
     setAttrs(t.attrs);
     setPriorities(t.priorities);
+    setSkillPriorities(t.skillPriorities);
     setSkills(t.skills);
     setDiscPowers(t.discPowers);
     setStep('review');
@@ -206,7 +250,7 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
   function canAdvance(): boolean {
     if (step === 'identity') return name.trim().length > 0;
     if (step === 'attributes') return Object.keys(priorities).length === 3;
-    if (step === 'skills') return true;
+    if (step === 'skills') return Object.keys(skillPriorities).length === 3;
     if (step === 'disciplines') return true;
     return true;
   }
@@ -264,6 +308,12 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
                     className="template-card"
                     onClick={() => applyTemplate(t)}
                   >
+                    <img
+                      className="template-portrait"
+                      src={{portraitPath(chronicle.era, t.clan)}}
+                      alt=""
+                      onError={e => { e.currentTarget.style.display = 'none'; }}
+                    />
                     <div className="template-clan">{t.clan}</div>
                     <div className="template-name">{t.name}</div>
                     <div className="template-concept">{t.concept}</div>
@@ -310,19 +360,33 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
                   className={`clan-card ${clan === c ? 'selected' : ''}`}
                   onClick={() => setClan(c)}
                 >
+                  <img
+                    className="clan-portrait-thumb"
+                    src={{portraitPath(chronicle.era, c)}}
+                    alt=""
+                    onError={e => { e.currentTarget.style.display = 'none'; }}
+                  />
                   <div className="clan-card-name">{c}</div>
                   <div className="clan-card-bane">{CLANS[c].bane.slice(0, 60)}…</div>
                 </div>
               ))}
             </div>
             {clan && (
-              <div className="card" style={{ marginTop: '0.5rem' }}>
-                <div style={{ fontSize: '0.85rem', color: 'var(--text-dim)', fontStyle: 'italic', marginBottom: '0.5rem' }}>
-                  {CLANS[clan].description}
-                </div>
-                <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
-                  <strong style={{ color: 'var(--gold)', fontFamily: 'var(--display)' }}>Disciplines: </strong>
-                  {CLANS[clan].disciplines.join(', ')}
+              <div className="clan-info-card">
+                <img
+                  className="clan-portrait-large"
+                  src={{portraitPath(chronicle.era, clan)}}
+                  alt={clan}
+                  onError={e => { e.currentTarget.style.display = 'none'; }}
+                />
+                <div className="clan-info-text">
+                  <div style={{ fontSize: '0.85rem', color: 'var(--text-dim)', fontStyle: 'italic', marginBottom: '0.5rem' }}>
+                    {CLANS[clan].description}
+                  </div>
+                  <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
+                    <strong style={{ color: 'var(--gold)', fontFamily: 'var(--display)' }}>Disciplines: </strong>
+                    {CLANS[clan].disciplines.join(', ')}
+                  </div>
                 </div>
               </div>
             )}
@@ -379,38 +443,64 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
 
         {step === 'skills' && (
           <>
-            <div className="budget-bar">
-              Points remaining: <span>{skillRemaining}</span> / {SKILL_BUDGET}
+            <div className="panel" style={{ marginBottom: '0.75rem', fontSize: '0.8rem', color: 'var(--text-dim)' }}>
+              Assign skill priorities. Primary gets 8 pts, Secondary 6, Tertiary 4. Max 5 per skill.
             </div>
-            <div className="skill-tabs">
-              {(['Physical', 'Social', 'Mental'] as SkillCat[]).map(cat => (
-                <button
-                  key={cat}
-                  className={`skill-tab ${skillTab === cat ? 'active' : ''}`}
-                  onClick={() => setSkillTab(cat)}
-                >
-                  {cat}
-                </button>
-              ))}
-            </div>
-            {SKILL_CATS[skillTab].map(sk => (
-              <div key={sk} className="attr-row">
-                <div className="attr-name">{sk}</div>
-                <div className="attr-controls">
-                  <button
-                    className="stepper-btn"
-                    onClick={() => setSkill(sk, -1)}
-                    disabled={(skills[sk] ?? 0) <= 0}
-                  >−</button>
-                  <div className="attr-value">{skills[sk] ?? 0}</div>
-                  <button
-                    className="stepper-btn"
-                    onClick={() => setSkill(sk, 1)}
-                    disabled={(skills[sk] ?? 0) >= 5 || skillRemaining <= 0}
-                  >+</button>
+            {/* Skill priority selection */}
+            {(Object.keys(SKILL_CATS) as SkillCat[]).map(cat => (
+              <div key={cat} className="attr-section" style={{ marginBottom: '0.5rem' }}>
+                <div className="attr-section-title">
+                  <span>{cat}</span>
+                  <span style={{ color: skillRemainingInCat(cat) < 0 ? 'var(--crimson-light)' : 'var(--text-dim)' }}>
+                    {skillPriorityFor(cat) > 0 ? `${skillRemainingInCat(cat)} pts left` : 'No priority set'}
+                  </span>
+                </div>
+                <div className="priority-row">
+                  {[0, 1, 2].map(rank => (
+                    <button
+                      key={rank}
+                      className={`priority-btn ${skillPriorities[cat] === rank ? 'selected' : ''}`}
+                      onClick={() => setSkillPriority(cat, rank)}
+                    >
+                      {PRIORITY_LABELS[rank]}
+                    </button>
+                  ))}
                 </div>
               </div>
             ))}
+            {Object.keys(skillPriorities).length === 3 && (
+              <>
+                <div className="skill-tabs">
+                  {(['Physical', 'Social', 'Mental'] as SkillCat[]).map(cat => (
+                    <button
+                      key={cat}
+                      className={`skill-tab ${skillTab === cat ? 'active' : ''}`}
+                      onClick={() => setSkillTab(cat)}
+                    >
+                      {cat} <span style={{ fontSize: '0.65rem', opacity: 0.7 }}>({skillRemainingInCat(cat)} left)</span>
+                    </button>
+                  ))}
+                </div>
+                {SKILL_CATS[skillTab].map(sk => (
+                  <div key={sk} className="attr-row">
+                    <div className="attr-name">{sk}</div>
+                    <div className="attr-controls">
+                      <button
+                        className="stepper-btn"
+                        onClick={() => setSkill(sk, -1, skillTab)}
+                        disabled={(skills[sk] ?? 0) <= 0}
+                      >−</button>
+                      <div className="attr-value">{skills[sk] ?? 0}</div>
+                      <button
+                        className="stepper-btn"
+                        onClick={() => setSkill(sk, 1, skillTab)}
+                        disabled={(skills[sk] ?? 0) >= 5 || skillRemainingInCat(skillTab) <= 0}
+                      >+</button>
+                    </div>
+                  </div>
+                ))}
+              </>
+            )}
           </>
         )}
 
@@ -448,11 +538,19 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
             <>
               <div className="review-block">
                 <div className="review-label">Identity</div>
-                <div className="card">
-                  <strong style={{ fontFamily: 'var(--display)', color: 'var(--gold)' }}>{name}</strong>
-                  <span style={{ color: 'var(--text-dim)', marginLeft: '0.5rem', fontSize: '0.85rem' }}>
-                    {gender === 'male' ? 'M' : 'F'} · {clan}
-                  </span>
+                <div className="review-identity-card">
+                  <img
+                    className="review-portrait"
+                    src={{portraitPath(chronicle.era, clan)}}
+                    alt={clan}
+                    onError={e => { e.currentTarget.style.display = 'none'; }}
+                  />
+                  <div>
+                    <strong style={{ fontFamily: 'var(--display)', color: 'var(--gold)', display: 'block' }}>{name}</strong>
+                    <span style={{ color: 'var(--text-dim)', fontSize: '0.85rem' }}>
+                      {gender === 'male' ? 'Male' : 'Female'} · {clan}
+                    </span>
+                  </div>
                 </div>
               </div>
               <div className="review-block">

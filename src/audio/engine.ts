@@ -150,34 +150,6 @@ class AudioEngineClass {
     }
   }
 
-  private playMusicLoop(url: string): void {
-    const buffer = this.musicBuffers.get(url);
-    if (!buffer) return;
-
-    this.stopMusicLoop();
-
-    const ctx = this.getCtx();
-    const source = ctx.createBufferSource();
-    const gain = ctx.createGain();
-
-    source.buffer = buffer;
-    source.loop = true;
-    gain.gain.value = 0;
-
-    source.connect(gain);
-    gain.connect(this.bgGain!);
-
-    source.start();
-    this.bgSource = source;
-    this.fadeGain = gain;
-    this.currentMusicUrl = url;
-
-    // Fade in
-    const now = ctx.currentTime;
-    gain.gain.setValueAtTime(0, now);
-    gain.gain.linearRampToValueAtTime(1, now + 2.0);
-  }
-
   private crossfadeToMusic(url: string): void {
     const buffer = this.musicBuffers.get(url);
     if (!buffer || this.currentMusicUrl === url) return;
@@ -440,8 +412,8 @@ class AudioEngineClass {
     const ctx = this.getCtx();
     const bg = this.bgGain!;
     const start = ctx.currentTime + 0.05;
-    let duration: number;
-    let gap: number;
+    let duration = 0;
+    let gap = 0;
 
     switch (mood) {
       case 'exploration':

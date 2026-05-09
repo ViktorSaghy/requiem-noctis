@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, Fragment } from 'react';
 import type { GameState } from '../engine';
 import { listSaves, CLANS, portraitPath, getSceneImage, preloadImages } from '../engine';
 import type { SaveSlot, JournalEntry } from '../engine';
@@ -121,7 +121,7 @@ function CharacterPane({ game }: { game: GameState }) {
               const catSkills = nonZeroSkills.filter(([k]) => SKILL_DISPLAY_CATS[cat].includes(k));
               if (catSkills.length === 0) return null;
               return (
-                <div key={cat} className="char-skills-cat">
+                <Fragment key={cat}>
                   <div className="char-skills-cat-label">{cat}</div>
                   {catSkills.map(([k, v]) => (
                     <div key={k} className="char-skill-row">
@@ -129,7 +129,7 @@ function CharacterPane({ game }: { game: GameState }) {
                       <span className="char-skill-dots">{'●'.repeat(v)}{'○'.repeat(5 - v)}</span>
                     </div>
                   ))}
-                </div>
+                </Fragment>
               );
             })}
           </div>

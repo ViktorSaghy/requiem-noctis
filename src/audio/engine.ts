@@ -179,12 +179,12 @@ class AudioEngineClass {
     // Fade out current
     if (this.fadeGain) {
       this.fadeGain.gain.setValueAtTime(this.fadeGain.gain.value, now);
-      this.fadeGain.gain.linearRampToValueAtTime(0, now + 3.0);
+      this.fadeGain.gain.linearRampToValueAtTime(0, now + 1.5);
     }
 
     // Fade in next
     nextGain.gain.setValueAtTime(0, now);
-    nextGain.gain.linearRampToValueAtTime(1, now + 3.0);
+    nextGain.gain.linearRampToValueAtTime(1, now + 1.5);
 
     // Clean up after fade
     setTimeout(() => {

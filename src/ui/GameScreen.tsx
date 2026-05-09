@@ -65,9 +65,16 @@ function CharacterPane({ game }: { game: GameState }) {
       <div className="char-identity">
         <img
           className="char-portrait"
-          src={portraitPath(game.chronicle.era, character.clan)}
+          src={portraitPath(game.chronicle.era, character.clan, character.gender)}
           alt={character.clan}
-          onError={e => { e.currentTarget.style.display = 'none'; }}
+          onError={e => {
+            const fallback = portraitPath(game.chronicle.era, character.clan);
+            if (e.currentTarget.src !== fallback) {
+              e.currentTarget.src = fallback;
+            } else {
+              e.currentTarget.style.display = 'none';
+            }
+          }}
         />
         <div className="char-identity-text">
           <div className="char-pane-name">{character.name}</div>
@@ -100,7 +107,7 @@ function CharacterPane({ game }: { game: GameState }) {
         <div className="char-attr-grid">
           {Object.entries(character.attributes).map(([k, v]) => (
             <div key={k} className="char-attr-cell">
-              <div className="char-attr-val">{v}</div>
+              <div className="char-attr-val">{'●'.repeat(v)}{'○'.repeat(5 - v)}</div>
               <div className="char-attr-name">{k.slice(0, 3)}</div>
             </div>
           ))}
@@ -166,6 +173,7 @@ function JournalPane({ journal }: { journal: JournalEntry[] }) {
       {journal.map((e, i) => (
         <div key={i} className="journal-entry">
           <div className="journal-entry-text">{e.entry}</div>
+          {e.summary && <div className="journal-entry-summary">{e.summary}</div>}
           <div className="journal-entry-time">{new Date(e.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
         </div>
       ))}

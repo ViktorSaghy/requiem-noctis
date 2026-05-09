@@ -1,6 +1,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import './App.css';
 import { useGame } from './engine';
+import { awardXp } from './engine/progression';
 import type { Character } from './engine';
 import type { Chronicle } from './engine';
 import {
@@ -11,6 +12,9 @@ import {
   EndingScreen,
   SettingsPanel,
   CreditsScreen,
+  UpgradeScreen,
+  Toast,
+  type ToastMessage,
 } from './ui';
 import { AshAndIvory } from '../content/ash-ivory/scenes';
 import { BloodGamesChronicle } from '../content/blood-games/scenes';
@@ -18,7 +22,7 @@ import { Audio } from './audio';
 import type { AppSettings } from './engine/settings';
 import { loadSettings } from './engine/settings';
 
-type Screen = 'title' | 'story' | 'create' | 'game' | 'ending' | 'settings' | 'credits';
+type Screen = 'title' | 'story' | 'create' | 'game' | 'ending' | 'downtime' | 'settings' | 'credits';
 
 const CHRONICLES: Chronicle[] = [AshAndIvory, BloodGamesChronicle];
 
@@ -28,6 +32,7 @@ export default function App() {
   const [selectedChronicle, setSelectedChronicle] = useState<Chronicle>(CHRONICLES[0]);
   const [endingId, setEndingId] = useState<string | null>(null);
   const [settings, setSettings] = useState<AppSettings>(() => loadSettings());
+  const [toast, setToast] = useState<ToastMessage | null>(null);
 
   const [audioUnlocked, setAudioUnlocked] = useState(false);
   const game = useGame();
@@ -89,13 +94,44 @@ export default function App() {
 
   const handleEndingReady = useCallback((id: string) => {
     setEndingId(id);
-    setScreen('ending');
-  }, []);
+    // Trigger XP award at ending
+    if (game.state) {
+      const xpRecord = awardXp(id, {
+        episodeComplete: true,
+        desireFulfilled: false, // Could extend with result data
+      });
+      const updated = { ...game.state.character };
+      updated.xp = (updated.xp ?? 0) + xpRecord.amount;
+      if (!updated.xpAwardLog) updated.xpAwardLog = [];
+      updated.xpAwardLog.push(xpRecord);
+      
+      // Show XP notification toast
+      setToast({
+        id: `xp-${Date.now()}`,
+        text: `Earned ${xpRecord.amount} XP: ${xpRecord.reason}`,
+        type: 'success',
+        duration: 4000,
+      });
+      
+      // Make downtime available
+      game.state.downtimeAvailable = true;
+      // Show downtime screen
+      setScreen('downtime');
+    }
+  }, [game.state]);
 
   const handlePlayAgain = useCallback(() => {
     setEndingId(null);
     setScreen('title');
   }, []);
+
+  const handleDowntimeComplete = useCallback((updatedChar: Character) => {
+    if (game.state) {
+      game.state.character = updatedChar;
+      game.state.downtimeAvailable = false;
+    }
+    setScreen('ending');
+  }, [game.state]);
 
   const handleSettings = useCallback(() => {
     setPrevScreen(screen);
@@ -173,6 +209,14 @@ export default function App() {
         />
       )}
 
+      {screen === 'downtime' && game.state && (
+        <UpgradeScreen
+          character={game.state.character}
+          onUpgrade={handleDowntimeComplete}
+          onClose={() => setScreen('ending')}
+        />
+      )}
+
       {screen === 'settings' && (
         <SettingsPanel
           settings={settings}
@@ -185,6 +229,8 @@ export default function App() {
       {screen === 'credits' && (
         <CreditsScreen onBack={handleCreditsBack} />
       )}
+
+      <Toast message={toast} />
     </>
   );
 }

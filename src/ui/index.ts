@@ -6,3 +6,5 @@ export { EndingScreen } from './EndingScreen';
 export { SettingsPanel } from './SettingsPanel';
 export { CreditsScreen } from './CreditsScreen';
 export { CombatScreen } from './CombatScreen';
+export { UpgradeScreen } from './UpgradeScreen';
+export { Toast, type ToastMessage } from './Toast';

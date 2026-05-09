@@ -46,21 +46,102 @@ const PRIORITY_LABELS = ['Primary (+5)', 'Secondary (+4)', 'Tertiary (+3)'];
 
 // ── Name Generator ─────────────────────────────────────────────────────────
 
-const CLAN_NAMES: Record<ClanName, string[]> = {
-  Ventrue:  ['Marcus', 'Lucius', 'Helena', 'Victoria', 'Maximilian', 'Cornelia', 'Octavia', 'Claudius', 'Valeria', 'Augustus', 'Livia', 'Tiberius', 'Domitia', 'Hadrian'],
-  Toreador: ['Séraphine', 'Adrien', 'Céleste', 'Lorenzo', 'Isabeau', 'Rémi', 'Valentina', 'Florian', 'Aurore', 'Matteo', 'Inès', 'Olivier', 'Camille', 'Luca'],
-  Malkavian:['Ezekiel', 'Harriet', 'Cornelius', 'Mildred', 'Jasper', 'Prudence', 'Obadiah', 'Lavinia', 'Algernon', 'Eustace', 'Millicent', 'Bartholomew', 'Eugenia', 'Thaddeus'],
-  Nosferatu:['Sigrid', 'Björn', 'Anastasia', 'Leif', 'Zosima', 'Gudrun', 'Konstantinos', 'Ragnvald', 'Thyra', 'Håkon', 'Basileia', 'Olaf', 'Euphrosyne', 'Ivar'],
-  Brujah:   ['Cormac', 'Áine', 'Dimitrios', 'Rhiannon', 'Stavros', 'Brigid', 'Leandro', 'Niamh', 'Oisín', 'Kallistrate', 'Brennus', 'Fionn', 'Zephyrine', 'Conall'],
-  Tremere:  ['Albrecht', 'Hildegard', 'Gottfried', 'Mathilde', 'Konrad', 'Sigismund', 'Adalberta', 'Wolfram', 'Irmgard', 'Burkhard', 'Mechthild', 'Dietrich', 'Kunigunde', 'Hartmann'],
-  Gangrel:  ['Ulf', 'Saoirse', 'Thorvald', 'Morwenna', 'Ragnar', 'Fionnuala', 'Gunnar', 'Aoife', 'Skadi', 'Eamon', 'Astrid', 'Conchobar', 'Freydís', 'Donnchad'],
-  Lasombra: ['Rodrigo', 'Constanza', 'Iago', 'Beatriz', 'Álvaro', 'Soledad', 'Ramiro', 'Esperanza', 'Ferrante', 'Vittoria', 'Ignacio', 'Catalina', 'Baldassare', 'Lucrezia'],
-  Tzimisce: ['Vlad', 'Mirela', 'Bogdan', 'Ecaterina', 'Radu', 'Ioana', 'Dragoș', 'Luminița', 'Ștefan', 'Doina', 'Andrei', 'Viorica', 'Mihai', 'Teodora'],
+const CLAN_FIRST_NAMES: Record<ClanName, { male: string[]; female: string[] }> = {
+  Ventrue: {
+    male: ['Marcus', 'Lucius', 'Maximilian', 'Claudius', 'Augustus', 'Tiberius', 'Hadrian'],
+    female: ['Helena', 'Victoria', 'Cornelia', 'Octavia', 'Valeria', 'Livia', 'Domitia'],
+  },
+  Toreador: {
+    male: ['Adrien', 'Rémi', 'Florian', 'Matteo', 'Olivier', 'Luca'],
+    female: ['Séraphine', 'Céleste', 'Isabeau', 'Valentina', 'Aurore', 'Inès', 'Camille'],
+  },
+  Malkavian: {
+    male: ['Ezekiel', 'Cornelius', 'Jasper', 'Obadiah', 'Algernon', 'Eustace', 'Bartholomew', 'Thaddeus'],
+    female: ['Harriet', 'Mildred', 'Prudence', 'Lavinia', 'Millicent', 'Eugenia'],
+  },
+  Nosferatu: {
+    male: ['Björn', 'Leif', 'Konstantinos', 'Ragnvald', 'Håkon', 'Olaf', 'Ivar'],
+    female: ['Sigrid', 'Anastasia', 'Zosima', 'Gudrun', 'Basileia', 'Euphrosyne'],
+  },
+  Brujah: {
+    male: ['Cormac', 'Dimitrios', 'Stavros', 'Leandro', 'Oisín', 'Brennus', 'Fionn', 'Conall'],
+    female: ['Áine', 'Rhiannon', 'Brigid', 'Niamh', 'Kallistrate', 'Zephyrine'],
+  },
+  Tremere: {
+    male: ['Albrecht', 'Gottfried', 'Konrad', 'Sigismund', 'Wolfram', 'Burkhard', 'Dietrich', 'Hartmann'],
+    female: ['Hildegard', 'Mathilde', 'Adalberta', 'Irmgard', 'Mechthild', 'Kunigunde'],
+  },
+  Gangrel: {
+    male: ['Ulf', 'Thorvald', 'Ragnar', 'Gunnar', 'Eamon', 'Donnchad'],
+    female: ['Saoirse', 'Morwenna', 'Fionnuala', 'Aoife', 'Skadi', 'Astrid', 'Freydís'],
+  },
+  Lasombra: {
+    male: ['Rodrigo', 'Iago', 'Álvaro', 'Ramiro', 'Ferrante', 'Ignacio', 'Baldassare'],
+    female: ['Constanza', 'Beatriz', 'Soledad', 'Esperanza', 'Vittoria', 'Catalina', 'Lucrezia'],
+  },
+  Tzimisce: {
+    male: ['Vlad', 'Bogdan', 'Radu', 'Dragoș', 'Ștefan', 'Andrei', 'Mihai'],
+    female: ['Mirela', 'Ecaterina', 'Luminița', 'Doina', 'Viorica', 'Teodora'],
+  },
 };
 
-function generateName(clan: ClanName): string {
-  const pool = CLAN_NAMES[clan];
-  return pool[Math.floor(Math.random() * pool.length)];
+const CLAN_LAST_NAMES: Record<ClanName, string[]> = {
+  Ventrue: ['Aurelius', 'Valerius', 'Septimus', 'Cassius', 'Merula', 'Vespasian', 'Severus', 'Lucilla', 'Octavian', 'Cornelia'],
+  Toreador: ['Moreau', 'Delacroix', 'Chevalier', 'Bianchi', 'Duval', 'Rousseau', 'Bellini', 'Laurent', 'D\'Argent', 'Fiore'],
+  Malkavian: ['Crowe', 'Thorn', 'Widdershins', 'Finch', 'Pock', 'Quill', 'Hallow', 'Rift', 'Haze', 'Shade'],
+  Nosferatu: ['Dragomir', 'Korzek', 'Vargan', 'Petrov', 'Kostr', 'Vasil', 'Baran', 'Morva', 'Sava', 'Nestor'],
+  Brujah: ['O\'Rourke', 'Byrne', 'Kane', 'Maddox', 'Blackthorn', 'Draven', 'Vale', 'Scar', 'Flint', 'Cross'],
+  Tremere: ['Weiss', 'Eisen', 'Nacht', 'Vogel', 'Albrecht', 'Schatten', 'Weber', 'Faust', 'Hartmann', 'Strauss'],
+  Gangrel: ['Storm', 'Wilder', 'Fen', 'Ash', 'Thorn', 'Morrow', 'Crow', 'Wolf', 'Bryn', 'Feral'],
+  Lasombra: ['del Toro', 'de la Cruz', 'Arroyo', 'Sombra', 'Velasco', 'Montenegro', 'Reyes', 'Silvano', 'Cortez', 'Casillas'],
+  Tzimisce: ['Dragos', 'Ionescu', 'Vasile', 'Stanescu', 'Petrescu', 'Diaconu', 'Muntean', 'Sandu', 'Iancu', 'Radu'],
+};
+
+function sample<T>(items: T[]): T {
+  return items[Math.floor(Math.random() * items.length)];
+}
+
+function generateName(clan: ClanName, gender: 'male' | 'female'): string {
+  const first = sample(CLAN_FIRST_NAMES[clan][gender]);
+  const last = sample(CLAN_LAST_NAMES[clan]);
+
+  switch (clan) {
+    case 'Malkavian': {
+      const epithets = ['the Mad', 'the Quiet', 'the Pale', 'the Seer', 'of Liminality', 'the Whisper'];
+      if (Math.random() < 0.4) return `${first} ${sample(epithets)}`;
+      return `${first} ${last}`;
+    }
+    case 'Nosferatu': {
+      const darkEpithets = ['the Pale', 'of the Sewers', 'the Night', 'of Blackwater', 'the Hollow'];
+      if (Math.random() < 0.35) return `${first} ${sample(darkEpithets)}`;
+      return `${first} ${last}`;
+    }
+    case 'Brujah': {
+      const warEpithets = ['the Red', 'the Fist', 'of Iron', 'the Reckless'];
+      if (Math.random() < 0.25) return `${first} ${sample(warEpithets)}`;
+      return `${first} ${last}`;
+    }
+    case 'Tremere': {
+      if (Math.random() < 0.25) return `Magister ${first} ${last}`;
+      return `${first} ${last}`;
+    }
+    case 'Gangrel': {
+      const wildEpithets = ['of the Wild', 'of the Moon', 'of the Woods', 'the Wanderer'];
+      if (Math.random() < 0.3) return `${first} ${sample(wildEpithets)}`;
+      return `${first} ${last}`;
+    }
+    case 'Lasombra': {
+      if (Math.random() < 0.3) return `${first} de ${last}`;
+      return `${first} ${last}`;
+    }
+    case 'Tzimisce': {
+      const easternEpithets = ['of the Carpathians', 'the Scarred', 'of Moldavia'];
+      if (Math.random() < 0.25) return `${first} ${sample(easternEpithets)}`;
+      return `${first} ${last}`;
+    }
+    default:
+      return `${first} ${last}`;
+  }
 }
 
 // ── Template Characters ────────────────────────────────────────────────────
@@ -310,7 +391,7 @@ export function CharacterCreation({ chronicle, onComplete, onBack }: Props) {
                   >
                     <img
                       className="template-portrait"
-                      src={portraitPath(chronicle.era, t.clan)}
+                      src={portraitPath(chronicle.era, t.clan, t.gender)}
                       alt=""
                       onError={e => { e.currentTarget.style.display = 'none'; }}
                     />
@@ -336,7 +417,7 @@ export function CharacterCreation({ chronicle, onComplete, onBack }: Props) {
                 <button
                   className="btn btn-sm btn-ghost name-gen-btn"
                   type="button"
-                  onClick={() => setName(generateName(clan))}
+                  onClick={() => setName(generateName(clan, gender))}
                 >
                   Generate
                 </button>
@@ -362,9 +443,16 @@ export function CharacterCreation({ chronicle, onComplete, onBack }: Props) {
                 >
                   <img
                     className="clan-portrait-thumb"
-                    src={portraitPath(chronicle.era, c)}
+                    src={portraitPath(chronicle.era, c, gender)}
                     alt=""
-                    onError={e => { e.currentTarget.style.display = 'none'; }}
+                    onError={e => {
+                      const fallback = portraitPath(chronicle.era, c);
+                      if (e.currentTarget.src !== fallback) {
+                        e.currentTarget.src = fallback;
+                      } else {
+                        e.currentTarget.style.display = 'none';
+                      }
+                    }}
                   />
                   <div className="clan-card-name">{c}</div>
                   <div className="clan-card-bane">{CLANS[c].bane.slice(0, 60)}…</div>
@@ -375,9 +463,16 @@ export function CharacterCreation({ chronicle, onComplete, onBack }: Props) {
               <div className="clan-info-card">
                 <img
                   className="clan-portrait-large"
-                  src={portraitPath(chronicle.era, clan)}
+                  src={portraitPath(chronicle.era, clan, gender)}
                   alt={clan}
-                  onError={e => { e.currentTarget.style.display = 'none'; }}
+                  onError={e => {
+                    const fallback = portraitPath(chronicle.era, clan);
+                    if (e.currentTarget.src !== fallback) {
+                      e.currentTarget.src = fallback;
+                    } else {
+                      e.currentTarget.style.display = 'none';
+                    }
+                  }}
                 />
                 <div className="clan-info-text">
                   <div style={{ fontSize: '0.85rem', color: 'var(--text-dim)', fontStyle: 'italic', marginBottom: '0.5rem' }}>
@@ -541,9 +636,16 @@ export function CharacterCreation({ chronicle, onComplete, onBack }: Props) {
                 <div className="review-identity-card">
                   <img
                     className="review-portrait"
-                    src={portraitPath(chronicle.era, clan)}
+                    src={portraitPath(chronicle.era, clan, gender)}
                     alt={clan}
-                    onError={e => { e.currentTarget.style.display = 'none'; }}
+                    onError={e => {
+                      const fallback = portraitPath(chronicle.era, clan);
+                      if (e.currentTarget.src !== fallback) {
+                        e.currentTarget.src = fallback;
+                      } else {
+                        e.currentTarget.style.display = 'none';
+                      }
+                    }}
                   />
                   <div>
                     <strong style={{ fontFamily: 'var(--display)', color: 'var(--gold)', display: 'block' }}>{name}</strong>

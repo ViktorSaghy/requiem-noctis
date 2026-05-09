@@ -15,6 +15,7 @@ export interface SaveSlot {
 
 export interface JournalEntry {
   entry: string;
+  summary?: string;
   time: number;
 }
 
@@ -24,6 +25,7 @@ export interface GameState {
   flags: Record<string, boolean>;
   journal: JournalEntry[];
   gmMode: 'classic' | 'ai';
+  downtimeAvailable?: boolean;
 }
 
 const STORAGE_PREFIX = 'requiem_noctis_';

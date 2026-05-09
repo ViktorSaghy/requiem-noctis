@@ -43,6 +43,7 @@ export interface Character {
   skills: Partial<Skills>;
   skillSpecialties: Record<string, string>;
   disciplines: Disciplines;
+  advantages?: Record<string, number>; // e.g. { Ally: 2, Resources: 1 }
   health: number;
   superficialDmg: number;
   aggravatedDmg: number;
@@ -50,6 +51,8 @@ export interface Character {
   humanity: number;
   hunger: number;
   xp: number;
+  xpAwardLog?: Array<{ episodeId: string; amount: number; reason: string; timestamp: string }>;
+  xpSpendLog?: Array<{ upgradeId: string; amount: number; timestamp: string }>;
   savedAt?: number;
 }
 

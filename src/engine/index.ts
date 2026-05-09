@@ -14,9 +14,21 @@ export type { DiceResult } from './dice';
 export { CLANS, createCharacter, defaultAttributes, deriveHealth, deriveWillpower } from './character';
 export { rollDice, difficultyCheck } from './dice';
 export { saveGame, loadGame, listSaves } from './saves';
-export function portraitPath(era: 'modern' | 'historical', clan: string): string {
+export { awardXp, getSuggestedUpgrades, canPurchase, purchase, getCategoryProgress } from './progression';
+
+function extractFirstSentence(text?: string): string | undefined {
+  if (!text) return undefined;
+  const match = text.match(/^[^.!?]*[.!?]/);
+  return match ? match[0].trim() : undefined;
+}
+
+export function portraitPath(era: 'modern' | 'historical', clan: string, gender?: 'male' | 'female'): string {
+  const base = clan.toLowerCase();
+  if (gender) {
+    return `/characters/portrait-${base}-${gender}-${era}.png`;
+  }
   const folder = era === 'modern' ? 'modern' : 'medieval';
-  return `/characters/${folder}/${clan.toLowerCase()}.png`;
+  return `/characters/${folder}/${base}.png`;
 }
 export type { SaveSlot, JournalEntry } from './saves';
 
@@ -134,6 +146,7 @@ export interface GameState {
   journal: JournalEntry[];
   diceState: DiceState;
   endingId: string | null;
+  downtimeAvailable?: boolean;
 }
 
 const MOOD_BY_ACT: Record<number, 'exploration' | 'tension' | 'combat'> = {
@@ -205,7 +218,7 @@ export function useGame() {
       const mood = MOOD_BY_ACT[scene.act] ?? 'exploration';
       Audio.setMood(mood);
       const journal = scene.title
-        ? [{ entry: `Act ${scene.act} — ${scene.title}`, time: Date.now() }, ...prev.journal]
+        ? [{ entry: `Act ${scene.act} — ${scene.title}`, summary: extractFirstSentence(scene.narrative), time: Date.now() }, ...prev.journal]
         : prev.journal;
       const character = scene.hunger_change != null
         ? { ...prev.character, hunger: Math.max(0, Math.min(5, prev.character.hunger + scene.hunger_change)) }
@@ -275,7 +288,7 @@ export function useGame() {
       const mood = MOOD_BY_ACT[scene?.act ?? 2] ?? 'tension';
       Audio.setMood(mood);
       const journal = scene?.title
-        ? [{ entry: `Act ${scene.act} — ${scene.title}`, time: Date.now() }, ...prev.journal]
+        ? [{ entry: `Act ${scene.act} — ${scene.title}`, summary: extractFirstSentence(scene?.narrative), time: Date.now() }, ...prev.journal]
         : prev.journal;
       let endingId: string | null = null;
       if (scene?.resolution) endingId = resolveEnding(prev.chronicle, flags);

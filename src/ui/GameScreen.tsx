@@ -290,16 +290,48 @@ function StoryActionsPanel({ scene, character, diceState, onGoTo, onBeginRoll }:
     if (scene.next) onGoTo(scene.next);
   }
 
+  // Returns null  → hide choice entirely
+  // Returns false → show as disabled (locked but visible — teaches the mechanic)
+  // Returns true  → show normally
+  function choiceAccess(choice: NonNullable<typeof scene.choices>[number]): null | boolean {
+    if (choice.requires_clan && choice.requires_clan !== character.clan) return null;
+    if (choice.requires_flag && !character.clan) return null; // flag check via game.flags is done below
+    const disciplines = character.disciplines as Record<string, number | undefined>;
+    if (choice.requires_discipline && !disciplines[choice.requires_discipline]) return false;
+    if (choice.requires_hunger_gte != null && character.hunger < choice.requires_hunger_gte) return false;
+    if (choice.requires_hunger_lte != null && character.hunger > choice.requires_hunger_lte) return false;
+    return true;
+  }
+
   return (
     <div className="gs-actions-inner">
       {scene.choices && scene.choices.length > 0 && (
         <div className="choice-list">
-          {scene.choices.map((choice, i) => (
-            <button key={i} className="choice-btn" onClick={() => handleChoice(choice.next)}>
-              {choice.icon && <span className="choice-icon">{choice.icon}</span>}
-              {choice.text}
-            </button>
-          ))}
+          {scene.choices.map((choice, i) => {
+            const access = choiceAccess(choice);
+            if (access === null) return null;
+            const locked = access === false;
+            const lockHint = locked
+              ? (choice.requires_discipline ? `Requires ${choice.requires_discipline}`
+                : choice.requires_hunger_gte != null ? `Hunger ${choice.requires_hunger_gte}+ required`
+                : choice.requires_hunger_lte != null ? `Hunger ${choice.requires_hunger_lte} or lower required`
+                : 'Locked')
+              : undefined;
+            return (
+              <button
+                key={i}
+                className={`choice-btn${locked ? ' choice-btn-locked' : ''}`}
+                disabled={locked}
+                title={lockHint}
+                onClick={() => !locked && handleChoice(choice.next)}
+              >
+                {choice.icon && <span className="choice-icon">{choice.icon}</span>}
+                {locked && <span className="choice-lock-icon">🔒</span>}
+                {choice.text}
+                {locked && lockHint && <span className="choice-lock-hint">{lockHint}</span>}
+              </button>
+            );
+          })}
         </div>
       )}
       {scene.check && diceState.phase === 'idle' && (
@@ -566,6 +598,30 @@ export function GameScreen({
                     </div>
                   )}
                   <p className="narrative-text">{scene.narrative}</p>
+
+                  {/* Clan-specific addendum — only shown to matching clan */}
+                  {scene.clan_notes?.[game.character.clan as keyof typeof scene.clan_notes] && (
+                    <p className="narrative-clan-note">
+                      {scene.clan_notes[game.character.clan as keyof typeof scene.clan_notes]}
+                    </p>
+                  )}
+
+                  {/* Compulsion instinct — shown when hunger ≥ 4 */}
+                  {scene.compulsion_note && game.character.hunger >= 4 && (
+                    <div className="compulsion-callout">
+                      <span className="compulsion-callout-icon">🩸</span>
+                      {scene.compulsion_note}
+                    </div>
+                  )}
+
+                  {/* Humanity stain notification */}
+                  {scene.humanity_change != null && scene.humanity_change < 0 && (
+                    <div className="stain-callout">
+                      <span className="stain-callout-icon">◆</span>
+                      {scene.stain_note ?? 'Something dims within you.'}
+                    </div>
+                  )}
+
                   {devMode && (
                     <div className="dev-panel">
                       <div className="dev-row"><span>{t('game.devScene')}</span><code>{sceneId}</code></div>

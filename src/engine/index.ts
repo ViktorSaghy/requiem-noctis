@@ -18,6 +18,17 @@ export { localizeChronicle } from './localize';
 export { awardXp, getSuggestedUpgrades, canPurchase, purchase, getCategoryProgress, buildTransactionLog } from './progression';
 export type { XpAwardRecord, XpSpendRecord, XpTransaction } from './progression';
 
+function applySceneDeltas(character: Character, scene: { hunger_change?: number; humanity_change?: number }): Character {
+  let c = character;
+  if (scene.hunger_change != null) {
+    c = { ...c, hunger: Math.max(0, Math.min(5, c.hunger + scene.hunger_change)) };
+  }
+  if (scene.humanity_change != null) {
+    c = { ...c, humanity: Math.max(0, Math.min(10, c.humanity + scene.humanity_change)) };
+  }
+  return c;
+}
+
 function extractFirstSentence(text?: string): string | undefined {
   if (!text) return undefined;
   const match = text.match(/^[^.!?]*[.!?]/);
@@ -195,8 +206,11 @@ export function useGame() {
   const start = useCallback((character: Character, chronicle: Chronicle) => {
     Audio.stopAll();                  // dispose any sources from a previous session
     Audio.setMood('exploration');
+    const startChar = chronicle.starting_hunger != null
+      ? { ...character, hunger: Math.max(0, Math.min(5, chronicle.starting_hunger)) }
+      : character;
     const gs: GameState = {
-      character,
+      character: startChar,
       chronicle,
       sceneId: 'start',
       flags: {},
@@ -223,9 +237,7 @@ export function useGame() {
       const journal = scene.title
         ? [{ entry: `Act ${scene.act} — ${scene.title}`, summary: extractFirstSentence(scene.narrative), time: Date.now() }, ...prev.journal]
         : prev.journal;
-      const character = scene.hunger_change != null
-        ? { ...prev.character, hunger: Math.max(0, Math.min(5, prev.character.hunger + scene.hunger_change)) }
-        : prev.character;
+      const character = applySceneDeltas(prev.character, scene);
       const next: GameState = {
         ...prev,
         character,
@@ -293,11 +305,13 @@ export function useGame() {
       const journal = scene?.title
         ? [{ entry: `Act ${scene.act} — ${scene.title}`, summary: extractFirstSentence(scene?.narrative), time: Date.now() }, ...prev.journal]
         : prev.journal;
+      const character = scene ? applySceneDeltas(prev.character, scene) : prev.character;
       let endingId: string | null = null;
       if (scene?.resolution) endingId = resolveEnding(prev.chronicle, flags);
       else if (scene?.ending) { Audio.setMood('ending'); endingId = scene.ending; }
       const next: GameState = {
         ...prev,
+        character,
         sceneId: nextId,
         flags,
         journal,

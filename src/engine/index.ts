@@ -13,7 +13,7 @@ export type { Chronicle, Scene, Ending } from './story';
 export type { DiceResult } from './dice';
 export { CLANS, createCharacter, defaultAttributes, deriveHealth, deriveWillpower } from './character';
 export { rollDice, difficultyCheck } from './dice';
-export { saveGame, loadGame, listSaves } from './saves';
+export { saveGame, loadGame, listSaves, saveCharacter, loadSavedCharacters } from './saves';
 export { awardXp, getSuggestedUpgrades, canPurchase, purchase, getCategoryProgress, buildTransactionLog } from './progression';
 export type { XpAwardRecord, XpSpendRecord, XpTransaction } from './progression';
 

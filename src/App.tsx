@@ -24,6 +24,7 @@ import { Audio } from './audio';
 import type { AppSettings } from './engine/settings';
 import { loadSettings } from './engine/settings';
 import { LangContext } from './engine/i18n';
+import { saveCharacter } from './engine/saves';
 
 type Screen = 'title' | 'story' | 'create' | 'game' | 'ending' | 'xp-recap' | 'downtime' | 'settings' | 'credits';
 
@@ -140,19 +141,31 @@ export default function App() {
     setScreen('downtime');
   }, []);
 
-  const handlePlayAgain = useCallback(() => {
-    setEndingId(null);
-    setPendingXpRecord(null);
-    setScreen('title');
-  }, []);
-
   const handleDowntimeComplete = useCallback((updatedChar: Character) => {
     if (game.state) {
       game.state.character = updatedChar;
       game.state.downtimeAvailable = false;
     }
+    void saveCharacter(updatedChar);
     setScreen('ending');
   }, [game.state]);
+
+  const handleContinueCharacter = useCallback(() => {
+    if (game.state) setPendingCharacter({ ...game.state.character });
+    setEndingId(null);
+    setScreen('story');
+  }, [game.state]);
+
+  const handleNewCharacter = useCallback(() => {
+    setEndingId(null);
+    setPendingCharacter(null);
+    setScreen('create');
+  }, []);
+
+  const handleSelectCharacter = useCallback((char: Character) => {
+    setPendingCharacter(char);
+    setScreen('story');
+  }, []);
 
   const handleSettings = useCallback(() => {
     setPrevScreen(screen);
@@ -187,14 +200,19 @@ export default function App() {
   return (
     <LangContext.Provider value={settings.language ?? 'en'}>
       {screen === 'title' && (
-        <TitleScreen onNewGame={handleNewGame} onContinue={handleContinue} />
+        <TitleScreen
+          onNewGame={handleNewGame}
+          onContinue={handleContinue}
+          onSettings={handleSettings}
+          onSelectCharacter={handleSelectCharacter}
+        />
       )}
 
       {screen === 'story' && (
         <StorySelect
           chronicles={CHRONICLES}
           onSelect={handleStorySelect}
-          onBack={() => setScreen('title')}
+          onBack={() => setScreen('create')}
         />
       )}
 
@@ -236,7 +254,9 @@ export default function App() {
       {screen === 'ending' && endingId && game.state && (
         <EndingScreen
           ending={game.state.chronicle.endings[endingId]}
-          onPlayAgain={handlePlayAgain}
+          characterName={game.state.character.name}
+          onContinueCharacter={handleContinueCharacter}
+          onNewCharacter={handleNewCharacter}
         />
       )}
 

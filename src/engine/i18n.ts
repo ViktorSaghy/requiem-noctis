@@ -18,6 +18,9 @@ const en = {
   'title.newGame': 'New Game',
   'title.continue': 'Continue',
   'title.credit': 'Vampire: The Masquerade 5th Edition',
+  'title.settings': 'Settings',
+  'title.yourCharacters': 'Your Characters',
+  'title.playAs': 'Play as {name}',
 
   // ── Settings ─────────────────────────────────────────────────────────────
   'settings.title': 'Settings',
@@ -202,6 +205,8 @@ const en = {
   'ending.good_end': 'Good End',
   'ending.perfect_end': 'Perfect End',
   'ending.playAgain': 'Play Again',
+  'ending.continueCharacter': 'Continue with {name}',
+  'ending.newCharacter': 'New Character',
 
   // ── XP Recap ─────────────────────────────────────────────────────────────
   'recap.endOfEpisode': 'End of Episode',
@@ -258,6 +263,9 @@ const hu: TranslationDict = {
   'title.newGame': 'Új játék',
   'title.continue': 'Folytatás',
   'title.credit': 'Vampire: The Masquerade 5th Edition',
+  'title.settings': 'Beállítások',
+  'title.yourCharacters': 'Karakterjeid',
+  'title.playAs': 'Játék mint {name}',
 
   // ── Settings ─────────────────────────────────────────────────────────────
   'settings.title': 'Beállítások',
@@ -442,6 +450,8 @@ const hu: TranslationDict = {
   'ending.good_end': 'Jó vég',
   'ending.perfect_end': 'Tökéletes vég',
   'ending.playAgain': 'Újrajátszás',
+  'ending.continueCharacter': 'Folytatás {name} karakterrel',
+  'ending.newCharacter': 'Új karakter',
 
   // ── XP Recap ─────────────────────────────────────────────────────────────
   'recap.endOfEpisode': 'Epizód vége',

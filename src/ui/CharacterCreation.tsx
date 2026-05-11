@@ -406,7 +406,14 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
                       className="template-portrait"
                       src={portraitPath(portraitEra, tmpl.clan, tmpl.gender)}
                       alt=""
-                      onError={e => { e.currentTarget.style.display = 'none'; }}
+                      onError={e => {
+                        const fallback = portraitPath(portraitEra, tmpl.clan);
+                        if (!e.currentTarget.src.endsWith(fallback)) {
+                          e.currentTarget.src = fallback;
+                        } else {
+                          e.currentTarget.style.display = 'none';
+                        }
+                      }}
                     />
                     <div className="template-clan">{tmpl.clan}</div>
                     <div className="template-name">{tmpl.name}</div>

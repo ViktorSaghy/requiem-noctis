@@ -1,6 +1,6 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import './App.css';
-import { useGame } from './engine';
+import { useGame, localizeChronicle } from './engine';
 import { awardXp } from './engine/progression';
 import type { XpAwardRecord } from './engine';
 import type { Character } from './engine';
@@ -28,7 +28,7 @@ import { saveCharacter } from './engine/saves';
 
 type Screen = 'title' | 'story' | 'create' | 'game' | 'ending' | 'xp-recap' | 'downtime' | 'settings' | 'credits';
 
-const CHRONICLES: Chronicle[] = [AshAndIvory, BloodGamesChronicle];
+const BASE_CHRONICLES: Chronicle[] = [AshAndIvory, BloodGamesChronicle];
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('title');
@@ -41,6 +41,10 @@ export default function App() {
 
   const [audioUnlocked, setAudioUnlocked] = useState(false);
   const game = useGame();
+  const CHRONICLES = useMemo(
+    () => BASE_CHRONICLES.map(c => localizeChronicle(c, settings.language ?? 'en')),
+    [settings.language]
+  );
 
   // Apply settings and attempt auto-start (works when browser allows autoplay)
   useEffect(() => {

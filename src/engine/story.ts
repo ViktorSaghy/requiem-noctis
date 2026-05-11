@@ -100,6 +100,23 @@ export interface NPC {
   };
 }
 
+export interface SceneLocale {
+  title?: string;
+  narrative?: string;
+  choices?: Array<string | null>;
+  check?: { label?: string; pool_label?: string; success_text?: string; fail_text?: string };
+  combat?: { label?: string; description?: string };
+}
+
+export interface ChronicleLocale {
+  title?: string;
+  subtitle?: string;
+  setting?: string;
+  acts?: Partial<Record<number, string>>;
+  endings?: Record<string, { title?: string; text?: string }>;
+  scenes?: Record<string, SceneLocale>;
+}
+
 export interface Chronicle {
   id: string;
   title: string;
@@ -110,4 +127,5 @@ export interface Chronicle {
   npcs: Record<string, NPC>;
   endings: Record<string, Ending>;
   scenes: Record<string, Scene>;
+  locales?: Partial<Record<string, ChronicleLocale>>;
 }

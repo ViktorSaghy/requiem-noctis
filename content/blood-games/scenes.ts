@@ -221,4 +221,109 @@ export const BloodGamesChronicle: Chronicle = {
       ending: 'defeat_medium',
     },
   },
+  locales: {
+    hu: {
+      title: 'Véres Játékok',
+      subtitle: 'A Sabbat Tűzpróbája',
+      setting: 'Chicago, 1997',
+      acts: {
+        1: 'A Vaulderie',
+        2: 'Harci Próba',
+        3: 'Következmények',
+      },
+      endings: {
+        victory_easy: {
+          title: 'Méltónak Bizonyult',
+          text: 'Rodrigo összeesik a hideg kövön, letörve, de nem megsemmisítve. A csomag üvölt. Átmentetél az első Vaulderie-próbán — véred összekeveredett az övékkel, értéked megmutatkozott agyarral és ököllel. A Sabbatban a tiszteletet vérrel szerzik. Ma éjjel megszerezted.',
+        },
+        victory_medium: {
+          title: 'A Csomag Felett',
+          text: 'Három Sabbat vámpír hever törten körülötted. Az összegyűlt szekta némán néz, majd üvöltésben tör ki. Még Zeta is, félig visszaalakulva, kénytelen vigyorogni a széttört agyarain keresztül. Az érsek egyszer bólint a terem másik végéből. Sabbat vagy.',
+        },
+        victory_hard: {
+          title: 'Fölemelkedett',
+          text: 'Valko érsek Zulo-formája összeomlik, az átformált hús megpuhul, ahogy a Torpor befogja. A csarnok teljesen elnémul. Negyven éve nem győzte le senki Valkót rituális harcban. Ebben a pillanatban valami megváltozik — érzed, ahogy a teremben lévő összes vámpír újraértékeli, ki is vagy valójában.',
+        },
+        defeat_easy: {
+          title: 'Tanulság',
+          text: "Rodrigo hátrál. A raktár gerendáit bámulod, vért és büszkeséget egyformán érezve a padlón fekve. 'Kelj fel,' mondja, kezet nyújtva. 'Ezt újra megtesszük. Meg újra. Amíg jobb nem leszel nálam.'",
+        },
+        defeat_medium: {
+          title: 'A Csomag Győz',
+          text: 'Nem végeznek veled — ez sosem volt halálról szóló. Mirka feloszlatja árnyait. Pawel megvizsgálja a csuklóját. Zeta visszaalakul nagyjából emberivé, és hátranézés nélkül elsétál. Fekszel ott, számolod a sérüléseket, és azon töprengesz, melyiküket győznéd le egy hét edzés után.',
+        },
+        defeat_hard: {
+          title: 'A Hosszú Sötétségbe',
+          text: "Nem emlékszel az esésre. Emlékszel Valko ősi szemeire — türelmesek, mérlegelők — aztán semmi. A kőpadlón ébredsz egyedül. Valaki hagyott egy cetlit: 'Edzz. Próbáld újra. Ez az, amik vagyunk — mi nem állunk meg.'",
+        },
+      },
+      scenes: {
+        start: {
+          title: 'A Szekta Gyülekezete',
+          narrative: "A raktár vérre és öreg kőre emlékeztet. Ötven Sabbat vámpír tölti meg a teret, hangjuk mély, zúgó kórust alkot. Valko érsek egy emelvényen áll, ősi jelenléte betölti a termet, mint vihar előtt a nyomás.\n\n'Ma éjjel,' mondja, 'megtartjuk a Véres Játékokat. Akik értéküket bizonyítani akarják a szektának, harcolni fognak. Három próba áll előttetek — válasszátok azt, amelyik illik a becsvágyatokhoz.'\n\nEgy Brujo kering a középső körön, összeszorított izmokkal, vigyorogva rád. Három vad vámpír guggol a keleti falnál. Maga Valko leszáll az emelvényről, feltörve a csuklóját, a hang olyan, mint a reccsenő fa.\n\nIdejöttél, hogy próbára tegyenek. Válassz.",
+          choices: [
+            'Rodrigo kihívása — egyetlen ellenfél',
+            'Szembenézés a Csomaggal — három ellenfél egyszerre',
+            'Valko érsek kihívása — a főpróba',
+          ],
+        },
+        fight_easy: {
+          title: 'Rodrigo Kihívása',
+          narrative: "Rodrigo Vega — tizenkettedik generációs Brujo, a chicagói csomag Priscusa — belép a körbe. Felroppantja a nyakát, és a hang olyan, mint egy pisztolylövés.\n\n'Gyorsan végzünk,' mondja. 'Az érdekedben.'\n\nA kör kiürül. Valko felemeli az egyik kezét.\n\n'Kezdjétek.'",
+          combat: {
+            label: 'Rodrigo Kihívása',
+            description: 'Négyszemközti harc egy tapasztalt Sabbat Brujo-val. Potencia és Gyorsaság kombinációjával harcol — gyors, erős, szüntelen. Csak felszínes sebzés: ez egy próba, nem kivégzés.',
+          },
+        },
+        fight_medium: {
+          title: 'A Csomag Próbája',
+          narrative: "Három alak lép be a körbe különböző irányokból. Zeta — Gangrel, már félig átalakult, körmei mint vaskampók. Mirka — Lasombra, árnyak gyűlnek a lábai körül. Pawel — Malkáviánus, az a törött mosoly, ami soha nem ér el a szeméig.\n\n'Három az egy ellen,' suttogja valaki. 'Nem fair.'\n\nMásik hang: 'Ez a lényeg.'\n\nA három szétoszlik, körülzárva téged. Zeta morog. Az árnyak megmozdulnak.",
+          combat: {
+            label: 'A Csomag Próbája',
+            description: 'Három különböző diszciplínájú Sabbat vámpír. Zeta karmolásaival súlyos aggravált sebzést oszt. Mirka árnyékból csap le. Pawel védekező és nehéz sarokba szorítani. Gondosan kezeld a célpontokat.',
+          },
+        },
+        fight_hard: {
+          title: 'Az Érsek Próbája',
+          narrative: "Valko lelép az emelvényről. Ahogy teszi, alakja változni kezd.\n\nAz átalakulás szándékos — az uralom demonstrációja. Vállai kiszélesednek, gerince ívbe hajlik, ahogy egy teljes lábbal megmagasodik. Bőre cserzett bőr állagát veszi fel, végtagjai megnyúlnak, állkapcsa kinyúlik. A Zulo-forma — a Tzimisce háborús-alakja — rátelepül, mint egy második test.\n\nA tömeg hátrálni kezd.\n\nHét láb ősi, átformált hús. Amikor megszólal, hangja alig változott.\n\n'Nyűgözz le.'",
+          combat: {
+            label: 'Valko Próbája',
+            description: 'Valko érsek teljes Zulo-formájában. Ősi generáció, pusztító aggravált támadások, természetes regeneráció minden körben. Ez nem próba — ez a kemence. Használd minden diszciplínádat.',
+          },
+        },
+        victory_easy_scene: {
+          title: 'Első Vér',
+          narrative: "A tömeg megnyílik előtted, ahogy kilépel a körből. Rodrigo, felülve és már gyógyulva, ellustult pillantást vet rád.\n\n'Jól harcolsz,' mondja. 'Egyelőre.'\n\nValko az emelvényről figyel, kifejezéstelen arccal. De nem néz el.",
+        },
+        victory_medium_scene: {
+          title: 'A Csomag Felett',
+          narrative: 'A három körözget a körben: egyik sántít, másik tartja a sebeit, amelyek napokig nem záródnak be. Te állsz a közepén, vérrel a kezeden, megszokásból lélegzel, szükség nélkül.\n\nA raktár felrobban.\n\nValko vékony mosolya az egyetlen elismerés, ami számít.',
+        },
+        victory_hard_scene: {
+          title: 'Az Új Felemelkedő',
+          narrative: 'Valko Zulo-formája összeomlik belülről, ahogy a Torpor befogja, az átformált hús megpuhul. Térdel — valójában térdel — aztán előre esik.\n\nSenki sem szól.\n\nAztán megkezdődik az üvöltés.',
+        },
+        defeat_easy_scene: {
+          title: 'Tanulság',
+          narrative: "Rodrigo hátrál. A padlón fekszel, a plafont bámulod, számolva, mi tört el.\n\n'Kelj fel,' mondja. 'Ezt újra megtesszük. Meg újra.'",
+        },
+        defeat_medium_scene: {
+          title: 'A Csomag Győz',
+          narrative: 'Nem végeznek veled. Mirka feloszlatja árnyait. Pawel oldalra billenti fejét. Zeta hátranézés nélkül elsétál.\n\nFekszel ott, számolod a sérüléseket, és tervet szövögetsz.',
+        },
+        defeat_hard_scene: {
+          title: 'Az Érsek Leckéje',
+          narrative: "Nem emlékszel az esésre. Emlékszel Valko szemére — öreg, türelmes, mérlegelő — aztán semmi.\n\nA kőpadlón ébredsz egyedül. Valaki hagyott egy cetlit.\n\n'Edzz. Próbáld újra.'",
+        },
+        flee_easy_scene: {
+          title: 'Elvonulás',
+          narrative: "Visszalépel a hatótávolságon kívülre, és felemeled a kezed. 'Elég.'\n\nRodrigo megáll. Rád néz. Aztán megvon egyet.\n\n'Ahogy gondolod,' mondja. 'Gyere vissza, ha be akarod fejezni.'\n\nA tömeg morog. Nem megvetéssel — enyhe, zavarba ejtő közönnyel. Beléptél egy sparringba, és kiléptél. Nincs ebben szégyen. Dicsőség sem.",
+        },
+        flee_medium_scene: {
+          title: 'Taktikai Visszavonulás',
+          narrative: 'Kitörsz a körülzáró csomag gyűrűjéből, és a raktárajtó felé tartasz. Zeta morog és tesz egy lépést — aztán Mirka ráteszi a kezét a karjára. Nézik, ahogy mész.\n\nOdakint vagy. A chicagói éjszaka hideg. A nevetés követ ki, halk és kíméletlen.\n\nHárom ellenfél. Elmenekültél. A Sabbat emlékezni fog. Te is.',
+        },
+      },
+    },
+  },
 };

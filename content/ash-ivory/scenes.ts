@@ -1004,4 +1004,564 @@ export const AshAndIvory: Chronicle = {
       narrative: "The clock says 5:15am. Dawn in two hours.\n\nThe night's work is done — or as done as it will be. Vienna is not saved. Vienna cannot be saved from what is starting here. But you may have saved the specific people whose names were in those documents.",
     },
   },
+
+  locales: {
+    hu: {
+      title: 'Hamu és Elefántcsont',
+      subtitle: 'Kölcsönzött idő nóirja',
+      setting: 'Bécs, Ausztria — 1938. március',
+      acts: {
+        1: 'Az Idézés',
+        2: 'A Vadászat',
+        3: 'Vér és Tűz',
+        4: 'Az Ár',
+      },
+      endings: {
+        dead_brandt_silver: {
+          title: 'Ezüst Lövedékek',
+          text: "Brandt célzása kiváló. Az első lövés elhibáz. A második a mellkasodba talál. Ezüst lövedék. A súlyos sebzés hideg tűzként terjed a szegycsontodban.\n\nAz alley-ban esel el a raktár mögött. Még eszmélten vagy, amikor közeledik. Leguggol, megvizsgál azzal a kifejezéssel, mint aki két éve vár erre a pillanatra.\n\n'Prága,' mondja halkan. 'Tudtam, hogy lesz egy másik.'\n\nNem látod a napfelkeltét. De érzed.",
+        },
+        dead_frenzy_masquerade: {
+          title: 'A Vadállat Dönt',
+          text: "Az éhség túl nagy. A Vadállat nem tárgyal.\n\nA Mariahilfer Strasse-ről leágazó mellékutcán térsel magadhoz. Három halandó van a földön. Egyikük Wehrmacht-katona.\n\nA Camarilla nem fog megvédeni ettől — ők jönnek érted, hogy megvédjék az Álarcot attól, amit tettél.\n\nAz éjszaka megtalál téged a hajnal előtt.",
+        },
+        bad_documents_destroyed: {
+          title: 'Hamu',
+          text: "A dokumentumok a Duna-csatornán égnek el reggel 5-kor. Nézed, ahogy a bőrtáska görbül, feketedik és süllyed.\n\nKesslernek négy neve van a saját nyomozásából. Nincsenek dokumentumai. Van egy berlini jelentése, amelynek senki nem fog hinni.\n\nBécs mindenképpen elesik. De a Vérrokonok sértetlenül élik túl a megszállást.\n\nEz nem győzelem. De 1938-ban a túlélés az, amire a győzelem hasonlít.",
+        },
+        good_escape: {
+          title: 'Elefántcsont',
+          text: "A nyugati vonat 6:15-kor indul a Westbahnhofról. Te rajta vagy.\n\nA dokumentumok hamu. Kessler megírja a jelentését. Berlinben senki sem fog cselekedni alapján.\n\nBécs elesik. Bécs szenvedni fog. De ennek a városnak a Vérrokonai sértetlenül élik túl a megszállás hosszú éjszakáját — nevük ismeretlen, menedékhelyük ép.\n\nNegyvennyolc órát vásároltál nekik. Elég volt.\n\nEbben a században a negyvennyolc óra minden.",
+        },
+        perfect_the_asset: {
+          title: 'A Besúgó',
+          text: "Kessler áthelyezési parancsai egy hét múlva érkeznek. Bukarest.\n\nÉlete végéig magánál hordja annak pontos tudatát, mivel tartozik és kinek. Három nyomozást eltemet. Két razziát átirányít.\n\nA dokumentumok hamu. Vasile saját lábán sétál ki a Bécsi Imperialból.\n\nMiriam képeslapot küld Genfből. Csak ennyit ír: Megmondtam.\n\nAz utolsó éjszakai vonaton hagyod el Bécset. A sötétben a város szinte békésnek látszik.\n\nNem lesz az. De ezt már tudtad.",
+        },
+      },
+      scenes: {
+        start: {
+          title: 'Kärntner Strasse, hajnali 2 óra',
+          narrative: "A borítékot memorizálta. Egyetlen sor: 'Vasile futár eltűnt. A dokumentumok léteznek. Csütörtök hajnalig találd meg őket.'\n\nA kávéházon kívül Bécs hat óra óta ünnepel. Wehrmacht-teherautók hömpölyögnek a Ringstrasse-n, éljenző tömeg között. Egy nő virágot dobott. Egy férfi elöl sírt. Nem lehetett tudni, melyik volt őszinte.\n\nA kávéháztulajdonos — Hofer, ötvenéves — egy pohár vörös bort tesz eléd, amelyet nem rendeltél. Kezei remegnek.\n\nCsütörtök hajnalig van időd. Vasile személyi okmányokat futtat a Camarillának. Ha ezek a dokumentumok rossz kezekbe kerülnek, tizenhét Vérrokon leplezödik le.\n\nHofer figyel téged. Egyszer sem néz el.",
+          choices: [
+            'Vizsgáld meg a borítékot — valaki szándékosan küldte',
+            "Tartsd Hofer tekintetét. Kényszeríts ki egy beszélgetést.",
+            'Indulj azonnal. Menj Vasile Józsefváros utcai lakásához.',
+            'Keresd meg Miriam Szabót. A Malkavian nyolcvan éve él ebben a városban.',
+          ],
+        },
+        examine_envelope: {
+          title: 'Amit a Papír Tud',
+          narrative: "A hajtás pontos. Három ránc, tökéletesen párhuzamos — valaki szokása, aki évtizedek óta iktat levelezést. Nem futár. Adminisztrátor.\n\nA viaszpecsétet pengével vágták fel, nem törték fel. Felbontva és visszazárva. Valaki elolvasta ezt, mielőtt te megkaptad.\n\nA jobb alsó sarokban, szinte láthatatlanul: egy nyomtatott szám. 44. A Camarilla adminisztratív levelezése szekvenciális hivatkozási kódokat alkalmaz. Ez a boríték a hálózaton belülről származik.\n\nValaki nem hivatalos figyelmeztetést küld neked hivatalos anyagokon keresztül. Nagyon rövid a lista azokról, akik ezt megtehetnék.\n\nFelnézel. Hofer kezei abbahagyták a remegést. Most szándékosan a pultot nézi, nem téged. Ez rosszabb.",
+          check: {
+            label: 'Érzékelés + Nyomozás — olvasd ki a teljes képet',
+            pool_label: 'ÉRZ + Nyomozás',
+            success_text: 'Minden szál összekapcsolódik.',
+            fail_text: 'Látod a kódot. Nem érted, mit jelent.',
+          },
+        },
+        examine_success: {
+          title: 'Már Jelentett',
+          narrative: "Hofer elfogta ezt, mielőtt megkaptad. Fizették, hogy elolvassa, és fizették, hogy figyelje, ki jön érte.\n\nJelentett a jelenlétedről, mielőtt leültél. Aki megfizette, már tudja, hogy itt vagy.\n\nA 44-es kód azt mondja, hogy a feladó a Camarillából való. Hofer viselkedése azt mondja, hogy valaki más is figyel. Két szempár fogságában vagy a pillanattól fogva, hogy belépett az ajtón.",
+          choices: [
+            'Tedd nyomás alá Hofert. Szerezd meg a nevet.',
+            'Menj el csendesen. Tudod, amit tudnod kell.',
+            'Keresd meg Miriamot. Ő küldte ezt.',
+          ],
+        },
+        examine_partial: {
+          title: 'A Kép Fele',
+          narrative: "Elkapod a kódot — belső Camarilla. Valaki a hálózaton belülről küldte ezt a figyelmeztetést. De Hofer viselkedése nem regisztrál fenyegetésként.\n\nElhagyod a kávéházat anélkül, hogy megértenéd: már bejelentöttek.",
+          choices: [
+            'Menj Vasile Józsefváros utcai lakásához',
+            'Keresd meg Miriam Szabót',
+          ],
+        },
+        confront_hofer: {
+          title: 'Hofer Beszél',
+          narrative: "Tartod a tekintetét a pult felett, amíg el nem néz.\n\n'Felbontottad,' mondod.\n\nNem tagadja. Hangja halkra sűlyed. 'Minden héten jönnek. Január óta. Két ember. Iratokat mutatnak. Jól fizetnek.' Óvatosan letesz egy poharat. 'Ma este rólad kérdeztek. Leírás alapján.'\n\nMég nem hívott. A légzéséből látod.",
+          check: {
+            label: 'Karizma + Meggyőzés — tartsd szóban',
+            pool_label: 'KAR + Meggyőzés',
+            success_text: 'A tőled való félelme felülmúlja a tőlük valót.',
+            fail_text: 'A telefon után nyúl.',
+          },
+        },
+        hofer_gives_name: {
+          title: 'Kessler',
+          narrative: "'Oberst Kessler,' mondja Hofer. 'Ahnenerbe. Szobája van a Bécsi Imperialban. Hat hete.'\n\nAhnenerbe. Az SS okkult kutatási részlege. Kategorikusan nem kellene tudniuk, hogy a Vérrokonok léteznek.\n\n'Vasile nevéről is kérdezett,' teszi hozzá Hofer. 'Három napja. Fotója volt.'\n\nMegmondod Hofernek, hogy vegye a családját, és látogasson el a grazi fivéréhez egy hétre. Ne kérdezze, miért.\n\nElmegy.",
+          choices: [
+            'Menj Vasile Józsefváros utcai lakásához',
+            'Előbb keresd meg Miriam Szabót',
+            'Menj egyenesen a Bécsi Imperialhoz',
+          ],
+        },
+        hofer_calls: {
+          title: 'A Hívás',
+          narrative: "Felemeli a kagylót, mielőtt megállíthatnád. Három szót mond, majd leteszi.\n\nGyorsan mész ki. Két sarokkal odébb csizmák csapódása a kövezeten, a kávéház felé tartva.",
+          choices: [
+            'Mozgás. Józsefváros.',
+            'Keresd Miriamot. Közelebb van.',
+          ],
+        },
+        josefstadt_direct: {
+          title: 'Laudongasse',
+          narrative: "Vasile lakása egy harmadik emeleti walk-up a Laudongasse-n. Két polgári ruhás férfi áll a sarkon, különböző irányba nézve. Figyelők.\n\nA lakás ablaka sötét. Az épület kapuja résnyire nyitva.",
+          check: {
+            label: 'Ügyesség + Lopakodás — közelítés láttatlanul',
+            pool_label: 'ÜGY + Lopakodás',
+            success_text: 'Árnyékok és türelem.',
+            fail_text: 'Az egyik figyelő pontosan a rossz pillanatban fordul meg.',
+          },
+        },
+        josefstadt_wise: {
+          title: 'Laudongasse — Körültekintően',
+          narrative: "Kétszer körbejárod a háztömböt. Két figyelő. Egy harmadik emeleti ablak résnyire nyitva a hideg ellenére. Az épület kapuja résnyire tárva — nemrég.\n\nValaki sietett ki. Vagy sietősen vittek ki.",
+          check: {
+            label: 'Ügyesség + Lopakodás — közelítés láttatlanul',
+            pool_label: 'ÜGY + Lopakodás',
+            success_text: 'Tiszta megközelítés.',
+            fail_text: 'Még az óvatosság sem elég ma éjjel.',
+          },
+        },
+        josefstadt_flat: {
+          title: 'A Lakás',
+          narrative: "Vasile lakását szakszerűen kutatták át — a fiókokat visszahelyezték, nem kiürítették, a párnákat visszatették, nem felhasítottak.\n\nKét dolgot mulasztottak el.\n\nElőször: egy lazán illő tégla a kandalló mögött. Belül: egy nő fülbevalója és egy kétnapos kávéházi számla a Taborstrasse-ről.\n\nMásodszor: a szekrény ajtajának belső oldalán, nagyon apró ceruzaírással: Sz.M. tud.\n\nMiriam Szabó. És ez alatt, más tintával: Ha megtalálják — ne bízz a raktárban. Figyelik.",
+          choices: [
+            'A Taborstrasse-i kávéház. Ott tevékenykedik Miriam.',
+            'Menj a raktárhoz mégis',
+            'Bécsi Imperial. Kessler fogva tartja Vasilét.',
+          ],
+        },
+        josefstadt_spotted: {
+          title: 'Leleplezve',
+          narrative: "A figyelő megfordul. Szemetek találkozik.\n\nFutsz. Három utca, egy tető, egy szolgálati bejárat. Négy percen belül tiszta. De nem értük el a lakást.\n\nKessler most tudja, hogy valaki dolgozik ellene.",
+          choices: [
+            'Keresd meg Miriam Szabót',
+            'A Bécsi Imperial. Vidd Kesslerhez közvetlenül.',
+          ],
+        },
+        contact_miriam_initial: {
+          title: 'Taborstrasse',
+          narrative: "A könyvesbolt a Taborstrasse-n. Miriam Szabó hátul ül, egy magyar újság keresztrejtvényébe merülve. Fel sem néz.\n\n'Kíváncsi voltam, mikor jössz,' mondja. Az akcentusa ma éjjel védtelen. 'Én küldtem a borítékot. Camarilla anyagokat használtam, mert azt akartam, hogy tudj, valódi.'\n\nLeteszi az újságot. Amikor rád néz, a szeme élesebb, mint amit a Malkavian hírnév sejtet.\n\n'Amire keresel, megvan nekem. Minden. Vasile adta nekem, mielőtt elvitték.' Szünet. 'De cserébe valamit akarok.'",
+          choices: [
+            'Kérdezd meg, mit akar',
+            'Kérdezd meg, miért nem szólt közvetlenül a Camarillának',
+            'Kérdezd meg, hol van Vasile',
+          ],
+        },
+        contact_miriam_with_clues: {
+          title: 'Taborstrasse — Tudod a dolgokat',
+          narrative: "Miriam felnéz, amikor belépsz. Felfogja az arckifejezésed. Leteszi az újságot.\n\n'A lakásnál jártál,' mondja.\n\n'Sz.M. tud,' mondod.\n\nValami feloldódik benne. 'Jó. A megfelelő emberben bízott.' Int a veled szemben lévő székre. 'Én küldtem a borítékot. Megvannak a dokumentumok — Vasile adta nekem az éjjel, mielőtt elvitték. Azt is tudom, hol van.'\n\nÖsszefonja a kezét. 'És valamit szeretnék cserébe mindezért.'",
+        },
+        contact_miriam_urgent: {
+          title: 'Taborstrasse — Sürgős',
+          narrative: "Miriam az ajtóban áll, amikor megérkezel, kis táskával a lábánál, felöltözve.\n\n'Kíváncsi voltam, mennyi ideig tart,' mondja. 'Megvannak a dokumentumok — Vasile adta nekem három éjjel ezelőtt. Vasile a Bécsi Imperialban van, Kessler szuitájában, a 14-es szobában.'\n\nFelveszi a táskát. 'Ma este elhagyom Bécset. Egy dologban segítek, mielőtt megyek. Válassz óvatosan.'",
+          choices: [
+            'Mondd el Kessler gyenge pontjait',
+            'Csinálj egy csődbontást a Bécsi Imperialban',
+            'Segíts megtervezni a menekülési útvonalat Bécsből',
+          ],
+        },
+        miriam_wants: {
+          title: 'Az Ára',
+          narrative: "'El akarok hagyni Bécset,' mondja Miriam. 'Nyolcvan éve vagyok itt. Tudom, milyenek a megszállások. Ez rosszabb lesz a legtöbbnél.'\n\nAz ablakhoz lép. Lent az utcán Wehrmacht-teherautók oszlopa vonul keletre, lassan és nehezen.\n\n'A Camarilla nem menekít ki engem. De neked kell, amid van — a dokumentumok, Vasile tartózkodási helye, és valami más. Kesslerről. Arról, mi tette félénkké a fajtáddal szemben.'\n\nMegfordul. 'Juttass el Svájcba. Mindent megadok.'",
+          choices: [
+            'Egyezz bele — elkíséred a svájci határig',
+            'Feltételesen egyezz bele — előbb az információ, aztán meglátjuk',
+            'Nyomj rá — mit tud Kesslerről?',
+          ],
+        },
+        miriam_deal_made: {
+          title: 'A Megállapodás',
+          narrative: "Egyszer bólint. Nincs kézfogás. A Vérrokonok között a szavad vagy ér valamit, vagy nem.\n\n'Vasile a Bécsi Imperial 14-es szobájában van. Nem tört meg — de hajnali csütörtökig fog. Kesslernek van egy Brandt nevű embere, aki a kihallgatást végzi. SS. 1936-ban Prágában volt.'\n\nHagyja, hogy ez beessen.\n\n'Prága az oka, hogy Kessler nehezen Dominálható. Brandt az oka, hogy Kessler életben maradt, miután hat hónapig nyomozta a fajtádat. Ezüst lövedékeket hord.'\n\nÁtadja a bőrtáskát. Belül: egy lezárt okmánycsomag. Tizenhét név és cím.",
+          choices: [
+            'Menj a Bécsi Imperialhoz',
+            'Mondj el többet Brandtról előbb',
+          ],
+        },
+        miriam_deal_partial: {
+          title: 'Fele Most',
+          narrative: "Figyel. Dönt.\n\n'Fele most. Fele a határnál.'\n\nMegadja Vasile tartózkodási helyét — a 14-es szoba, Bécsi Imperial — és mond Brandtról. Az emberről, akit Kessler ilyen helyzetekre tart. SS. Ahnenerbe specialista. Prága 1936.\n\n'Ezüst lőszert hord. Kerüli a szemkontaktust. Húsz percenként jelent.'\n\nA dokumentumtáskát megtartja. 'Ha Vasile szabad és mi vonaton ülünk, megkapod a többit.'",
+          choices: ['Menj a Bécsi Imperialhoz'],
+        },
+        miriam_kessler_weakness: {
+          title: 'Prága, 1936',
+          narrative: "'Volt egy Vérrokon Prágában. Régi. Azt a hibát követte el, hogy Dominálni próbált egy csoport Ahnenerbe-ügynököt demonstrációként.\n\nTúl sokat vállalt. Kessler a szobában volt. A Dominancia rosszul érte — részleges ellenállás, töredezett beültetett emlék, de egyben oltóanyag is. Az elméje hegszövetet képzett a tapasztalat köré.'\n\nMiriam átad egy hajtogatott papírt. 'Kessler igazi neve. Hans Bremer. Az eredeti Kessler 1934-ben halt meg Dachauban. Ha ez a megfelelő emberekhez jutna el a Birodalom struktúráján belül—' A többit elhallgatja.",
+        },
+        miriam_brandt_detail: {
+          title: 'Ismerd az Ellenséged',
+          narrative: "'Brandt a 89. gyalogosban szolgált, mielőtt az Ahnenerbe-hez került. Kiváló lövész. Felesége Münchenben — Clara. Stressz alatt rá gondol; látható a kezein.\n\nHat ezüst lövedéket hord. Tudja, nem kell a szemedbe nézni. Tudja, a tűz és a napfény veszélyes. Nem tudja az éhségről — arról, mit tesz az ítélőképességeddel. Ez az előnyöd.\n\nHúsz percenként jelent. Ha kimarad egy jelzés, Kessler erősítést hív. Ablakod van.\n\nNe engedd, hogy ő lőjön először.'",
+          choices: ['Menj a Bécsi Imperialhoz'],
+        },
+        miriam_distraction: {
+          title: 'A Riasztás',
+          narrative: "Miriam telefont használ Klein íróasztaláról. Tizenegy perccel később tűzriasztás hallható a Bécsi Imperial keleti szárnyában.\n\nÁtadja a dokumentumtáskát, amíg a riasztás még szól. 'Vasile a 14-es szobában van. Nyolc percetek van, mielőtt Brandt rájön, hogy ez egy csapda.'",
+        },
+        miriam_escape_route: {
+          title: 'A Kiút',
+          narrative: "'A Westbahn-vonal Salzburgba, majd délre Innsbruckba és át a Brenneren. De a határok napokban kezdenek zárni.'\n\nKihúz egy fiókot és két okmánykészletet vesz elő. 'Svájci tartózkodási engedélyek. Nagyon jó hamisítványok — a zürichi Nosferatu tartozik nekem egy szívességgel.'\n\nAtadja az egyiket. 'A 6:15-ös vonat a Westbahnhofról. Együtt megyünk.'",
+        },
+        miriam_why_hidden: {
+          title: 'Miért Nem a Camarilla',
+          narrative: "'Mert a Camarilla hozzáértő embert küldött volna,' mondja, azzal a laposságával, aki sokszor csalódott. 'A hozzáértő emberek kérdéseket tesznek fel, amelyekre nem akarok válaszolni.'\n\nSzünet. 'Neked azért küldtem a borítékot, mert elég új vagy ahhoz, hogy kétségbeesett légy, és elég képes ahhoz, hogy ne legyél haszontalan.'",
+        },
+        miriam_vasile_location: {
+          title: 'Hol Van Vasile',
+          narrative: "'Bécsi Imperial. 14-es szoba, földszint, keleti szárny.' Mondja, anélkül, hogy megcédulákat néz. 'Két napja van ott. Nem tört meg — Vasile makacs, mint a Gangrel-ek makacs szoknak lenni. De mindenki eléri a határát. Brandt türelmes.'",
+        },
+        warehouse_watched: {
+          title: 'Leopoldváros — Megfigyelve',
+          narrative: "A csatornai út melletti raktárnál két ember ül egy parkoló autóban. Negyven perccel ezelőtt érkeztek, és azóta nem mozdultak. Kessler emberei.\n\nVasilenak igaza volt. A főbejáraton belépni azt jelenti, hogy beléjük sétálsz.",
+          choices: [
+            'Közelíts hátulról — a csatorna felőli bejáraton keresztül',
+            'Hagyd. Keresd inkább Miriamot.',
+          ],
+        },
+        hunger_pressure: {
+          title: 'A Visszafogottság Ára',
+          narrative: "Három óra óta vagy mozgásban. A város tele van meleg testekkel — ünneplő katonák, ablakból néző polgárok, részeg mulatozók.\n\nAz éhség nem veszi tudomásul ezt.\n\nNem ösztön. Egy hang, és racionális érveket hoz: veszélyes dologba mész csökkent kapacitással. A táplálkozás most nem gyengeség. Felkészülés.\n\nAz érv nem téves. Ez a probléma a Vadállattal — szinte soha nincs teljesen igaza.\n\nEgy Wehrmacht-katona levált a csoportjától. Padon ül a Naschmarkt közelében, fejét hátravetve, félig alszik.",
+          choices: [
+            'Táplálkozz. Teljes erőre van szükséged ahhoz, ami következik.',
+            'Tartsd vissza magad. Nem táplálkozol katonáktól.',
+            'Keress diszkrétebb áldozatot — az éjszakai bárokban mindig van hajlandó résztvevő.',
+          ],
+        },
+        hunger_feed_soldier: {
+          title: 'A Könnyű Döntés',
+          narrative: "Gyorsan táplálkozol. A katona nem fog emlékezni.\n\nAz éhség csökken. A tisztaság visszatér. És vele valami más: a tudat, mit tettél épp. Egy részeg, elszakadt Wehrmacht-katona, aki valószínűleg tett dolgokat az elmúlt hat órában, amelyekről nem akarsz tudni.\n\nEz volt a könnyű döntés. A Vadállat racionális érveket hozott. Beleegyeztél.\n\nÍgy kezdődik mindig.",
+        },
+        hunger_resist: {
+          title: 'A Nehéz Döntés',
+          narrative: "Ott hagyod. Padon alva, tudatlan, meleg.\n\nAz éhség elcsendesedik, türelmesen, a tudatod hátterében. Ott lesz mindahhoz, ami következik — minden kihúzásnál, minden konfrontációnál, minden pillanatban, amikor gyorsabbnak vagy erősebbnek kellene lenned, mint amilyen vagy.\n\nA visszafogottságot választottad. Valahol valamibe fog kerülni. Ez az alku.",
+        },
+        hunger_careful_feed: {
+          title: 'Megfontolt Megközelítés',
+          narrative: "Az Opernring melletti bár sajátos vendégkört vonz — színházi embereket, művészeket, az a fajta bécsi, aki mindig is tudta, hogy az éjszaka furcsább dolgokat is tartalmaz, mint amit a legtöbben bevallanak.\n\nEgy fiatal zenész, aki az Anschluss miatt boldogtalan, ahogy a művészek boldogtalanok — hangosan, mintha az elégedetlenségük ellenzékiséget alkotna. Amikor a figyelem teljes súlyát fordítod rá, teljesen hajlandónak mutatkozik.\n\nTiszta táplálkozás. Irgalmas is, a létezésed mértékeivel mérve.",
+        },
+        act2_approach: {
+          title: 'Konvergencia',
+          narrative: "Bécs hajnali háromkor más minőségű, mint éjfélkor. Az ünneplés megalvadt. Férficsoportok állnak keresztutakon ok nélkül. Egy zsidó boltos szögeli be az ablakait lámpafénynél, gyorsan dolgozva, senkire sem nézve.\n\nHárom szál húzódik. A dokumentumok. Vasile. Kessler.\n\nÉs valahol a háttérben: Brandt.",
+          choices: [
+            'Bécsi Imperial — szabadítsd ki Vasilét és szembesülj Kesslerrel',
+            'Keresd meg Miriamot előbb, ha még nem tetted',
+          ],
+        },
+        imperial_approach_informed: {
+          title: 'A Bécsi Imperial',
+          narrative: "Bécs legpompásabb szállodája jelenleg teli van az Anschlusst ünneplő német tisztekkel. A hall konyakos és friss egyenruhás szagú.\n\nA 14-es szoba a földszint, keleti szárny. Brandt húsz percenként jelent — ami azt jelenti, hogy vagy Vasiléval van, vagy a közelben. Tizenöt percig figyelted: egy ember halad el a keleti folyosón nyolc percenként.\n\nA megközelítés módja számít.",
+          choices: [
+            'Elrejtőzés — menj el az őrök mellett láthatatlanul',
+            'Társasági — te ide tartozol, és a jelenlétedből ez sugárzik',
+            'Szolgálati bejárat — a konyhán és a személyzeti folyosókon keresztül',
+            'Közvetlen — kopogtass a 14-es szobán. Találkozz Kesslerrel a te feltételeid szerint.',
+          ],
+        },
+        hotel_obfuscate: {
+          check: {
+            label: 'Érzékelés + Elrejtőzés — Árnyékköpeny',
+            pool_label: 'ÉRZ + Elrejtőzés',
+            success_text: 'Bútor vagy. Falra vetett árnyék.',
+            fail_text: 'Az éhség megnehezíti a koncentrációt. Brandt egy ajtóból lép ki előtted.',
+          },
+        },
+        hotel_social: {
+          check: {
+            label: 'Karizma + Etikett — te ide tartozol',
+            pool_label: 'KAR + Etikett',
+            success_text: 'Egy SS ezredes innivalóra invitál. Udvariasan visszautasítod és elsiklasz.',
+            fail_text: 'Brandt a folyosó végén van. Nem néz rád közvetlenül. De abbahagyja a sétát.',
+          },
+        },
+        hotel_service: {
+          check: {
+            label: 'Ügyesség + Lopakodás — személyzeti folyosók',
+            pool_label: 'ÜGY + Lopakodás',
+            success_text: 'Fehérneműraktár. Egy bejáró konyha. Tíz méterre kerülsz a 14-es szobától.',
+            fail_text: 'Egy éjszakai portás kinyit egy ajtót közvetlenül az utadba. Kiált.',
+          },
+        },
+        hotel_spotted_brandt: {
+          title: 'Brandt',
+          narrative: "Nem hív segítségért. Nem nyúl azonnal a fegyveréhez. Szembefordul veled, kezeit láthatóan tartva, és gondos németséggel mondja: 'Számítottam valakire.'\n\nA szeme a gallérodnál fókuszál. Nem az arcodnál.\n\n'Tudom, nem kell közvetlenül rád néznem,' mondja. 'Tudom, elfelejtetheted velem ezt a beszélgetést, ha mégis néznék.' Szünet. 'Két éve készülök erre. Szeretnék beszélni, mielőtt ez olyanná válik, amit egyikünk sem akar.'",
+          choices: [
+            'Beszélj. Nyilván tud valamit.',
+            'Cselekedj, mielőtt a fegyveréhez ér.',
+            'Használj Diszciplínát — Dominancia vagy Jelenlét',
+          ],
+        },
+        brandt_talk: {
+          title: 'Amit Brandt Tud',
+          narrative: "'Prágában voltam,' mondja. Nagyon mozdulatlan. 'Láttam, mire képes a fajtád. Azt is láttam, mi lett Kesslerből utána — a részleges ellenállás, a megszállottság.'\n\nKéztartása látható. Ezüst lőszer a zakójában.\n\n'Kessler nyomozása ma éjjel mindenképpen lezárul — parancsot kapott a berlini konszolidációra. De válaszok nélkül nem fog elmenni.'\n\nBrandt a gallérodnál pillant. 'A 14-es szobában lévő futár — meg fog törni. Nem azért, mert kegyetlenek vagyunk. Mert három napja nem táplálkozott, és ez az, amit az tesz a fajtáddal, nem igaz? Az éhség.'",
+          choices: [
+            'Mindenben igaza van. Tárgyalj.',
+            'Túl sokat tud. Ez a beszélgetés itt ér véget.',
+            'Kérdezz rá Kessler igazi nevére — teszteld, ő is tudja-e',
+          ],
+        },
+        brandt_negotiate: {
+          title: 'Feltételek',
+          narrative: "'Amit én akarok,' mondja Brandt lassan, 'az az, hogy túléljek egy háborút. Én vagyok az egyetlen ember a Birodalomban, aki tudja, hogy a fajtád létezik, és azt is tudja, hogy az Ahnenerbe megközelítése öngyilkos.'\n\nNagyon lassan belenyúl a zsebébe és kivesz egy füzetet. Leteszi egy oldalasztalra.\n\n'Minden név és helyszín, amit két év alatt összegyűjtöttem. Nem a hivatalos jelentés — az Kesslernél van. A jegyzetek. Minden.'\n\nA füzetet feléd tolja. 'Cserébe: akinek jelented, tudja meg, hogy Hauptsturmführer Brandt elérhető ügynökként. Amikor a háború fordul — és fordulni fog — szövetségesekre lesz szükségetek a struktúrán belül.'",
+          choices: [
+            'Elfogadod. Ez rendkívül hasznos.',
+            'Elfogadod és Dominálod, hogy felejtse el ezt a találkozót.',
+            'Visszautasítod. Nem kötöl alkut az SS-szel.',
+          ],
+        },
+        brandt_deal_accepted: {
+          title: 'Szokatlan Szövetség',
+          narrative: "Elveszed a füzetet. Brandt egy töredéknyit ellazul.\n\n'A futár a folyosó végén van. Kessler a 14-es szobában. Tizenkét perced van, mielőtt be kellene jelentenem.'\n\nFélreáll.\n\n'Még egy dolog,' mondja, a hátadhoz. 'Prága. Az idős, aki megpróbálta dominálni minket. Megöltük. Arra az esetre, ha kíváncsi vagy, képesek vagyunk-e erre. Azt akarom, hogy tudd a választ, mielőtt megállapodunk a bizalomban.'",
+        },
+        brandt_deal_dominate: {
+          check: {
+            label: 'Manipuláció + Dominancia — Hipnózis és átírás',
+            pool_label: 'MAN + Dominancia',
+            success_text: 'Üvegessé válik a szeme. Gondosan szólsz. Amikor visszatér, más beszélgetésre fog emlékezni.',
+            fail_text: 'Az elméjének valamije ellenáll. Prága hegszövetet hagyott.',
+          },
+        },
+        brandt_dominate_success: {
+          title: 'Átírva',
+          narrative: "Az alku valódi. Az emlék nem az. Arra fog ébredni, hogy azt hiszi, rutinőrjáratot tartott és semmit sem talált.\n\nA füzet a tiéd. Vasile a folyosó végén van.",
+        },
+        brandt_immune: {
+          title: 'Prága Megint',
+          narrative: "Pislog. Egyszer megrázza a fejét. A keze a zakójához mozdul.\n\n'Prága,' mondja halkan. 'Tudtam, hogy lesz ilyen nap.'\n\nKihúzza a fegyvert.",
+        },
+        brandt_kessler_name: {
+          title: 'Hans Bremer',
+          narrative: "Valami átfut Brandt arcán.\n\n'Hol hallottad azt a nevet?' Nagyon hosszú szünet. 'Nem számít. Igen. Tudom. 1935 óta tudom.' Kienged. 'Megmentette az életem Prágában. Sosem találtam a megfelelő pillanatot eldönteni, mit jelent ez a lojalitásomra nézve.'",
+        },
+        brandt_discipline: {
+          check: {
+            label: 'Dominancia vagy Jelenlét — állítsd meg',
+            pool_label: 'MAN + Dominancia vagy KAR + Jelenlét',
+            success_text: 'Megdermed. Amit tenni készült, azt most nem akarja tenni.',
+            fail_text: 'Tudta, hogy ez jön. A szeme már a padlón van.',
+          },
+        },
+        brandt_fight_first: {
+          title: 'Első Lépés',
+          narrative: "Mielőtt előrányúlhatna, bezárod a távolságot. Gyors — kiképzett, felkészült — de nem számított arra, hogy azonnal elkötelezed magad.\n\nA harc egy szállodai folyosón zajlik. Vendégek két szobával odébb. Minden hang számít.",
+        },
+        brandt_fight_after_talk: {
+          title: 'Nincs Alku',
+          narrative: "'Értem,' mondja Brandt. Majd nagyon simán kihúzza a fegyvert, annak a valakinek a begyakorolt mozdulatával, aki tudta, hogy ez a valószínű kimenetel.\n\nEzüst lövedékek.",
+        },
+        brandt_fight: {
+          title: 'Hauptsturmführer Brandt',
+          narrative: "Brandt nem olyan, mint a raktárban lévő férfiak. Nem riad meg a sebességedtől. Nem fagy le a szemedtől. Mozgásban marad, távolságot tart, a folyosó geometriáját annak könnyedségével használja, aki alaposan átgondolta, hogyan küzdjön szűk térben nálánál gyorsabb valamivel szemben.\n\nAz első lövés szándékosan elhibáz — figyelmeztetés, vagy újrakalibrálás. A második nem fog.\n\nMinden lövés Álarc megsértése. Fejezd be gyorsan.",
+          combat: {
+            label: 'Hauptsturmführer Brandt',
+            description: 'Kiképzett SS tiszt, aki kimondottan erre a találkozóra készült. Az ezüst lövedékek súlyos sebzést okoznak.',
+          },
+        },
+        brandt_fight_win: {
+          title: 'Elesett, Nem Meghalt',
+          narrative: "Brandt eszméletlen a folyosó padlóján. Három bordája törött, lefegyverezve, lélegzik.\n\nNálad van a fegyvere. Hat ezüst lövedék.\n\nValaki hallotta a küzdelmet. Négy percen belül valaki kinyit egy ajtót.\n\nVasile a folyosó végén. Kessler a 14-es szobában.",
+          choices: [
+            'Szabadítsd ki Vasilét. Indulj azonnal.',
+            'Szabadítsd ki Vasilét, majd intézd el Kesslert.',
+            'Menj egyenesen Kesslerhez, amíg Brandt le van.',
+          ],
+        },
+        hotel_room_14: {
+          title: '14-es Szoba',
+          narrative: "Vasile a szomszéd szobában van. Három nap táplálkozás nélkül. Az éhség látható abban, ahogy tartja magát — gondosan, mint egy ember, aki próbál nem gondolni arra, amit akar.\n\nMeglát téged, és valami feloldódik. Nem megkönnyebbülés. Egy ember elszántsága, aki arra várt, hogy megtudja, jön-e segítség, és most tudja a választ.",
+          choices: [
+            'Szabadítsd ki Vasilét azonnal és fuss',
+            'Előbb kutasd át a szobát — értsd meg, mit tud Kessler',
+            'Várj Kesslerre — lesben állj itt a saját feltételeid szerint',
+          ],
+        },
+        kessler_direct_knock: {
+          title: '14-es Szoba — Közvetlen',
+          narrative: "Kopogtatál.\n\nSzünet. Majd: 'Tessék.'\n\nKessler az íróasztalnál ül. Akták nyitva. Amikor felnéz rád, az arckifejezése annak az embernek az irányított nyugalma, aki számított valami ilyesmire, és még nem döntötte el teljesen, mit érezzen az igazolódásról.",
+        },
+        search_kessler_room: {
+          title: 'A Kutatás',
+          narrative: "Hat hónap munkája. Kessler módszeres. Nem tudja, mik a Vérrokonok — de tudja, hogy vannak emberek, akik nem öregszenek, kerülik a napfényt, és nem hagynak fényképes nyomot.\n\nNégy neve van. Tizenhét, ha megszerzi Vasile dokumentumait. Az egyik a te neved.\n\nAz íróasztalon: egy tervezetlevél Berlinnek, kérvényezve kiterjesztett fogvatartási protokollok engedélyezését. Holnapra keltezve.",
+          choices: [
+            'Égesd el az egészet — a kutatásait, a levelet, mindent',
+            'Szabadítsd ki Vasilét és menj',
+            'Várj Kesslerre',
+          ],
+        },
+        burn_research: {
+          title: 'A Szál Elégetése',
+          narrative: "Az akták jól égnek. Négy perc.\n\nKiszabadítod Vasilét. Alig tud járni. A szolgálati folyosón jártok, amikor hallod, hogy Kessler visszatér, és az utána következő csend.\n\nTudja. Újraépíti majd. De az újrakezdés időt vesz igénybe, és az idő 1938-ban az egyetlen, amivel senki sem rendelkezik.",
+        },
+        kessler_ambush: {
+          title: 'A Lesből Támadás',
+          narrative: "Kessler hajnali 4-kor tér vissza. Belép és megáll — annak a kiképzett mozdulatlanságával, aki érez valamit, ami nem stimmel. A keze a zakójához mozdul.",
+          check: {
+            label: 'Kezdeményezés — csapj le, mielőtt fegyvert húz',
+            pool_label: 'ÉRZ + Higgadtság',
+            success_text: 'Mozogsz. Ő nem ér a pisztolyhoz.',
+            fail_text: 'Gyorsabb a vártnál.',
+          },
+        },
+        vasile_rescue: {
+          title: 'Vasile Megmentése',
+          narrative: "A szoba a keleti folyosó végén. Nincs bezárva — miért zárnák be az ajtót, ha Brandt maga a zár?\n\nVasile a fal mellett. Három napja nem táplálkozott. Rád néz, és az első kérdése:\n\n'Megszerezted a dokumentumokat?'",
+          choices: [
+            'Igen — biztonságban vannak',
+            'Nem — elégtek vagy elvesztek',
+            'Tudsz járni? Később is megbeszélhetjük.',
+          ],
+        },
+        vasile_rescue_then_kessler: {
+          title: 'És Aztán',
+          narrative: "Vasile talpra áll. Brandt eszméletlen alakját megjegyzés nélkül veszi szemügyre.\n\n'Kessler?' kérdezi.\n\n'Még egy dolog.'",
+        },
+        vasile_docs_safe: {
+          narrative: "Hosszan, lassan kifújja a levegőt. 'Jó. Menjünk.' Feláll. Stabilabb, mint kellene.\n\n'Gangrel,' mondja, mintha ez mindent megmagyarázna. Meg is magyaráz.",
+        },
+        vasile_no_docs: {
+          narrative: "Vasile lehunyja a szemét. 'Akkor Kesslernek megvan, amire szüksége van, akár szabad vagyok, akár nem.' Kinyitja őket lapos egyértelműséggel. 'Egyenesen Kesslerhez megyek. Magamat adom cserébe a nevekért.'\n\nKomolyan gondolja.",
+          choices: [
+            'Engedd — a nevek fontosabbak egy futárnál',
+            'Állítsd meg — ez rosszul végződik',
+          ],
+        },
+        vasile_can_walk: {
+          narrative: "'Igen.' Feláll. 'Az éhség négyen van. Tudok járni. Nem tudok harcolni.' Rád néz. 'Egyikünk sem kellene, hogy most harcban legyen. Mi a kimentési terv?'",
+        },
+        vasile_sacrificed: {
+          narrative: "Vasile hajnali 5-kor sétál be a Bécsi Imperialba, és nem jön ki.\n\nA dokumentumok három nappal később hiányosan jutnak vissza a Camarillához. Ami Vasile-val ezután történt, arról egyetlen nyilvántartás sem számol be.",
+        },
+        kessler_captured: {
+          title: 'Az Oberst',
+          narrative: "Kessler a padlón van, a csuklója szorítva, pisztolya az egész szoba másik végén. Nem pánikol. Figyel. Még most is, még a kezeddel a torkán is, adatokat jegyez.\n\n'Szóval,' mondja. 'Prága mégis igaz volt.'\n\nNincs megijedve. Pontosabban — van, de úgy döntött, hogy a félelmet adatként kezeli.",
+        },
+        kessler_armed_standoff: {
+          title: 'Patthelyzet',
+          narrative: "Kesslernek van a pisztolya. Neked van a fölényesen gyorsabb reakciókészséged. A szoba sötét. Egyikőtök sem mozdul.\n\n'Nem fogok lőni, ha nem kényszerítesz,' mondja. 'Beszélni akarok. Két éve akarok ilyen valakivel beszélni.'\n\nA pisztoly nem remeg.",
+        },
+        kessler_meeting: {
+          title: 'Kávé Hajnali 4-kor',
+          narrative: "Kessler tölt két csésze kávét. Egyet eléd tesz.\n\n'Tudom, nem fogod meginni. De udvariasnak tűnt.'\n\nAz íróasztal mögé ül. A közöttetek lévő akták hat hónap aprólékos munkáját tartalmazzák. Nem rejti el őket. Láttatni akarja veled.\n\n'A nevem — az igazi nevem — Hans Bremer. Gyanítom, ezt tudod.'",
+          choices: [
+            'Igen. Mit akarsz ebből a beszélgetésből?',
+            'Öld meg. Hat hónap kutatás vele hal.',
+            'Dominálj. Töröld ki az utóbbi hat hónapot.',
+            'Használd a nevet tőkekarként.',
+          ],
+        },
+        kessler_choice: {
+          title: 'Mit Tegyünk Kesslerrel',
+          narrative: "Kessler tud. Nem mindent — de eleget.\n\n'A Birodalom két éven belül háborúban lesz,' mondja. 'Szándékomban áll túlélni. A szokatlan erőforrásokkal bíró emberek hasznosak lehetnek a háborút túlélni akaró valakinek.'\n\nAlkut ajánl. Egyúttal — ha úgy döntesz — céltáblát is kínál önmagából.",
+          choices: [
+            'Öld meg. Ez itt ér véget.',
+            'Dominálás — töröld ki az utóbbi hat hónapot',
+            'Tárgyalj. Hallgasd meg a feltételeit.',
+            'Használd a tőkekaratot — a hamis személyazonosságát',
+          ],
+        },
+        kessler_wants: {
+          title: 'Mit Akar Kessler',
+          narrative: "'Meg akarom érteni, amit találtam,' mondja. 'Nem fegyverként. Nem egy láncba, amely döntéseket hoz, amelyeket nem irányítok. Megérteni.'\n\nKihúz egy irattartót egy fiókból. 'Ez a személyes másolatom. A hivatalos jelentés Berlinben van.' Szünet. 'El tudnám égetni ezt.'\n\nAz íróasztalra teszi. 'Egy beszélgetést akarok. Egy őszintét. Arról, mik vagytok és mit jelent ez. Aztán el akarok hagyni Bécset és elgondolkodni, el tudok-e hallgatni mindenről.'",
+          choices: [
+            'Add meg a beszélgetést. Az őszinteség kockázatvállalás — vállald.',
+            'Dominálj.',
+            'Ígérd meg a beszélgetést. Vedd az aktáját. Menj el.',
+            'Öld meg.',
+          ],
+        },
+        kessler_honest_talk: {
+          title: 'Egy Őszinte Éjszaka',
+          narrative: "Hajnali 4-ig beszéltek.\n\nNem mondasz el mindent. Eleget mondasz — az Álarcot, miért létezik, milyen az alternatíva.\n\nJó kérdéseket tesz fel. Olyanokat, amelyek arra utalnak, hogy két éve gondolkodik ezen.\n\nHajnali 4-kor elégeti a személyes aktáját. Nézed, ahogy elmegy.\n\n'A berlini hivatalos jelentés valószínű hamisításként írja le,' mondja. 'Három hónappal ezelőtt szándékosan így írtam meg, amikor elkezdtem hinni, hogy a nyomozás valódi. Egy biztosítási kötvény.'",
+          choices: [
+            'Hagyd ennyiben. Törékeny béke.',
+            'Túl hasznos ahhoz, hogy elengedje. Javasolj formális megállapodást.',
+          ],
+        },
+        kessler_asset_proposal: {
+          check: {
+            label: 'Manipuláció + Meggyőzés — ajánlj valami valódit',
+            pool_label: 'MAN + Meggyőzés',
+            success_text: 'Túlélni akarja a háborút. Ebben tudsz segíteni.',
+            fail_text: "'Hallgatok. De nem tudom megbízni azt, amit nem tudok ellenőrizni.'",
+          },
+        },
+        kessler_asset_success: {
+          title: 'A Besúgó',
+          narrative: "A feltételek húsz percet vesznek igénybe. Módszeres, még az önfenntartásban is.\n\nLezárja a bécsi nyomozást. Berlinbe megy. Nem nyújt be kiegészítő jelentéseket. Cserébe: erőforrások, amikor szüksége van rájuk, és a tudat, hogy egy hatalmasnak érdekében áll a folytatódó túlélése.\n\nKézfogással kötöd meg az alkut azzal az emberrel, aki pontosan tudja, mi vagy.",
+        },
+        kessler_asset_fail: {
+          title: 'Nem Elég',
+          narrative: "Meggyőzetlen. Nem ellenséges — erre túl óvatos — de meggyőzetlen.\n\nKessler lezárja a nyomozást, mert nincs más választása. De a megállapodás, amelyet szerettél volna, nem létezik.\n\nMegtartja az aktáit. Valahol. És valamikor valaki megtalálja majd őket.",
+        },
+        kessler_peaceful_end: {
+          title: 'Törékeny Dolog',
+          narrative: "Hajnal előtt mész el. Kessler az íróasztalnál ül, a papírkosarában hamuval és egy döntéssel, amelyet még nem fejezett be teljesen.\n\nKét hét múlva Berlinbe kerül. Lezárja a bécsi aktát. A háborút hírszerzéssel tölti, és kompetensen csinálja, és túléli.\n\nSoha nem lesz teljesen biztos abban, hogy a megfelelő döntést hozta.",
+        },
+        kessler_dominate: {
+          check: {
+            label: 'Manipuláció + Dominancia — hat hónap emlék',
+            pool_label: 'MAN + Dominancia',
+            success_text: 'Üres lesz a szeme. Hat hónapot írsz át egy csüggedt, sikertelen nyomozásként.',
+            fail_text: 'Prága. A hegszövet kitart. Pislog. A telefon felé nyúl.',
+          },
+        },
+        kessler_wiped: {
+          title: 'Tiszta Lap',
+          narrative: "Pislog. Egy ember, aki túl keményen dolgozott. Jövő héten egy jelentést fog beadni — semmi sem található, bezárást ajánl. Áthelyezést fog javasolni magának.\n\nRémálmai lesznek. Semmi konkrét. Csak egy tartós érzés, hogy elfelejt valamit fontosat.",
+        },
+        kessler_immune: {
+          title: 'Prága Megint',
+          narrative: "Pislog. Megrázza a fejét. A telefon felé nyúl.\n\n'Tudtam, hogy van oka, hogy felkészültem erre,' mondja. Szinte önmagához.",
+          choices: [
+            'Állítsd meg, mielőtt felhív.',
+            'A tőkekarat. Most.',
+          ],
+        },
+        kessler_negotiate: {
+          check: {
+            label: 'Manipuláció + Meggyőzés — állapíts meg tartható feltételeket',
+            pool_label: 'MAN + Meggyőzés',
+            success_text: 'Túlélni akar. Te az Álarcot akarod. Ezek az akarások egybeesnek.',
+            fail_text: 'A telefon felé nyúl.',
+          },
+        },
+        kessler_leverage: {
+          title: 'Hans Bremer',
+          narrative: "Leteszed a papírt az íróasztalra.\n\nKessler elolvassa. A kezei nagyon óvatosan teszik le a kávéscsészét.\n\n'Hol szerezted ezt?'\n\n'Fontos?'\n\nSzünet. Kívül: Bécs, még mindig ünnepel hajnali 4-kor.\n\n'Mit akarsz?' kérdezi.",
+          check: {
+            label: 'Manipuláció + Megfélemlítés — nyomj az erőpozícióból',
+            pool_label: 'MAN + Megfélemlítés',
+            success_text: 'Egy hamis személyazonosságot védő embernek nagyon kevés tere van visszautasítani.',
+            fail_text: "'Tedd ki, és én is kiteszek mindent. Mindketten veszítünk.'",
+          },
+        },
+        kessler_leverage_fail: {
+          choices: [
+            'Öld meg.',
+            'Tárgyalj őszintén.',
+          ],
+        },
+        kessler_kill: {
+          title: 'Végső Halál',
+          narrative: "Kevesebb mint egy másodpercig tart.\n\nKessler, dicsőségére legyen mondva, nem riad vissza. Olyan ember ő, aki ezt lehetséges kimenetelként látta, és úgy döntött, hogy mindenképpen folytatja.\n\nA személyes aktái itt vannak. Elégetem, ami előttem van. A berlini hivatalos jelentés semmi hasznosat nem tartalmaz.\n\nHajnali 4:30-kor hagyod el a Bécsi Imperialt.",
+        },
+        kessler_promise_lie: {
+          title: 'A Szegett Ígéret',
+          narrative: "Megígéred neki a beszélgetést. Amíg elfordul, elveszed a személyes aktáját — az egyetlen berlinen kívüli másolatot.\n\nMár az ajtónál állsz.\n\n'Várj,' mondja. Nem dühösen. Ami ennél rosszabb: meglepetlenül.\n\nElmész. Az akta elég a lépcsőházban. Kessler ott ül a 14-es szobában, tudva, hogy átverték, és eldönti, mit tesz ezzel az ismerettel.",
+        },
+        kessler_negotiate_fails: {
+          title: 'A Hívás',
+          narrative: "Kessler a telefon felé nyúl. Egy másodperc.",
+          check: {
+            label: 'Állítsd meg, mielőtt felhív',
+            pool_label: 'ÜGY + Dulakodás',
+            success_text: 'Előre érsz.',
+            fail_text: 'A hívás összeköttetésbe lép. Az emberei ezüsttel érkeznek.',
+          },
+        },
+        act3_resolution: {
+          title: 'Hajnal Előtt',
+          narrative: "Az óra 5:15-öt mutat. Hajnal két óra múlva.\n\nAz éjszaka munkája kész — vagy legalábbis annyira kész, amennyire lesz. Bécs nincs megmentve. Bécs nem menthető meg attól, ami itt kezdődik. De megmentheted azokat a konkrét embereket, akiknek neve azokban a dokumentumokban volt.",
+        },
+      },
+    },
+  },
 };

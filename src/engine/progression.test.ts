@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import type { Character } from '../character';
-import { UPGRADE_CATALOG, awardXp, canPurchase, purchase, getSuggestedUpgrades } from '../progression';
+import type { Character } from './character';
+import { UPGRADE_CATALOG, awardXp, canPurchase, purchase, getSuggestedUpgrades } from './progression';
 
 // Mock character for testing
 const mockCharacter: Character = {
@@ -111,7 +111,7 @@ describe('canPurchase', () => {
   });
 
   it('accepts if sufficient XP', () => {
-    const result = canPurchase('Persuasion_1', mockCharacter); // needs 2, has 5
+    const result = canPurchase('Athletics_1', mockCharacter); // needs 2, has 5, not yet learned
     expect(result.ok).toBe(true);
   });
 
@@ -147,9 +147,9 @@ describe('purchase', () => {
   });
 
   it('deducts XP and applies skill upgrade', () => {
-    const result = purchase('Persuasion_1', mockCharacter);
+    const result = purchase('Athletics_1', mockCharacter); // cost 2, not yet learned
     expect(result.xp).toBe(3); // 5 - 2
-    expect(result.skills?.Persuasion).toBe(1); // new rating
+    expect(result.skills?.Athletics).toBe(1); // new rating
   });
 
   it('deducts XP and applies discipline upgrade', () => {
@@ -166,7 +166,7 @@ describe('purchase', () => {
 
   it('does not mutate original character', () => {
     const original = { ...mockCharacter };
-    purchase('Persuasion_1', mockCharacter);
+    purchase('Athletics_1', mockCharacter);
     expect(mockCharacter.xp).toBe(original.xp);
   });
 });

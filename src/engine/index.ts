@@ -14,7 +14,8 @@ export type { DiceResult } from './dice';
 export { CLANS, createCharacter, defaultAttributes, deriveHealth, deriveWillpower } from './character';
 export { rollDice, difficultyCheck } from './dice';
 export { saveGame, loadGame, listSaves } from './saves';
-export { awardXp, getSuggestedUpgrades, canPurchase, purchase, getCategoryProgress } from './progression';
+export { awardXp, getSuggestedUpgrades, canPurchase, purchase, getCategoryProgress, buildTransactionLog } from './progression';
+export type { XpAwardRecord, XpSpendRecord, XpTransaction } from './progression';
 
 function extractFirstSentence(text?: string): string | undefined {
   if (!text) return undefined;

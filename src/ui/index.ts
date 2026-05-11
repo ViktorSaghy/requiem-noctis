@@ -7,4 +7,6 @@ export { SettingsPanel } from './SettingsPanel';
 export { CreditsScreen } from './CreditsScreen';
 export { CombatScreen } from './CombatScreen';
 export { UpgradeScreen } from './UpgradeScreen';
+export { XpHUD } from './XpHUD';
+export { XpRecapScreen } from './XpRecapScreen';
 export { Toast, type ToastMessage } from './Toast';

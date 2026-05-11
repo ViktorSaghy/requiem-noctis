@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect } from 'react';
 import './App.css';
 import { useGame } from './engine';
 import { awardXp } from './engine/progression';
+import type { XpAwardRecord } from './engine';
 import type { Character } from './engine';
 import type { Chronicle } from './engine';
 import {
@@ -13,6 +14,7 @@ import {
   SettingsPanel,
   CreditsScreen,
   UpgradeScreen,
+  XpRecapScreen,
   Toast,
   type ToastMessage,
 } from './ui';
@@ -22,7 +24,7 @@ import { Audio } from './audio';
 import type { AppSettings } from './engine/settings';
 import { loadSettings } from './engine/settings';
 
-type Screen = 'title' | 'story' | 'create' | 'game' | 'ending' | 'downtime' | 'settings' | 'credits';
+type Screen = 'title' | 'story' | 'create' | 'game' | 'ending' | 'xp-recap' | 'downtime' | 'settings' | 'credits';
 
 const CHRONICLES: Chronicle[] = [AshAndIvory, BloodGamesChronicle];
 
@@ -33,6 +35,7 @@ export default function App() {
   const [endingId, setEndingId] = useState<string | null>(null);
   const [settings, setSettings] = useState<AppSettings>(() => loadSettings());
   const [toast, setToast] = useState<ToastMessage | null>(null);
+  const [pendingXpRecord, setPendingXpRecord] = useState<XpAwardRecord | null>(null);
 
   const [audioUnlocked, setAudioUnlocked] = useState(false);
   const game = useGame();
@@ -94,34 +97,46 @@ export default function App() {
 
   const handleEndingReady = useCallback((id: string) => {
     setEndingId(id);
-    // Trigger XP award at ending
-    if (game.state) {
-      const xpRecord = awardXp(id, {
-        episodeComplete: true,
-        desireFulfilled: false, // Could extend with result data
-      });
-      const updated = { ...game.state.character };
-      updated.xp = (updated.xp ?? 0) + xpRecord.amount;
-      if (!updated.xpAwardLog) updated.xpAwardLog = [];
-      updated.xpAwardLog.push(xpRecord);
-      
-      // Show XP notification toast
-      setToast({
-        id: `xp-${Date.now()}`,
-        text: `Earned ${xpRecord.amount} XP: ${xpRecord.reason}`,
-        type: 'success',
-        duration: 4000,
-      });
-      
-      // Make downtime available
-      game.state.downtimeAvailable = true;
-      // Show downtime screen
-      setScreen('downtime');
-    }
+    if (!game.state) return;
+
+    const flags = game.state.flags;
+    const ending = game.state.chronicle.endings[id];
+
+    // Infer bonus XP criteria from ending type and flags
+    const isGoodOrPerfect = ending?.type === 'good_end' || ending?.type === 'perfect_end';
+    const isPerfect = ending?.type === 'perfect_end';
+
+    const xpRecord = awardXp(id, {
+      episodeComplete: true,
+      desireFulfilled: isPerfect || !!flags['desire_fulfilled'],
+      ambitionAdvanced: !!flags['ambition_advanced'],
+      masqueradeKept: isGoodOrPerfect && !flags['masquerade_broken'],
+      humanityPreserved: !!flags['humanity_preserved'],
+      endingTitle: ending?.title,
+    });
+
+    // Apply XP to character and persist to log
+    const updatedChar: Character = {
+      ...game.state.character,
+      xp: (game.state.character.xp ?? 0) + xpRecord.amount,
+      xpTotal: (game.state.character.xpTotal ?? 0) + xpRecord.amount,
+      xpAwardLog: [...(game.state.character.xpAwardLog ?? []), xpRecord],
+    };
+    game.state.character = updatedChar;
+    game.state.downtimeAvailable = true;
+
+    setPendingXpRecord(xpRecord);
+    setScreen('xp-recap');
   }, [game.state]);
+
+  const handleRecapContinue = useCallback(() => {
+    setPendingXpRecord(null);
+    setScreen('downtime');
+  }, []);
 
   const handlePlayAgain = useCallback(() => {
     setEndingId(null);
+    setPendingXpRecord(null);
     setScreen('title');
   }, []);
 
@@ -199,6 +214,17 @@ export default function App() {
           onBackToTitle={handleBackToTitle}
           onApplyPostCombatDamage={game.applyPostCombatDamage}
           devMode={settings.devMode}
+        />
+      )}
+
+      {screen === 'xp-recap' && pendingXpRecord && game.state && endingId && (
+        <XpRecapScreen
+          record={pendingXpRecord}
+          characterName={game.state.character.name}
+          endingTitle={game.state.chronicle.endings[endingId]?.title}
+          endingType={game.state.chronicle.endings[endingId]?.type}
+          totalXp={game.state.character.xp ?? 0}
+          onContinue={handleRecapContinue}
         />
       )}
 

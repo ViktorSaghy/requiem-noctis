@@ -2,6 +2,7 @@ import { useEffect, useState, useMemo, Fragment } from 'react';
 import type { GameState } from '../engine';
 import { listSaves, CLANS, portraitPath, getSceneImage, preloadImages } from '../engine';
 import type { SaveSlot, JournalEntry } from '../engine';
+import { XpHUD } from './XpHUD';
 import { Audio } from '../audio';
 import { DiceOverlay } from './DiceOverlay';
 import { useCombat } from './useCombat';
@@ -81,6 +82,9 @@ function CharacterPane({ game }: { game: GameState }) {
           <div className="char-pane-sub">
             {character.clan} · {character.gender === 'male' ? 'Male' : 'Female'} · Gen. {character.generation}
           </div>
+          {(character.xp ?? 0) > 0 && (
+            <XpHUD xp={character.xp ?? 0} compact />
+          )}
         </div>
       </div>
       <div className="char-pane-section">

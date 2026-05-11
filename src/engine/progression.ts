@@ -122,16 +122,35 @@ export const UPGRADE_CATALOG: Upgrade[] = [
 // ─────────────── XP Logging Types ────────────────────────────────────────
 
 export interface XpAwardRecord {
+  id: string;
   episodeId: string;
   amount: number;
+  baseAmount: number;
+  bonusAmount: number;
+  bonusReason?: string;
   reason: string;
+  endingTitle?: string;
   timestamp: string;
 }
 
 export interface XpSpendRecord {
   upgradeId: string;
+  upgradeName?: string;
+  category?: string;
   amount: number;
   timestamp: string;
+}
+
+// Unified transaction log entry for the XP ledger UI
+export interface XpTransaction {
+  id: string;
+  timestamp: number; // unix ms
+  episodeId: string;
+  type: 'award' | 'spend';
+  amount: number;
+  category: string;
+  reason: string;
+  source?: string;
 }
 
 // ─────────────── Core Functions ──────────────────────────────────────────
@@ -144,8 +163,8 @@ export interface XpSpendRecord {
  *   - ambition (character advanced their ambition)
  *   - masquerade (character maintained masquerade)
  *   - humanity (character preserved or gained humanity)
- * 
- * Returns { amount: 2|3, reason: string }
+ *
+ * Returns enriched XpAwardRecord with base/bonus breakdown.
  */
 export function awardXp(episodeId: string, criteria: {
   episodeComplete: boolean;
@@ -153,39 +172,88 @@ export function awardXp(episodeId: string, criteria: {
   ambitionAdvanced?: boolean;
   masqueradeKept?: boolean;
   humanityPreserved?: boolean;
+  endingTitle?: string;
 }): XpAwardRecord {
-  let amount = 0;
-  let reason = '';
+  const id = `award_${episodeId}_${Date.now()}`;
 
   if (!criteria.episodeComplete) {
-    return { episodeId, amount: 0, reason: 'Episode not complete', timestamp: new Date().toISOString() };
+    return {
+      id, episodeId, amount: 0, baseAmount: 0, bonusAmount: 0,
+      reason: 'Episode not complete', timestamp: new Date().toISOString(),
+    };
   }
 
-  amount = 2; // base
+  const baseAmount = 2;
+  let bonusAmount = 0;
+  let bonusReason: string | undefined;
 
-  // Check for bonus (pick best match)
   if (criteria.desireFulfilled) {
-    amount += 1;
-    reason = 'Episode complete + desire fulfilled';
+    bonusAmount = 1;
+    bonusReason = 'Desire fulfilled';
   } else if (criteria.ambitionAdvanced) {
-    amount += 1;
-    reason = 'Episode complete + ambition advanced';
+    bonusAmount = 1;
+    bonusReason = 'Ambition advanced';
   } else if (criteria.masqueradeKept) {
-    amount += 1;
-    reason = 'Episode complete + masquerade maintained';
+    bonusAmount = 1;
+    bonusReason = 'Masquerade maintained';
   } else if (criteria.humanityPreserved) {
-    amount += 1;
-    reason = 'Episode complete + humanity preserved';
-  } else {
-    reason = 'Episode complete';
+    bonusAmount = 1;
+    bonusReason = 'Humanity preserved';
   }
+
+  const amount = baseAmount + bonusAmount;
+  const reason = bonusReason
+    ? `Episode complete + ${bonusReason.toLowerCase()}`
+    : 'Episode complete';
 
   return {
+    id,
     episodeId,
     amount,
+    baseAmount,
+    bonusAmount,
+    bonusReason,
     reason,
+    endingTitle: criteria.endingTitle,
     timestamp: new Date().toISOString(),
   };
+}
+
+/**
+ * Build a unified XP transaction log from a character's award and spend logs,
+ * sorted newest-first. Used by the XP Ledger UI.
+ */
+export function buildTransactionLog(character: Character): XpTransaction[] {
+  const transactions: XpTransaction[] = [];
+
+  for (const record of character.xpAwardLog ?? []) {
+    transactions.push({
+      id: record.id ?? `legacy_award_${record.timestamp}`,
+      timestamp: new Date(record.timestamp).getTime(),
+      episodeId: record.episodeId,
+      type: 'award',
+      amount: record.amount,
+      category: 'Episode Reward',
+      reason: record.reason,
+      source: record.endingTitle,
+    });
+  }
+
+  for (const record of character.xpSpendLog ?? []) {
+    const upgrade = UPGRADE_CATALOG.find(u => u.id === record.upgradeId);
+    transactions.push({
+      id: `spend_${record.upgradeId}_${record.timestamp}`,
+      timestamp: new Date(record.timestamp).getTime(),
+      episodeId: '',
+      type: 'spend',
+      amount: record.amount,
+      category: record.category ?? upgrade?.category ?? 'Upgrade',
+      reason: record.upgradeName ?? upgrade?.name ?? record.upgradeId,
+      source: record.upgradeId,
+    });
+  }
+
+  return transactions.sort((a, b) => b.timestamp - a.timestamp);
 }
 
 /**

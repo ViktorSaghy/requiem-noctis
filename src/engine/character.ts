@@ -51,8 +51,16 @@ export interface Character {
   humanity: number;
   hunger: number;
   xp: number;
-  xpAwardLog?: Array<{ episodeId: string; amount: number; reason: string; timestamp: string }>;
-  xpSpendLog?: Array<{ upgradeId: string; amount: number; timestamp: string }>;
+  xpTotal?: number; // lifetime XP earned (never decremented)
+  xpAwardLog?: Array<{
+    id: string; episodeId: string; amount: number;
+    baseAmount: number; bonusAmount: number; bonusReason?: string;
+    reason: string; endingTitle?: string; timestamp: string;
+  }>;
+  xpSpendLog?: Array<{
+    upgradeId: string; upgradeName?: string; category?: string;
+    amount: number; timestamp: string;
+  }>;
   savedAt?: number;
 }
 

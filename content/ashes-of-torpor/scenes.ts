@@ -500,4 +500,227 @@ export const AshesOfTorpor: Chronicle = {
     },
 
   },
+
+  locales: {
+    hu: {
+      title: 'Torpor Hamvai',
+      subtitle: 'Az az éjszaka, amikor rosszul ébredsz fel',
+      setting: 'Bécs, Ausztria — jelen éjszaka',
+      acts: {
+        1: 'A Torpor Vége',
+        2: 'Az Első Éhség',
+        3: 'A Város Odafönt',
+      },
+      endings: {
+        dawn_survived: {
+          title: 'Egy Éjszaka Túlélve',
+          text: "A búvóhely beforr körülötted és a város elcsendesül.\n\nEtettél. Mozgtál. Nem haltál meg. Egy vámpír számára, aki Torporbóol ébred egy városba, amely nem ismeri a nevedet, ez elég.\n\nAhogy a tudat elszáll, valami felszínre kerül — nem emlék, hanem az emlék érzése. Olajfák. Egy ünnepi körmenet. Tömjén illata, sűrűn, ízlelhetően. A jeled tenyereden egyszer felmelegszik, röviden.\n\nAztán álom vesz el, és a melegség nem múlik el.",
+        },
+        dawn_troubled: {
+          title: 'Amit Magad Után Hagytál',
+          text: "Megtalálod a nyughelyedet, mielőtt a nap megtalálna. Alig.\n\nValahol a városban valaki nehéz beszélgetést folytat arról, amit ma éjjel látott. Nem tudod, hol. Nem tudod, milyen messzire terjed a kár. Nem fogod tudni, amíg fel nem ébredsz.\n\nAhogy elmerülsz, egyetlen kép: olajfák, körmenet, tömjénfüst. Ősi. A jel tenyereden ég tőle.\n\nKövetkezményekre ébredsz. Mindenképpen felébreszel.",
+        },
+        dawn_perfect: {
+          title: 'Tiszta Munka',
+          text: "A búvóhely beforr. Bécs zümmög fölötted, mit sem sejtve.\n\nTanúk nélkül etettél. Nyomok nélkül mozogtál. Mindenki, aki ma éjjel látott, vagy tudatos résztvevő, vagy nem tudja, mit látott. Az Álarc tartja. Bármi is zárt abba a pincébe, még odakint van — de ma éjjel nem adtál neki semmit, amivel dolgozhatna.\n\nAz utolsó pillanatban álom előtt: olajfák teljes napfényben, körmenet egy alig ismert nyelven, tömjén a levegőben. A jel tenyereden egyszer lüktet — meleg, biztos, mint valami, amely emlékezik rád.\n\nA következő éjszakára egy kicsit kevésbé elveszve ébredsz fel.",
+        },
+      },
+      scenes: {
+        start: {
+          title: 'A Torpor Vége',
+          narrative: "Először sötétség. Aztán súly — kő fölülről, kő oldalt, kő alul.\n\nAztán réz. Az íz hamarabb érkezik, mint a te többi részed: hideg, éles, abszolút. A szájadban lévő vér régi, a tiéd, és nem elég.\n\nEgy mondat tör fel mindennél előbb — a neved előtt, az év előtt, a miért előtt. *A spiritu maligno, libera nos.* A gonosz lélektől, szabadíts meg minket. Latin. Liturgikus. Fogalmad sincs, honnan jött.\n\nFölötted, méternyi kövön és vakolaton át tompítva: vonósok. Egy zenekar, élő, fegyelmezett mechanikussággal. Valami alatt vagy, ami még mindig játszik.",
+        },
+        the_wall: {
+          title: 'Új Habarcs',
+          narrative: "Tapintás útján találod meg. A pince egyik fala más — a fugák habarcs puha, az illata friss. Hetes, nem évszázados. Valaki szándékosan és nemrégiben elzárta ezt a teret.\n\nA bal oldali falon van egy rés, ahol vascsővezeték fut: egy karbantartási varrat, alig váll-szélességű.\n\nBal tenyered ég. A sötétben ránézel, és nem látsz semmit — de érzed a bőrbe vésett valami formáját. Egy jel. Nem emlékszel rá, hogy ott volt.",
+          choices: [
+            'Verd be vállal a puha fugát — törj át',
+            'Csússz át a karbantartási résen — lassan, csendesen',
+            'Érezd a varázszár szerkezetét és bontsd ki belülről',
+            'Hagyd, hogy a Vadállat olvassa a követ — kövesd a patkányok útjait',
+            'Formáld át az ujjaidat a fugoknál, érezd, hol enged a habarcs',
+            'Hagyd, hogy a düh elvégezze — most, gyorsan, hangosan',
+          ],
+        },
+        wall_forced: {
+          narrative: "Három ütés. Az első megrepeszti. A második hasadékot nyit. A harmadik egy falszakaszt hoz le tégla- és porzajjal, amely betölti a pincét zajjal és fehér porral.\n\nKiértél.\n\nValahol fölötted a zenekar tovább játszik. Vagy nem hallotta senki, vagy senki nem törődött vele. Még nem tudod, melyik.",
+        },
+        wall_seam: {
+          narrative: "A csőrés szűk. Valami kisebbre nyomod össze magad, mint amire emlékszel, hogy képes vagy, és kézzel előre haladva, centiméterről centiméterre, arccal a hideg vasnak nyomva mozogsz át.\n\nHarminc másodperc. Aztán a túlsó oldal megnyílik egy szervizalagútba — sötét, alacsony mennyezetű, poros és régi zsír illatú.\n\nNincs riasztás zaja. Nincs lépés. A zenekar most közelebb van.",
+        },
+        wall_ward: {
+          narrative: "Tenyeredet laposan a habarcsra nyomod és behunyod a szemed.\n\nA varázszár egyszerű kötés — amatőr munkája, olyasvalakié, aki félmegjegyzett utasításokból dolgozott, sietősen. Megkeresed a szándék csomóját a közepén. Megtalálod. Meghúzod.\n\nA fal nem dől le — kilehel. A habarcs szárazon omlik, dráma nélkül. Egy szakasz megdől és leülepszik, te pedig átstepelsz a résen a mögötte lévő szervizalagútba.\n\nAki ezt a varázszárat felállította, csak annyira értett hozzá, amennyire sértő volt.",
+        },
+        wall_tunnel: {
+          narrative: "Behunyod a szemed és hagyod, hogy a test vezessen.\n\nAz ösztön régebbi az éhségnél, régebbi az amnéziánál. Kezeid megtalálják a csőrést, mielőtt szemeid megtalálnák. Ujjaid olvassák a rés méreteit, ahogy egy kulcs olvassa a zárat. A túlsó oldal megnyílik egy szervizalagútba és már átértél, mielőtt tudatosan döntöttél volna a mozgásról.\n\nA zenekar most közel van. Egy szinttel feljebb, legfeljebb.",
+        },
+        wall_frenzy: {
+          narrative: "Abbahagyod a gondolkodást és hagyod, hogy a Vadállat vezessen.\n\nAz új fal nem tart három másodpercig. Ökleid átmennek rajta, mintha próbálna romok lenni. Por, zaj, valaki szerszámkészletének fémcsilingelése, amelyet lever a polcról a szomszéd kamrában. A törmelék leülepedése előtt már a szervizalagútban vagy.\n\nA düh lassan hűl. Átjutottál. Kezeid véreznek, ahol a habarcs megvágta őket. A sebek már záródnak.",
+        },
+        surface_tunnel: {
+          narrative: "A szervizalagút keletre fut egy boltozatos mennyezet alatt, alig két méter magasan. Csőkötegek és elosztók. Egy vészvilágító, halott. A túlsó végén egy acélajtó, az ajtó alatt: egy vékony fényszalag és egy foglalt és meleg épület szaga.\n\nEmellett: valami más. Közelebb.\n\nEmberi szag — bőr, szappan, régi kávé, és mindez alatt a nyílt seb réz-fényű lobogója.\n\nValahol ebben az alagútban valaki vérzik.",
+        },
+        stagehand_encounter: {
+          title: 'Az Első Éhség',
+          narrative: "Hat méterre előtted ül a falnál, telefonnal az egyik kezében, egy ronggyal a másikkal az alkarja ellen nyomva. Egy stábember — fekete stábos ruha, laminált kitűző, valaki különleges fáradtsága, aki egy duplaszakasz harmadik óráján jár.\n\nA seb apró. Még nem vett észre. Az ajtó alatti fényszalag az egyetlen fény, és te még a sötétben vagy.\n\nAz éhséged hangosabb, mint bármely gondolat, amelyet most formálni tudsz. Négyen vagy — egy szám, amelyről valahogy tudod, hogy az elvesztés határát jelenti.",
+          choices: [
+            'Etesd óvatosan — közelíts lassan, győződj meg, hogy nem kiált',
+            'Etesd gyorsan — foglalkozz azzal, hogy emlékezik-e rá majd',
+            'Urald magad. Menj el mellette. Találj más módot',
+            'Fogd meg a szemét és győződj meg, hogy nem fog emlékezni',
+            'Vonzd magadhoz — hagyd, hogy önként jöjjön hozzád',
+          ],
+        },
+        feed_clean: {
+          narrative: "Elég lassan mozgsz ahhoz, hogy emberként hallja, nem dologként.\n\n'Hé.' Felnéz. Megragadod a szemét és megtalálod a zárat — nem diszciplína, csak a ragadozó régi állatias magabiztossága, aki tízezerszer csinálta ezt.\n\nNem ellenáll. Alig veszi észre. Két percen belül elveszed, amire szükséged van, és otthagyod a fal mellett ülve, nem egészen alva, már feledve az alakját.\n\nAz éhség csökken. A város visszafókuszálódik. Ismét gondolkodhatsz.",
+        },
+        feed_messy: {
+          narrative: "Gyorsan mozgsz és az önuralmad nem tökéletes. Hangot ad — félig meglepetés, félig valami más — mielőtt az etetési állapot átveszi.\n\nVisszahúzol, amikor az éhség leülepszik, de az időzítés rossz volt. Nyomok vannak a nyakán. Eszméletnél van. Emlékezni fog valamire.\n\nOtthagyod az alacsony vérnyomásról szóló történettel és a telefonjával nyitva az ölén. Talán tartja. Valószínűleg nem állja ki az alaposabb vizsgálást.\n\nAz éhség halkabb. A kezeid nem teljesen stabilak.",
+        },
+        feed_refuse: {
+          narrative: "Elmész mellette.\n\nFelnéz. Nem mondasz semmit. Néz, ahogy eltűnsz a távolabbi ajtó felé, azzal a zavart arckifejezéssel, mint akinek az agya csendesen 'furcsa, de valószínűleg rendben' kategóriába sorolja ezt az élményt.\n\nÁttolod magad a kintebb lévő szervizfolyosóra. Az éhség nem csendesül — alacsony, állandó nyomásként ülepszik le a szemeid mögé. Ezzel tudod dolgozni. Rosszabbal is dolgoztál.\n\nGondolod.",
+        },
+        feed_dominate: {
+          narrative: "Felnéz a telefonjáról és találkozik a szemeddel, és te benyúlsz.\n\nA parancs halk: *aludj, felejts, pihenj.* Feje leesik, mielőtt a mondat véget ér. Sietség nélkül, csend nélkül etetsz, olyan nyomok nélkül, amelyek számítanak. Húsz perc múlva, amikor felébred, egy szédülős rosszullétre fog emlékezni és semmi másra.\n\nAz erő fizet valamennyit — érzed a koponyád tövén lévő száraz fájdalomban — de az eredmény tiszta.\n\nAz éhség visszahúzódik. A gondolkodás visszatér.",
+        },
+        feed_presence: {
+          narrative: "Átengedsz valamit — nem az éhséget, a másikat. A meleget. A vonzást.\n\nFelnéz a telefonjáról és érdekesnek talál téged. Érdeknél is érdekesebbnek. Feláll és hozzád jön, mint valaki, aki egy félig ismerős dal felé sétál, és a többi úgy történik, ahogy szokott: készségesen, melegen, tisztán.\n\nLesz egy története arról, hogy valakivel találkozott. Nem fog emlékezni, hogyan nézett ki, vagy mit csinált utána. Ettől függetlenül jól fog érezni magát.\n\nTe is jól érzed magad, ami az a rész, amelyet még nem vizsgálsz meg.",
+        },
+        caretaker_approach: {
+          title: 'A Gondozó',
+          narrative: "Az acélajtó egy szélesebb szervizfolyosóra nyílik — és egy emberre, aki nyilván nem várt rád.\n\nÖtvenesek. Munkaköpeny. Egy akkora kulcskarika, mint egy ököl. Megmerevedik, ahogy az emberek megmerevednek, amikor megijednek, és a félelem alatt, mélyebben, bűnösek. Nem meglepett. Bűnös.\n\nTudja, mi vagy. Látta a fajtádat korábban.",
+        },
+        caretaker_talk: {
+          narrative: "Ő szól előbb. 'Még nem kellene kinn lenned.'\n\nMegkérdezed tőle, ki zárt oda be.\n\nMélyet lélegzik. 'Utasításokat kaptam. Három hete, kedden lezártam a kamrát. Azt mondták, négy naponta ellenőrizzek és várjak.' Bal kezedre néz. A kifejezése megváltozik — félelem valami alatt, egy felismerés, amellyel nem akar élni.\n\n'Az a jel.' Hátralép egyet. 'Honnan van ez a jel?'",
+        },
+        caretaker_offer: {
+          narrative: "Felixnek hívják. Nem mondja meg, ki zárt be — azt mondja, nem tudja a nevet, csak az utasításokat. Talán hazudik.\n\nAzt ajánlja fel: egy kijárási útvonalat az épületből a teherbejáraton keresztül, és egy kapcsolati cím Józsefvárosban — egy rejtekhelyet, amelyet a helyi hálózat használ, csendes, felszerelt. Cserébe azt szeretné, hogy elmenj, mielőtt a főnöke rájön, hogy felébredtél.\n\nMegféledt. Szavait is, észreveszed, nagyon óvatosan választja.",
+          choices: [
+            'Fogadd el az alkut — vedd a cím-et, menj csendesen',
+            'Nyomd meg erősebben — a nevet akarod, nem egy cím-et',
+            'Nyúlj be és vedd el, amit tud',
+            'Köszönd meg és menj el — nincs szükséged a segítségére',
+          ],
+        },
+        caretaker_helped: {
+          narrative: "Leírja a cím-et egy szervizütemterv hátoldalára, és két kézzel nyújtja át, ahogy az emberek átnyújtanak dolgokat, amelyeket nem akarnak tovább tartani.\n\nJózsefváros, egy keresztutca a színháznegyed közelében. Harmadik emelet, bal oldali lakás. 'A kulcs a lépcsőházi csatlakozó doboz alatt van. Ne hagyd égve a villanyt.'\n\nFogja az ajtót. Szinte udvarias.",
+        },
+        caretaker_pushed: {
+          narrative: "'Nem tudom a nevet.' Laposan mondja. 'Tudok egy drop-cím-et és egy telefonszámot, amely hat napja nem veszi fel. Ez minden, amim van.'\n\nEzt érti. A félelem valós, de mögötte az üres fal is az — szándékosan tudatlanul tartották.\n\nMég mindig felajánlja a józsefvárosi cím-et. Kevésbé melegen most. Az ajtót, amikor kinyitja, nem fogja.",
+        },
+        caretaker_dominated: {
+          narrative: "Szeme üressé válik és elmond mindent abban a sorrendben, ahogy kérdezed.\n\nAz utasítások futárral jöttek — névtelenül, egy viaszpecséttel, amelyet leír, de nem ismer fel. A tenyeredben lévő jel egyezik valamivel a levél belső szárnyán. Korábban már látta — levelezésben, a főnöke irodáján keresztül, valakinek cím-ezve, akit 'Karmesternekneveznek.\n\nMegadja a józsefvárosi cím-et anélkül, hogy tudná, hogy teszi. Amikor elengedsz, pislog és egy pillanatra kimenti magát. Az információ a tiéd. Az érzés is, hogyan szereztél meg, szintén.",
+        },
+        caretaker_refused: {
+          narrative: "Egy szó nélkül elmész mellette.\n\nUtánad szól: 'A teherbejárati kijárat balra van. Ne használd a nyilvános ajtókat — kamerák vannak.' Szünet. 'Mindenképpen megmondtam volna.'\n\nNem nézel vissza. A józsefvárosi cím-mel marad.",
+        },
+        watcher_encounter: {
+          title: 'A Megfigyelő',
+          narrative: "Odakint: Bécs a kisórákon. Villamos sínek narancs fényt fognak. Az Állami Opera teherbejárata egy mellékutcára vezet, csendes, kövezett, amilyen utca a város többi részének díszletéül szolgál.\n\nHárom épülettel odébb érzed, hogy követnek.\n\nNem érzés — egy konkrét, hideg bizonyosság. Valaki kilencven másodperce tartja a távolságot. Azonos tempó. Azonos szünetek. A városon mindenütt kamerák vannak, és valaki, valahol, ma éjjel különös figyelmet fordít erre a tömbre.",
+          choices: [
+            'Menj be a Ringstrasse turistatömegébe — tűnj el a zajban',
+            'Vágj be a lakótömbökbe — tetők, veszítsd el őket a magasban',
+            'Tűnj el. Lépj ki a látható spektrumból teljesen.',
+            'Menj vissza. Keress egy sikátort. Szembesülj avval, aki ez.',
+          ],
+        },
+        watcher_blend: {
+          narrative: "Találsz egy turistacsoportot egy késő esti Würstelstand előtt és a szélére illeszkedsz — telefon kint, a vállak beállítva, az éppen ide tartozó ember általános pózában.\n\nKét perc. A követő anélkül megy el, hogy lassítana. Egy szürke dzsekit viselő alak, feltűnésmentes, pontosan az a fajta feltűnésmentes, amelyet gyakorolnak. Oldalirányban végigpásztáz a csoporton egyszer azzal a jellegzetes oldalirányú söprésssel, mint aki kiképzett arra, hogy úgy tegye, hogy ne látsszon rajta.\n\nElmegy. Kilencven másodpercet vársz és az ellenkező irányba indulsz.",
+        },
+        watcher_rooftops: {
+          narrative: "Második emeleti erkély, tűzlétra, tetőn tizenkét másodpercen belül. Tudod, hogy ezt megteheted, ahogy tudod, hogyan kell lélegezni — a test emlékszik arra, amit az elme elveszített.\n\nA Belváros tetőről hajnali 1-kor látványos: megvilágított tornyok, a Ring fekete fonala, villamosszikrák a huzalon. Te nézed a várost és a város nem tud téged figyelni.\n\nAz alatta lévő utcán az alak megáll. Balra és jobbra néz azzal a szakmaisággal, amely megválaszol egy kérdést: ez nem véletlenszerű találkozás.",
+        },
+        watcher_obfuscate: {
+          narrative: "Oldalra lépel ki a fényből — nem fizikailag, pontosan, de ki a figyelméből, amely az embereket regisztráltatja a mozgással.\n\nA követő átmegy az imént elfoglalt téren. Megáll. Lassan megfordul, minden arcot végigpásztáz az utcán összpontosítással, amely feltűnően szakmai. Egyszer csendesen megszólal egy gallérmikrofonba.\n\nHárom méterről nézed, ahogy megpróbálnak megtalálni téged. Valódi erőfeszítésbe kerül, hogy ne mondj valamit.",
+        },
+        watcher_confront: {
+          narrative: "A sikátor egy patikazár és egy zárt galéria között van. Sötétben vársz annak a türelmével, ami heteket töltött a föld alatt.\n\nKilencven másodperccel később befordulnak a sarokon és megállnak, amikor találkoznak veled, szemben velük, a sikátor közepén.\n\nEgy pillanat tiszta kölcsönös felmérés. Aztán valami után nyúlnak a dzseki alatt — nem elég gyorsan.",
+          choices: [
+            'Fegyverezd le és szorítsd a falhoz — kérdezz',
+            'Vágd a falba és fuss — ma éjjel nem kell válasz',
+          ],
+        },
+        watcher_confront_silent: {
+          narrative: "A csuklójuk. A fal. Az eszköz — egy irányított szkenner, nem fegyver — esik a macskakövekre.\n\nKontrolláltak még leszorítva is. Nem kiabálnak. Szabad kezük nem nyúl a telefon felé. Kiképzett reakció: ne eszkalálj, ne adj információt, várj a kimentésre.\n\nElég sokáig tartod őket, hogy lássad a felszerelést, a fülhallgatót, valakinek testtartását, aki egy intézményi keretrendszerben dolgozik, amelyben hisz. Elengeded, mielőtt befejezték volna a döntést a következő lépésükről.",
+        },
+        watcher_confront_flight: {
+          narrative: "Elég erővel ütnek a falba, hogy megrepessze a vakolatot, és te már vissza vagy a főúton, mielőtt feldolgoznák, mi történt.\n\nLátták az arcodat. Megvan a hozzávetőleges magasságod és sebességed. Valahol ez az adat bekerül egy iratba.\n\nGyorsan sétálsz és nem úgy nézel ki, mint aki most vert meg valakit egy mellékutcában, ami nehezebb, mint hangzik.",
+        },
+        archivist_door: {
+          title: 'A Levéltáros Ajtaja',
+          narrative: "Úgy találod meg a cím-et, hogy követed a régi papír és alatta valami régebbi illatát — egy vámpír pihenési hőmérsékletének jellegzetes hidegét, távolit, de jelenlévőt.\n\nEgy ajtó a Naschmarkt közelében lévő épület második alagsorában. Névtábla nélkül. A kilincset évtizedek óta ugyanazok a kezek érintik.\n\nMielőtt kopogol: egy nyílás nyílik szemmagasságban. Egy szem — sárgás, türelmes — megvizsgál meglepetés vagy üdvözlet nélkül.\n\n'Hallottam, hogy fenn vagy. Gyere be. Semmit ne érintse meg.'",
+        },
+        archivist_meeting: {
+          narrative: "Gregor elég régi ahhoz, hogy a Nosferatu vonásai valami olyasmibe ülepedtek, amely inkább architektúraszerűnek, mintsem rossznak hat. Iktatószekrények, papír-indexek és akár archivált megőrző folyadék, akár olyasvalami szaga között él, ami archivált megőrző folyadékon táplálkozik.\n\nMár tudja a nevedet. Kimondja, mielőtt megmondtad volna neki, és nézi az arcodat, amikor megteszi.\n\n'Három dolog van, ami a tiéd,' mondja. 'Kettőt ingyen adok. A harmadikat fizeted.'",
+          choices: [
+            'Fogadd el a feltételeit — kérdezz a költségről, mielőtt elfogadsz',
+            'Ellenajánlat: információ az információért, nincs nyitott adósság',
+            'Add meg neki a Félixnél kapott cím-et — kereskedj a nyommal',
+            'Vedd az ingyenes információt és menj el — ma éjjel nincs alku',
+          ],
+        },
+        archivist_terms: {
+          narrative: "A harmadik tárgy egy levél. Viaszpecsételt, neked cím-ezve, egy kézírással, amelyet nem azonosít. Két hónappal azelőtt érkezett, hogy Torpor alá kerültél.\n\n'A költség: elmondsz nekem mindent, amit megtalálsz, amikor megtalálod. Bármit is ér el ez az út.' Egy ujjal megérinti a viaszpecsétet. 'Előbb-utóbb tudom majd. Inkább előbb szeretném tudni.'\n\nVárás nélkül odatolja az első két tárgyat: a bécsi Rack feltérképezett térképét és saját kézírásodban lévő céduládat, amelyen az áll: *ne bízz senkiben, aki a 'Karmester' kifejezést rebbenés nélkül használja.*\n\nA levelet addig tartja, amíg válaszolsz.",
+          choices: [
+            'Egyezz bele a feltételekbe — vedd el a levelet',
+            'Utasítsd el a levelet — magad fogod megtalálni',
+          ],
+        },
+        archivist_deal_made: {
+          narrative: "A viaszpecsét tisztán törik.\n\nA levél saját kezedben van, és nem emlékszel, hogy írtad. Három sor. *Ha ezt olvasod, valami rosszul ment. A pince végső megoldás, nem büntetés. A tenyereden lévő jel kockázat — tartsd takart. Mindent, amire szükséged van, ott hagytam, ahol először keresnéd.*\n\nEzzel egy pillanatra leülsz. Gregor nem tesz úgy, mintha nem figyelne.\n\n'Jó volt üzletelni,' mondja. 'A két utcával keletre lévő búvóhely a tiéd, amíg az adósság rendeződik. Második emelet, kék ajtó.'",
+        },
+        archivist_counter: {
+          narrative: "'Információ az információért,' mondod. 'Nincs futó számla.'\n\nEzt olyan türelemmel fontolja meg, mint aki a legtöbb tárgyalást egyszerűen várakozással meghaladta.\n\n'Az ingyenes tárgyak még mindig érvényesek.' Áttólja a térképet és a kézírásos cédulátt. 'A levél az őrizetemnél marad, amíg nem hozol valamit, ami megéri a cserét. Ideiglenes.'\n\nNincs búvóhely-ajánlat. Nincs nyitott adósság. Munkaviszony, kísérleti, még nem tesztelt.",
+        },
+        archivist_favor: {
+          narrative: "Megadod neki a józsefvárosi cím-et.\n\nSzünet. Gregor kifejezésének finom elmozdulása — nem meglepetés, hanem újraszámolás. Ez a cím értéket képvisel, amelyet nem várt tőled.\n\n'Az ingyenes tárgyak, a levél és a búvóhely,' mondja, a megállapodást kéretlenül újraosztva. 'A rejtekhelycím rendezi a főkönyvet és egy kis egyenleget helyez a te oszlopodba.'\n\nA Nosferatu módján pecsételi meg a megállapodást: egy megosztott titokkal. Elmond neked valamit, amit meg akart tartani. Megtudod a megfigyelő szervezeti hovatartozását és azt, hogy mire tervezték a szkennerüket.\n\nMindennel távozol. Nincs nyitott adósság. Nincsenek laza tanúk. Egy éjszaka túlélve anélkül, hogy egyetlen szálat is magad után hagytál volna.",
+        },
+        archivist_letter_refused: {
+          narrative: "Otthagyod nála a levelet.\n\nAz asztalon hagyja a térképet és a cédulátt — már a tieid — és néz, ahogy felállsz. 'A levélre szóló ajánlat határozatlan időre érvényes. Türelmes vagyok.'\n\nEllhiszed neki.",
+        },
+        archivist_free_only: {
+          narrative: "Panasz nélkül adja oda a térképet és a cédulátt. Az ingyenes tárgyak mindig ingyenesek voltak.\n\nAz ajtónál: 'A levél itt lesz, ha kell. Én is itt leszek.'\n\nKilépsz a lépcsőházba. Az ajtó mögött, már: egy iktatószekrény nyitásának hangja.",
+        },
+        choice_of_dens: {
+          title: 'Hajnal Előtt',
+          narrative: "Napkelteig egy óra, a város az esszenciálisra szűkül: hol legyél, amikor jön a fény.\n\nVannak lehetőségeid. Egyik sem kényelmes. Mindegyik jobb a pincénél.",
+          choices: [
+            'Az opera pincéje — vissza a lezárt kamrába, belülről újraelzárva',
+            'A józsefvárosi búvóhely — Felix tartaléka, ha van a cím',
+            'Gregor kölcsönzött búvóhelye — két utcával keletre a Naschmarkttól',
+          ],
+        },
+        den_opera: {
+          narrative: "Visszamész, ahonnan jöttél.\n\nA pince most ismerős, ahogy a rossz helyek ismerősé válnak: tudod, melyik kövek engednek a lábad alatt, melyik falak tartanak. A sérült szakaszt visszahúzod egy durva zárba és egy darab törött csővel megtámasztod.\n\nNem fogja megállítani azt, aki tudja, hol kell keresni. De még senki sem tudja, hol kell keresni.",
+        },
+        den_safehouse: {
+          narrative: "Józsefváros gyalog húsz perc, csendes ebben az órában. Az épület egy Gründerzeit-kori bérház kódolt bejárattal és az olyan tér különleges csendjével, amelyet nem rendes lakhatásra használnak.\n\nHarmadik emelet, bal oldali lakás. Kulcs a csatlakozó doboz alatt, ahogy ígérték. Belül: sötétítő függönyök, lezárt belső szoba, semmi személyes. Búvóhely, nem otthon.\n\nEgy hajnalra elég.",
+        },
+        den_archivist: {
+          narrative: "A kék ajtó nyitva van. Belül: egy szoba, megtisztítva a személyes részletektől, sötétítő redőnyök az ablakokra szakmai gondossággal illesztve. Alvótér, pontosan erre a felhasználásra előkészítve.\n\nGregor vendégszeretete tranzakcionális, de alapos. A szoba sötét, lezárt, és senki élő szagát nem hordozza.\n\nAz ajtót bereteszeled és elszámolod az éjszaka eredményeit, mielőtt az álom megérkezik.",
+        },
+        dawn_rest: {
+          title: 'Hajnal',
+          narrative: "A nap percekkel van a horizont alatt.\n\nÉrzed, ahogy érzed az apály fordulóját — nem látás, nem hő, hanem a sötétség minőségének eltolódása. A test leállni kezd, rendszerről rendszerre, a nappali álomba süllyedő vámpír rendezett sorrendjében.\n\nHagyod, hogy megtörténjen. Nincs semmi elvégzetlen az éjszakáról, ami ne tűrhetne holnapig.",
+        },
+        dawn_memory: {
+          narrative: "Az utolsó pillanatban, mielőtt az eszmélet elmegy, valami felszínre kerül.\n\nNem gondolat. Nem álom. Egy érzet — teljes, pontos, más testhez és más évszázadhoz tartozó.\n\n*Olajfák teljes délutáni fényben. Tömjén illata egy piacon áthaladó körmenettől. Meleg kő csupasz talp alatt. Valaki, aki egy nevet szólít, amelyet majdnem felismersz a koponyád hátuljából, egy nevet, amely majdnem a tiéd.*\n\nBal tenyeredben a jel felmelegszik. Nem éget — felmelegszik, mint valami, amely régen meleget emlékszik.\n\nAztán semmi. Aztán hajnal.",
+        },
+        dawn_favor_rest: {
+          title: 'Hajnal',
+          narrative: "A búvóhely pontosan olyan, mint amilyet Gregor ígért: sötét, lezárt, semmi személyes nyom.\n\nBereteszeled az ajtót. A fölötted lévő város folytatja a dolgát, mit sem sejtve. Mindenki, aki számít, ma éjjel nem látott semmi olyat, amit nem tudott megmagyarázni. Az Álarc tartja. A levéltáros tudja, amit tud, és beleegyezett az árba.\n\nA test leállni kezd a szokott módján. Hagyod.",
+        },
+        dawn_memory_perfect: {
+          narrative: "Az utolsó pillanatban, mielőtt az eszmélet elmegy, valami felszínre kerül.\n\nNem gondolat. Nem álom. Egy érzet — teljes, pontos, más testhez és más évszázadhoz tartozó.\n\n*Olajfák teljes délutáni fényben. Tömjén illata egy piacon áthaladó körmenettől. Meleg kő csupasz talp alatt. Valaki, aki egy nevet szólít a zsúfolt tér másik oldaláról — majdnem a tiéd, de nem egészen, olyan valakié, aki még nem tudta, mi volt — olyan hangon szólít, amely úgy hangzik, mint senki, akit ismersz, és mindenki, akit valaha ismertél.*\n\nBal tenyeredben a jel felmelegszik, és ezúttal nem áll meg a melegedésnél. A bőr alatt valami mozdul, egyszer, mint egy kulcs, amely egy olyan zárba fordul, amely emlékezetnél hosszabb ideig befagyva volt.\n\nAztán semmi. Aztán hajnal. És a város vár.",
+        },
+        dawn_breach: {
+          title: 'Kárfelszámolás',
+          narrative: "Ma éjjel nem mész el a levéltároshoz.\n\nA tanú valahol a városban van egy telefonnal, egy történettel és szervezeti támogatással. Nem tudod, milyen gyorsan terjed az információ. Nem tudod, mit csinálnak azzal, amit láttak. A hajnal előtti utolsó órát valószínűségi számítások végiggondolásával töltöd, és csak nyitott kérdéseket találsz.\n\nVégül abbahagyod a számolást és találsz egy helyet, ahol lehetsz, amikor jön a fény: egy lezárt karbantartó helyiség egy parkolóház alatt, három utcával attól, ahol feljöttél. Nem kényelmes. Nem tartós. Elég egy napra.",
+        },
+        dawn_memory_troubled: {
+          narrative: "Az utolsó pillanatban, mielőtt az eszmélet elmegy, valami felszínre kerül.\n\nNem gondolat. Nem álom. Egy érzet — régi, pontos, más évszázadhoz tartozó.\n\n*Olajfák. Körmenet. Tömjén. Egy zsúfolt tér másik oldaláról szólított név — majdnem a tiéd, de nem egészen, olyan valakié, aki még nem tudta, mi volt.*\n\nBal tenyeredben a jel egyszer felmelegszik, röviden — aztán a melegség aggodalommal telik, ahogy egy figyelmeztető tábla meleg a tapintásra, mielőtt a mögötte lévő tűz megmutatkozna.\n\nAztán semmi. Aztán hajnal. Valahol fölötted egy reggel kezdődik, amelyben kérdések lesznek.",
+        },
+      },
+    },
+  },
 };

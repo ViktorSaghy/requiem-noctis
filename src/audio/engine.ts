@@ -2,54 +2,18 @@
 
 export type Mood = 'title' | 'exploration' | 'tension' | 'combat' | 'ending';
 
-interface NoteSpec {
-  freq: number;
-  dur: number;
-}
-
-// Frequencies (Hz)
+// Frequency constants used by SFX only
 const N = {
-  E2:    82.41,
-  F2:    87.31,
-  A3:   220.00,
-  D4:   293.66,
-  E4:   329.63,
-  G4:   392.00,
-  A4:   440.00,
-  C5:   523.25,
-  E5:   659.25,
-  F5:   698.46,
-  A5:   880.00,
-  C6:  1046.50,
-  E6:  1318.51,
-  F6:  1396.91,
+  E2:  82.41,
+  A3: 220.00,
+  D4: 293.66,
+  E4: 329.63,
+  G4: 392.00,
+  A4: 440.00,
+  E5: 659.25,
 } as const;
 
-// Masquerade: A C E F E — high triangle oscillator
-const MASQUERADE: NoteSpec[] = [
-  { freq: N.A5, dur: 0.35 },
-  { freq: N.C6, dur: 0.35 },
-  { freq: N.E6, dur: 0.35 },
-  { freq: N.F6, dur: 0.35 },
-  { freq: N.E6, dur: 0.70 },
-];
-
-// Beast: E→F semitone grind — low sawtooth
-const BEAST: NoteSpec[] = [
-  { freq: N.E2, dur: 0.6 },
-  { freq: N.F2, dur: 0.6 },
-];
-
-// Mortal: pentatonic descent A G E D A — sine
-const MORTAL: NoteSpec[] = [
-  { freq: N.A4, dur: 0.5 },
-  { freq: N.G4, dur: 0.5 },
-  { freq: N.E4, dur: 0.5 },
-  { freq: N.D4, dur: 0.5 },
-  { freq: N.A3, dur: 1.0 },
-];
-
-// Pre-computed soft-knee distortion curve (k=100)
+// Pre-computed soft-knee distortion curve (k=100) — bestialFailure SFX
 const DISTORTION_CURVE = (() => {
   const n = 256;
   const k = 100;
@@ -60,6 +24,12 @@ const DISTORTION_CURVE = (() => {
   }
   return curve;
 })();
+
+const DEV = import.meta.env.DEV;
+
+function audioLog(msg: string, ...extra: unknown[]): void {
+  if (DEV) console.log(`[Audio] ${msg}`, ...extra);
+}
 
 class AudioEngineClass {
   private ctx: AudioContext | null = null;
@@ -77,21 +47,26 @@ class AudioEngineClass {
   private currentMusicUrl: string | null = null;
   private nextMusicUrl: string | null = null;
 
-  private musicUrls: Record<Mood, string> = {
-    title: '/audio/velvet-hunger.mp3',
-    exploration: '/audio/black-chapel-veil.mp3',
-    tension: '/audio/black-chapel-veil.mp3',
-    combat: '/audio/blackwater-alley-duel.mp3',
-    ending: '/audio/velvet-hunger.mp3',
-  };
+  // Monotonically incremented on every setMood/stopAll call.
+  // Any async continuation that sees a stale gen bails out immediately,
+  // which is how we prevent ghost oscillator loops and stale crossfades.
   private moodGen = 0;
-  private tensionPhase = 0;
+
+  private musicUrls: Record<Mood, string> = {
+    title:       '/audio/velvet-hunger.mp3',
+    exploration: '/audio/crimson-cathedral-loop.mp3',
+    tension:     '/audio/black-chapel-veil.mp3',
+    combat:      '/audio/blackwater-alley-duel.mp3',
+    ending:      '/audio/velvet-hunger.mp3',
+  };
 
   private _masterVol = 0.8;
   private _musicVol = 1.0;
   private _sfxVol = 1.0;
   private _musicEnabled = true;
   private _sfxEnabled = true;
+
+  // ── AudioContext lifecycle ────────────────────────────────────────────────
 
   private async getCtx(): Promise<AudioContext> {
     if (!this.ctx) {
@@ -101,7 +76,7 @@ class AudioEngineClass {
       this.masterGain.gain.value = this._masterVol;
       this.masterGain.connect(this.ctx.destination);
 
-      // Music chain: bgGain (animated by mood) → bgControlGain (user volume) → masterGain
+      // Music chain: bgGain (animated per mood) → bgControlGain (user vol) → masterGain
       this.bgGain = this.ctx.createGain();
       this.bgGain.gain.value = 0;
       this.bgControlGain = this.ctx.createGain();
@@ -109,7 +84,7 @@ class AudioEngineClass {
       this.bgGain.connect(this.bgControlGain);
       this.bgControlGain.connect(this.masterGain);
 
-      // SFX chain: sfxGain → sfxControlGain (user volume) → masterGain
+      // SFX chain: sfxGain → sfxControlGain (user vol) → masterGain
       this.sfxGain = this.ctx.createGain();
       this.sfxGain.gain.value = 1.0;
       this.sfxControlGain = this.ctx.createGain();
@@ -123,90 +98,95 @@ class AudioEngineClass {
     return this.ctx;
   }
 
+  // ── Source management ────────────────────────────────────────────────────
+
   private stopMusicLoop(): void {
     if (this.bgSource) {
-      try {
-        this.bgSource.stop();
-      } catch {
-        // ignore stop errors if already ended
-      }
+      try { this.bgSource.stop(); } catch { /* already ended */ }
       this.bgSource.disconnect();
       this.bgSource = null;
+      audioLog('bgSource stopped and disconnected');
     }
     if (this.nextBgSource) {
-      try {
-        this.nextBgSource.stop();
-      } catch {
-        // ignore stop errors if already ended
-      }
+      try { this.nextBgSource.stop(); } catch { /* already ended */ }
       this.nextBgSource.disconnect();
       this.nextBgSource = null;
     }
-    if (this.fadeGain) {
-      this.fadeGain.disconnect();
-      this.fadeGain = null;
-    }
-    if (this.nextFadeGain) {
-      this.nextFadeGain.disconnect();
-      this.nextFadeGain = null;
-    }
+    if (this.fadeGain) { this.fadeGain.disconnect(); this.fadeGain = null; }
+    if (this.nextFadeGain) { this.nextFadeGain.disconnect(); this.nextFadeGain = null; }
+    this.currentMusicUrl = null;
+    this.nextMusicUrl = null;
   }
 
-  private async crossfadeToMusic(url: string): Promise<void> {
+  // Hard stop: kills all playing sources and pending crossfades immediately.
+  // Call before starting a new game so no remnants from the previous session bleed through.
+  stopAll(): void {
+    const prevGen = this.moodGen;
+    this.moodGen++;                 // invalidates any queued setMood timeouts
+    this.stopMusicLoop();
+    if (this.bgGain && this.ctx) {
+      const now = this.ctx.currentTime;
+      this.bgGain.gain.cancelScheduledValues(now);
+      this.bgGain.gain.setValueAtTime(0, now);
+    }
+    audioLog(`stopAll (gen ${prevGen} → ${this.moodGen})`);
+  }
+
+  private async crossfadeToMusic(url: string, gen: number): Promise<void> {
     const buffer = this.musicBuffers.get(url);
-    if (!buffer || this.currentMusicUrl === url) return;
+    if (!buffer) return;
+    if (this.currentMusicUrl === url) return;     // already playing
+    if (gen !== this.moodGen) {
+      audioLog(`crossfade aborted — gen stale (${gen} vs ${this.moodGen})`);
+      return;
+    }
 
     const ctx = await this.getCtx();
 
-    // Create next source
     const nextSource = ctx.createBufferSource();
     const nextGain = ctx.createGain();
-
     nextSource.buffer = buffer;
     nextSource.loop = true;
     nextGain.gain.value = 0;
-
     nextSource.connect(nextGain);
     nextGain.connect(this.bgGain!);
-
     nextSource.start();
+
     this.nextBgSource = nextSource;
     this.nextFadeGain = nextGain;
     this.nextMusicUrl = url;
 
+    audioLog(`crossfade start → ${url}`);
+
     const now = ctx.currentTime;
 
-    // Fade out current
+    // Fade out current source (if any)
     if (this.fadeGain) {
       this.fadeGain.gain.setValueAtTime(this.fadeGain.gain.value, now);
       this.fadeGain.gain.linearRampToValueAtTime(0, now + 1.5);
     }
 
-    // Fade in next
+    // Fade in next source
     nextGain.gain.setValueAtTime(0, now);
     nextGain.gain.linearRampToValueAtTime(1, now + 1.5);
 
-    // Clean up after fade
+    // Clean up old source after fade completes
     setTimeout(() => {
       if (this.bgSource && this.bgSource !== this.nextBgSource) {
-        try {
-          this.bgSource.stop();
-        } catch {
-          // ignore
-        }
+        try { this.bgSource.stop(); } catch { /* ignore */ }
         this.bgSource.disconnect();
+        audioLog(`crossfade cleanup — old source for ${this.currentMusicUrl} disposed`);
       }
       if (this.fadeGain && this.fadeGain !== this.nextFadeGain) {
         this.fadeGain.disconnect();
       }
-
       this.bgSource = this.nextBgSource;
       this.fadeGain = this.nextFadeGain;
       this.currentMusicUrl = this.nextMusicUrl;
-
       this.nextBgSource = null;
       this.nextFadeGain = null;
       this.nextMusicUrl = null;
+      audioLog(`crossfade complete — now playing ${this.currentMusicUrl}`);
     }, 3000);
   }
 
@@ -214,17 +194,19 @@ class AudioEngineClass {
     if (this.musicBuffers.has(url)) return;
     if (this.musicLoading.has(url)) return this.musicLoading.get(url)!;
 
+    audioLog(`loading ${url}…`);
     const loading = fetch(url)
       .then(async response => {
-        if (!response.ok) throw new Error(`Failed to load music: ${response.status}`);
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
         const arrayBuffer = await response.arrayBuffer();
         const ctx = await this.getCtx();
         const buffer = await ctx.decodeAudioData(arrayBuffer);
         this.musicBuffers.set(url, buffer);
         this.musicLoading.delete(url);
+        audioLog(`loaded ${url}`);
       })
       .catch(err => {
-        console.warn('Audio music load failed:', err);
+        console.warn('[Audio] failed to load', url, err);
         this.musicLoading.delete(url);
       });
 
@@ -232,15 +214,27 @@ class AudioEngineClass {
     return loading;
   }
 
+  // ── Public API ────────────────────────────────────────────────────────────
+
+  // Must be called inside a user-gesture handler (button click, tap).
+  // On iOS the AudioContext stays suspended until a gesture; this resumes it
+  // and pre-caches all music so tracks start instantly when setMood is called.
   async unlock(): Promise<boolean> {
     const ctx = await this.getCtx();
     for (const url of Object.values(this.musicUrls)) {
       void this.loadMusic(url);
     }
+    audioLog(`unlocked (state=${ctx.state}), pre-loading all tracks`);
     return ctx.state === 'running';
   }
 
-  applySettings(s: { masterVolume: number; musicVolume: number; sfxVolume: number; musicEnabled: boolean; sfxEnabled: boolean }): void {
+  applySettings(s: {
+    masterVolume: number;
+    musicVolume: number;
+    sfxVolume: number;
+    musicEnabled: boolean;
+    sfxEnabled: boolean;
+  }): void {
     this._masterVol = s.masterVolume;
     this._musicVol = s.musicVolume;
     this._sfxVol = s.sfxVolume;
@@ -264,6 +258,7 @@ class AudioEngineClass {
   setMusicEnabled(enabled: boolean): void {
     this._musicEnabled = enabled;
     if (this.bgControlGain) this.bgControlGain.gain.value = enabled ? this._musicVol : 0;
+    audioLog(`music ${enabled ? 'enabled' : 'muted'}`);
   }
 
   setSfxVolume(v: number): void {
@@ -274,7 +269,69 @@ class AudioEngineClass {
   setSfxEnabled(enabled: boolean): void {
     this._sfxEnabled = enabled;
     if (this.sfxControlGain) this.sfxControlGain.gain.value = enabled ? this._sfxVol : 0;
+    audioLog(`sfx ${enabled ? 'enabled' : 'muted'}`);
   }
+
+  // ── Mood system ───────────────────────────────────────────────────────────
+
+  setMood(mood: Mood): void {
+    void this.getCtx().then(ctx => {
+      const gen = ++this.moodGen;
+      const bg = this.bgGain!;
+      const now = ctx.currentTime;
+
+      audioLog(`setMood('${mood}') gen=${gen}`);
+
+      // Brief dip to zero before crossfading in (prevents abrupt track switch)
+      bg.gain.cancelScheduledValues(now);
+      bg.gain.setValueAtTime(bg.gain.value, now);
+      bg.gain.linearRampToValueAtTime(0, now + 0.4);
+
+      const target =
+        mood === 'combat' ? 0.50 :
+        mood === 'ending' ? 0.20 :
+        mood === 'title'  ? 0.40 : 0.35;
+
+      setTimeout(async () => {
+        if (gen !== this.moodGen) return;    // a newer setMood won the race
+
+        const t = ctx.currentTime;
+        bg.gain.setValueAtTime(0, t);
+        bg.gain.linearRampToValueAtTime(target, t + 0.5);
+
+        const musicUrl = this.musicUrls[mood];
+        if (this.musicBuffers.has(musicUrl)) {
+          await this.crossfadeToMusic(musicUrl, gen);
+        } else {
+          // Track not cached yet. Load silently; start playing once ready.
+          // No procedural oscillator fallback — we wait for the real file.
+          audioLog(`${musicUrl} not cached yet, waiting for load…`);
+          void this.loadMusic(musicUrl).then(async () => {
+            if (gen === this.moodGen) {
+              audioLog(`late-start ${musicUrl} (gen=${gen})`);
+              await this.crossfadeToMusic(musicUrl, gen);
+            } else {
+              audioLog(`late-load discarded — gen stale (${gen} vs ${this.moodGen})`);
+            }
+          });
+        }
+      }, 450);
+    });
+  }
+
+  async stopMood(): Promise<void> {
+    const ctx = await this.getCtx();
+    this.moodGen++;
+    this.stopMusicLoop();
+    const now = ctx.currentTime;
+    const bg = this.bgGain!;
+    bg.gain.cancelScheduledValues(now);
+    bg.gain.setValueAtTime(bg.gain.value, now);
+    bg.gain.linearRampToValueAtTime(0, now + 0.8);
+    audioLog('stopMood');
+  }
+
+  // ── SFX ──────────────────────────────────────────────────────────────────
 
   private async scheduleNote(
     type: OscillatorType,
@@ -287,38 +344,19 @@ class AudioEngineClass {
     const ctx = await this.getCtx();
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-
     osc.type = type;
     osc.frequency.value = freq;
-
     const attack  = Math.min(0.02, duration * 0.10);
     const release = Math.min(0.06, duration * 0.20);
-
     gain.gain.setValueAtTime(0, start);
     gain.gain.linearRampToValueAtTime(peak, start + attack);
     gain.gain.setValueAtTime(peak, start + duration - release);
     gain.gain.linearRampToValueAtTime(0, start + duration);
-
     osc.connect(gain);
     gain.connect(dest);
     osc.start(start);
     osc.stop(start + duration);
     osc.onended = () => { osc.disconnect(); gain.disconnect(); };
-  }
-
-  private async playMotif(
-    notes: NoteSpec[],
-    type: OscillatorType,
-    startTime: number,
-    peak: number,
-    dest: AudioNode,
-  ): Promise<number> {
-    let t = startTime;
-    for (const n of notes) {
-      await this.scheduleNote(type, n.freq, t, n.dur, peak, dest);
-      t += n.dur;
-    }
-    return t - startTime;
   }
 
   private async noiseBuffer(duration: number): Promise<AudioBuffer> {
@@ -340,17 +378,14 @@ class AudioEngineClass {
     const ctx = await this.getCtx();
     const src = ctx.createBufferSource();
     src.buffer = await this.noiseBuffer(duration);
-
     const filter = ctx.createBiquadFilter();
     filter.type = 'bandpass';
     filter.frequency.value = filterFreq;
     filter.Q.value = 1;
-
     const gain = ctx.createGain();
     gain.gain.setValueAtTime(0, start);
     gain.gain.linearRampToValueAtTime(peak, start + 0.005);
     gain.gain.exponentialRampToValueAtTime(0.0001, start + duration);
-
     src.connect(filter);
     filter.connect(gain);
     gain.connect(dest);
@@ -359,106 +394,11 @@ class AudioEngineClass {
     src.onended = () => { src.disconnect(); filter.disconnect(); gain.disconnect(); };
   }
 
-  // ── Mood system ───────────────────────────────────────────────────────────
-
-  setMood(mood: Mood): void {
-    void this.getCtx().then(ctx => {
-      const gen = ++this.moodGen;
-      this.tensionPhase = 0;
-
-      const bg = this.bgGain!;
-      const now = ctx.currentTime;
-      bg.gain.cancelScheduledValues(now);
-      bg.gain.setValueAtTime(bg.gain.value, now);
-      bg.gain.linearRampToValueAtTime(0, now + 0.4);
-
-      const target =
-        mood === 'combat'  ? 0.50 :
-        mood === 'ending'  ? 0.20 :
-        mood === 'title'   ? 0.40 : 0.35;
-
-      setTimeout(async () => {
-        if (gen !== this.moodGen) return;
-        const t = ctx.currentTime;
-        bg.gain.setValueAtTime(0, t);
-        bg.gain.linearRampToValueAtTime(target, t + 0.5);
-
-        const musicUrl = this.musicUrls[mood];
-        if (this.musicBuffers.has(musicUrl)) {
-          await this.crossfadeToMusic(musicUrl);
-        } else {
-          void this.loadMusic(musicUrl).then(async () => {
-            if (gen === this.moodGen && this.musicBuffers.has(musicUrl)) {
-              await this.crossfadeToMusic(musicUrl);
-            }
-          });
-          this.loopMood(mood, gen);
-        }
-      }, 450);
-    });
-  }
-
-  async stopMood(): Promise<void> {
-    const ctx = await this.getCtx();
-    this.moodGen++;
-    this.stopMusicLoop();
-    const now = ctx.currentTime;
-    const bg = this.bgGain!;
-    bg.gain.cancelScheduledValues(now);
-    bg.gain.setValueAtTime(bg.gain.value, now);
-    bg.gain.linearRampToValueAtTime(0, now + 0.8);
-  }
-
-  private async loopMood(mood: Mood, gen: number): Promise<void> {
-    if (gen !== this.moodGen) return;
-
-    const ctx = await this.getCtx();
-    const bg = this.bgGain!;
-    const start = ctx.currentTime + 0.05;
-    let duration = 0;
-    let gap = 0;
-
-    switch (mood) {
-      case 'exploration':
-        duration = await this.playMotif(MORTAL, 'sine', start, 1, bg);
-        gap = 2.5;
-        break;
-
-      case 'tension':
-        if (this.tensionPhase % 2 === 0) {
-          duration = await this.playMotif(MASQUERADE, 'triangle', start, 1, bg);
-        } else {
-          duration = await this.playMotif(BEAST, 'sawtooth', start, 1, bg);
-        }
-        this.tensionPhase++;
-        gap = 0.6;
-        break;
-
-      case 'combat':
-        duration = await this.playMotif(BEAST, 'sawtooth', start, 1, bg);
-        gap = 0.2;
-        break;
-
-      case 'ending': {
-        const slowMasquerade = MASQUERADE.map(n => ({ freq: n.freq, dur: n.dur * 2.5 }));
-        duration = await this.playMotif(slowMasquerade, 'triangle', start, 1, bg);
-        gap = 4.0;
-        break;
-      }
-    }
-
-    setTimeout(() => void this.loopMood(mood, gen), (duration + gap) * 1000);
-  }
-
-  // ── SFX ──────────────────────────────────────────────────────────────────
-
   async diceRoll(): Promise<void> {
     const ctx = await this.getCtx();
     const dest = this.sfxGain!;
     const now = ctx.currentTime;
-
     await this.playNoise(now, 0.35, 0.4, 1500, dest);
-
     for (let i = 0; i < 5; i++) {
       const t = now + 0.04 + i * 0.055 + Math.random() * 0.015;
       await this.scheduleNote('sine', 700 + Math.random() * 500, t, 0.03, 0.35, dest);
@@ -478,7 +418,6 @@ class AudioEngineClass {
     const ctx = await this.getCtx();
     const dest = this.sfxGain!;
     const now = ctx.currentTime;
-    // Descending diminished: A4 Eb4 C4 A3
     for (const [i, freq] of [N.A4, 311.13, 261.63, N.A3].entries()) {
       await this.scheduleNote('sine', freq, now + i * 0.13, 0.22, 0.35, dest);
     }
@@ -489,20 +428,16 @@ class AudioEngineClass {
     const dest = this.sfxGain!;
     const now = ctx.currentTime;
     const dur = 1.2;
-
     const osc = ctx.createOscillator();
     const dist = ctx.createWaveShaper();
     const gain = ctx.createGain();
-
     dist.curve = DISTORTION_CURVE;
     osc.type = 'sawtooth';
     osc.frequency.setValueAtTime(N.E2, now);
     osc.frequency.linearRampToValueAtTime(N.E2 * 0.65, now + dur);
-
     gain.gain.setValueAtTime(0, now);
     gain.gain.linearRampToValueAtTime(0.5, now + 0.04);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-
     osc.connect(dist);
     dist.connect(gain);
     gain.connect(dest);
@@ -521,25 +456,20 @@ class AudioEngineClass {
     const dest = this.sfxGain!;
     const now = ctx.currentTime;
     const dur = 1.8;
-
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
-
     osc.type = 'sine';
     osc.frequency.setValueAtTime(180, now);
     osc.frequency.exponentialRampToValueAtTime(900, now + 0.6);
     osc.frequency.exponentialRampToValueAtTime(80, now + dur);
-
     gain.gain.setValueAtTime(0, now);
     gain.gain.linearRampToValueAtTime(0.3, now + 0.08);
     gain.gain.exponentialRampToValueAtTime(0.0001, now + dur);
-
     osc.connect(gain);
     gain.connect(dest);
     osc.start(now);
     osc.stop(now + dur);
     osc.onended = () => { osc.disconnect(); gain.disconnect(); };
-
     await this.playNoise(now, 1.0, 0.2, 3000, dest);
   }
 
@@ -547,11 +477,8 @@ class AudioEngineClass {
     const ctx = await this.getCtx();
     const dest = this.sfxGain!;
     const now = ctx.currentTime;
-
-    // lub
     await this.scheduleNote('sine', 60, now,        0.09, 0.7, dest);
     await this.scheduleNote('sine', 80, now,        0.07, 0.3, dest);
-    // dub (120 ms later, slightly softer)
     await this.scheduleNote('sine', 55, now + 0.12, 0.08, 0.5, dest);
     await this.scheduleNote('sine', 70, now + 0.12, 0.06, 0.2, dest);
   }
@@ -561,34 +488,28 @@ class AudioEngineClass {
     const dest = this.sfxGain!;
     const now = ctx.currentTime;
     const dur = 1.8;
-
     const osc = ctx.createOscillator();
     const filter = ctx.createBiquadFilter();
     const gain = ctx.createGain();
-
     osc.type = 'sawtooth';
     osc.frequency.setValueAtTime(180, now);
     osc.frequency.linearRampToValueAtTime(320, now + 0.4);
     osc.frequency.linearRampToValueAtTime(240, now + 0.8);
     osc.frequency.linearRampToValueAtTime(410, now + 1.2);
     osc.frequency.linearRampToValueAtTime(280, now + dur);
-
     filter.type = 'bandpass';
     filter.frequency.value = 700;
     filter.Q.value = 8;
-
     gain.gain.setValueAtTime(0, now);
     gain.gain.linearRampToValueAtTime(0.25, now + 0.08);
     gain.gain.setValueAtTime(0.25, now + 1.5);
     gain.gain.linearRampToValueAtTime(0, now + dur);
-
     osc.connect(filter);
     filter.connect(gain);
     gain.connect(dest);
     osc.start(now);
     osc.stop(now + dur);
     osc.onended = () => { osc.disconnect(); filter.disconnect(); gain.disconnect(); };
-
     await this.playNoise(now, dur, 0.08, 600, dest);
   }
 }

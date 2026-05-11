@@ -193,6 +193,7 @@ export function useGame() {
   }, []);
 
   const start = useCallback((character: Character, chronicle: Chronicle) => {
+    Audio.stopAll();                  // dispose any sources from a previous session
     Audio.setMood('exploration');
     const gs: GameState = {
       character,

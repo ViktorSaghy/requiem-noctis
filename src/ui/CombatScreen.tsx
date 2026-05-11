@@ -5,6 +5,7 @@ import type { EnemyState, PlayerCombatState } from '../engine/combat';
 import { Audio } from '../audio';
 import { useCombat } from './useCombat';
 import type { CombatHook, CombatMode } from './useCombat';
+import { useT } from '../engine/i18n';
 
 // ─────────────── SHARED ATOMS ───────────────
 
@@ -53,6 +54,7 @@ export function EnemyCard({
 }: {
   enemy: EnemyState; targetable: boolean; selected: boolean; onClick?: () => void;
 }) {
+  const t = useT();
   const defeated = enemy.hp <= 0;
   return (
     <div
@@ -64,27 +66,27 @@ export function EnemyCard({
         <span className="enemy-clan">{enemy.spec.clan} · Gen {enemy.spec.generation}</span>
       </div>
       {defeated ? (
-        <div className="enemy-torpor">TORPOR</div>
+        <div className="enemy-torpor">{t('combat.torpor')}</div>
       ) : (
         <>
           <div className="enemy-stat-row">
-            <span className="enemy-stat-label">HP</span>
+            <span className="enemy-stat-label">{t('game.hp')}</span>
             <HpTrack superficial={enemy.superficialDmg} aggravated={enemy.aggravatedDmg} max={enemy.spec.maxHealth} compact />
           </div>
           <div className="enemy-stat-row">
-            <span className="enemy-stat-label">WP</span>
+            <span className="enemy-stat-label">{t('game.wp')}</span>
             <WpDots current={enemy.willpower} max={enemy.spec.maxWillpower} />
           </div>
           <div className="enemy-stat-row">
-            <span className="enemy-stat-label">Hunger</span>
+            <span className="enemy-stat-label">{t('game.hunger')}</span>
             <HungerPips hunger={enemy.hunger} />
           </div>
-          {enemy.stunned && <div className="enemy-status-badge">STUNNED</div>}
+          {enemy.stunned && <div className="enemy-status-badge">{t('combat.stunned')}</div>}
           {enemy.attackPenalty > 0 && <div className="enemy-status-badge penalty">−{enemy.attackPenalty} ATK</div>}
           {enemy.spec.description && <div className="enemy-desc">{enemy.spec.description}</div>}
         </>
       )}
-      {targetable && !defeated && <div className="target-indicator">▸ TARGET</div>}
+      {targetable && !defeated && <div className="target-indicator">{t('combat.targetIndicator')}</div>}
     </div>
   );
 }
@@ -94,23 +96,24 @@ export function EnemyCard({
 export function CombatStatusPanel({ combat, character, scenario }: {
   combat: CombatHook; character: Character; scenario: CombatScenario;
 }) {
+  const t = useT();
   const { cs, mode, targetableMode, pendingDiscAction, handleEnemyCardClick, setMode, setPendingDiscId } = combat;
   return (
     <div className="cs-status-panel">
       <div className="cs-header">
         <span className="cs-scenario-label">{scenario.label}</span>
-        <span className="cs-round-badge">Round {cs.round}</span>
+        <span className="cs-round-badge">{t('combat.round', { n: cs.round })}</span>
       </div>
       {cs.player.compulsion && (
         <div className="compulsion-banner">
-          <span className="compulsion-banner-label">Compulsion</span>
+          <span className="compulsion-banner-label">{t('combat.compulsion')}</span>
           <span className="compulsion-banner-text">{cs.player.compulsion}</span>
         </div>
       )}
       {targetableMode && (
         <div className="combat-target-prompt">
-          {mode === 'select_target_attack' ? 'Choose target' : `Target for ${pendingDiscAction?.label}`}
-          <button className="combat-cancel-btn" onClick={() => { setMode('actions'); setPendingDiscId(null); }}>Cancel</button>
+          {mode === 'select_target_attack' ? t('combat.chooseTarget') : t('combat.targetFor', { action: pendingDiscAction?.label ?? '' })}
+          <button className="combat-cancel-btn" onClick={() => { setMode('actions'); setPendingDiscId(null); }}>{t('cancel')}</button>
         </div>
       )}
       <div className="combat-enemy-list">
@@ -128,26 +131,26 @@ export function CombatStatusPanel({ combat, character, scenario }: {
         <div className="cpp-name">{character.name} · {character.clan}</div>
         <div className="cpp-stats">
           <div className="cpp-stat-row">
-            <span className="cpp-label">HP</span>
+            <span className="cpp-label">{t('game.hp')}</span>
             <HpTrack superficial={cs.player.superficialDmg} aggravated={cs.player.aggravatedDmg} max={character.health} />
             <span className="cpp-stat-val">{cs.player.hp}/{character.health}</span>
           </div>
           <div className="cpp-stat-row">
-            <span className="cpp-label">WP</span>
+            <span className="cpp-label">{t('game.wp')}</span>
             <WpDots current={cs.player.willpower} max={character.willpower} />
             <span className="cpp-stat-val">{cs.player.willpower}/{character.willpower}</span>
           </div>
           <div className="cpp-stat-row">
-            <span className="cpp-label">Hunger</span>
+            <span className="cpp-label">{t('game.hunger')}</span>
             <HungerPips hunger={cs.player.hunger} />
             <span className="cpp-stat-val">{cs.player.hunger}/5</span>
           </div>
           <div className="cpp-badges">
-            {cs.player.isFullDefense && <div className="cpp-badge">FULL DEFENSE</div>}
+            {cs.player.isFullDefense && <div className="cpp-badge">{t('combat.fullDefenseBadge')}</div>}
             {cs.player.fortitudeShield > 0 && <div className="cpp-badge">FORTITUDE −{cs.player.fortitudeShield}</div>}
             {cs.player.auspexShield > 0 && <div className="cpp-badge">PREMONITION −{cs.player.auspexShield}</div>}
-            {cs.player.isFrenzy && <div className="cpp-badge frenzy">FRENZY</div>}
-            {cs.player.compulsion && <div className="cpp-badge compulsion">COMPULSION</div>}
+            {cs.player.isFrenzy && <div className="cpp-badge frenzy">{t('combat.frenzy')}</div>}
+            {cs.player.compulsion && <div className="cpp-badge compulsion">{t('combat.compulsionBadge')}</div>}
           </div>
         </div>
       </div>
@@ -160,6 +163,7 @@ export function CombatStatusPanel({ combat, character, scenario }: {
 export function CombatActionsPanel({ combat, scenario }: {
   combat: CombatHook; scenario: CombatScenario;
 }) {
+  const t = useT();
   const {
     cs, mode, wpBoost, canSpendWP, availableDiscs, aliveEnemies,
     inFrenzy, endDelay, outcomeLabel, outcomeClass,
@@ -172,12 +176,12 @@ export function CombatActionsPanel({ combat, scenario }: {
       <div className={`combat-outcome ${outcomeClass}`}>
         <div className="combat-outcome-label">{outcomeLabel}</div>
         <p className="combat-outcome-desc">
-          {cs.outcome === 'victory' ? 'All enemies have entered Torpor.' :
-           cs.outcome === 'defeat' ? 'You have been brought to Torpor.' :
-           'You fled the field of battle.'}
+          {cs.outcome === 'victory' ? t('combat.victory') :
+           cs.outcome === 'defeat' ? t('combat.defeat') :
+           t('combat.fled')}
         </p>
         {endDelay && (
-          <button className="btn btn-primary btn-full" onClick={handleEnd}>Continue →</button>
+          <button className="btn btn-primary btn-full" onClick={handleEnd}>{t('game.continue')} →</button>
         )}
       </div>
     );
@@ -187,15 +191,15 @@ export function CombatActionsPanel({ combat, scenario }: {
     return (
       <div className="frenzy-action-area">
         <div className="frenzy-banner">
-          <div className="frenzy-banner-title">FRENZY</div>
-          <div className="frenzy-banner-text">The Beast has seized control. You cannot choose — you can only attack.</div>
+          <div className="frenzy-banner-title">{t('combat.frenzy')}</div>
+          <div className="frenzy-banner-text">{t('combat.frenzyMsg')}</div>
         </div>
         <button
           className="combat-btn attack frenzy-btn"
           disabled={cs.outcome !== 'ongoing' || aliveEnemies.length === 0}
           onClick={() => dispatch({ type: 'attack', targetIdx: Math.max(0, cs.enemies.findIndex(e => e.hp > 0)) })}
         >
-          ⚔ Frenzy Attack
+          {t('combat.frenzyAttack')}
         </button>
       </div>
     );
@@ -205,7 +209,7 @@ export function CombatActionsPanel({ combat, scenario }: {
     return (
       <div className="disc-menu">
         <div className="disc-menu-header">
-          Choose a Discipline
+          {t('combat.chooseDisc')}
           <button className="combat-cancel-btn" onClick={() => setMode('actions')}>✕</button>
         </div>
         <div className="disc-menu-list">
@@ -218,7 +222,7 @@ export function CombatActionsPanel({ combat, scenario }: {
               <div className="disc-item-desc">{da.description}</div>
             </button>
           ))}
-          {availableDiscs.length === 0 && <div className="disc-menu-empty">No discipline actions available.</div>}
+          {availableDiscs.length === 0 && <div className="disc-menu-empty">{t('combat.noDisc')}</div>}
         </div>
       </div>
     );
@@ -232,7 +236,7 @@ export function CombatActionsPanel({ combat, scenario }: {
             className={`wp-spend-btn ${wpBoost ? 'active' : ''}`}
             onClick={() => setWpBoost(v => !v)}
           >
-            {wpBoost ? '◉' : '○'} Spend WP (+3 dice) — {cs.player.willpower} remaining
+            {wpBoost ? '◉' : '○'} {t('combat.spendWp', { wp: cs.player.willpower })}
           </button>
         </div>
       )}
@@ -242,19 +246,19 @@ export function CombatActionsPanel({ combat, scenario }: {
           disabled={cs.outcome !== 'ongoing' || aliveEnemies.length === 0}
           onClick={handleAttackClick}
         >
-          ⚔ Attack{wpBoost ? ' +WP' : ''}
+          {wpBoost ? t('combat.attackWp') : t('combat.attack')}
         </button>
         {availableDiscs.length > 0 && (
           <button className="combat-btn discipline" disabled={cs.outcome !== 'ongoing'} onClick={() => setMode('disc_menu')}>
-            ✦ Disciplines
+            {t('combat.disciplines')}
           </button>
         )}
         <button className="combat-btn defense" disabled={cs.outcome !== 'ongoing'} onClick={() => dispatch({ type: 'full_defense' })}>
-          🛡 Full Defense
+          {t('combat.fullDefense')}
         </button>
         {scenario.flee_next && (
           <button className="combat-btn flee" disabled={cs.outcome !== 'ongoing'} onClick={() => dispatch({ type: 'flee' })}>
-            ↩ Flee
+            {t('combat.flee')}
           </button>
         )}
       </div>
@@ -265,10 +269,11 @@ export function CombatActionsPanel({ combat, scenario }: {
 // ─────────────── COMBAT LOG PANEL (right story tab) ───────────────
 
 export function CombatLogPanel({ combat }: { combat: CombatHook }) {
+  const t = useT();
   const { cs, logRef } = combat;
   return (
     <div className="combat-log" ref={logRef}>
-      {cs.log.length === 0 && <div className="combat-log-empty">The fight has not yet begun.</div>}
+      {cs.log.length === 0 && <div className="combat-log-empty">{t('combat.logEmpty')}</div>}
       {[...cs.log].reverse().map(entry => (
         <div
           key={entry.id}

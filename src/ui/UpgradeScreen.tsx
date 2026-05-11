@@ -5,25 +5,28 @@ import {
   getCategoryProgress, buildTransactionLog, type Upgrade,
 } from '../engine/progression';
 import { XpHUD } from './XpHUD';
+import { useT } from '../engine/i18n';
 
 interface Props {
   character: Character;
-  onDone: (updated: Character) => void; // called exactly once when player leaves downtime
+  onDone: (updated: Character) => void;
 }
 
 type Tab = 'upgrades' | 'history';
 type CategoryFilter = 'All' | 'Skills' | 'Disciplines' | 'Advantages';
 
 function PurchasedBanner({ name, onDismiss }: { name: string; onDismiss: () => void }) {
+  const t = useT();
+
   useEffect(() => {
-    const t = setTimeout(onDismiss, 3500);
-    return () => clearTimeout(t);
+    const timer = setTimeout(onDismiss, 3500);
+    return () => clearTimeout(timer);
   }, [onDismiss]);
 
   return (
     <div className="upgrade-purchased-banner" role="status">
       <span className="upgrade-purchased-check">✓</span>
-      <span className="upgrade-purchased-name">{name} purchased</span>
+      <span className="upgrade-purchased-name">{t('downtime.purchased', { name })}</span>
     </div>
   );
 }
@@ -32,6 +35,7 @@ function UpgradesList({ character, onPurchase }: {
   character: Character;
   onPurchase: (upgraded: Character, upgradeName: string) => void;
 }) {
+  const t = useT();
   const [showAll, setShowAll] = useState(false);
   const [confirmingUpgrade, setConfirmingUpgrade] = useState<Upgrade | null>(null);
   const [categoryFilter, setCategoryFilter] = useState<CategoryFilter>('All');
@@ -76,11 +80,12 @@ function UpgradesList({ character, onPurchase }: {
     }
   }, [confirmingUpgrade]);
 
+  const CAT_LABELS: CategoryFilter[] = ['All', 'Skills', 'Disciplines', 'Advantages'];
+
   return (
     <>
-      {/* Progress bars */}
       <div className="upgrade-progress-section">
-        <div className="upgrade-progress-label">Progression</div>
+        <div className="upgrade-progress-label">{t('downtime.progression')}</div>
         {categoryProgress.map(p => (
           <div key={p.category} className="upgrade-progress-bar">
             <div className="progress-label">
@@ -94,15 +99,14 @@ function UpgradesList({ character, onPurchase }: {
         ))}
       </div>
 
-      {/* Category tabs */}
       <div className="upgrade-category-tabs">
-        {(['All', 'Skills', 'Disciplines', 'Advantages'] as const).map(cat => (
+        {CAT_LABELS.map(cat => (
           <button
             key={cat}
             className={`upgrade-tab${categoryFilter === cat ? ' active' : ''}`}
             onClick={() => { setCategoryFilter(cat); setConfirmingUpgrade(null); }}
           >
-            {cat}
+            {t(`downtime.cat.${cat}` as Parameters<typeof t>[0])}
           </button>
         ))}
       </div>
@@ -110,7 +114,7 @@ function UpgradesList({ character, onPurchase }: {
       <div className="upgrade-list">
         {visible.length === 0 && (
           <div className="upgrade-empty">
-            No upgrades available in this category.
+            {t('downtime.noUpgrades')}
           </div>
         )}
         {visible.map(upgrade => {
@@ -132,7 +136,7 @@ function UpgradesList({ character, onPurchase }: {
               <div className="upgrade-card-header">
                 <div className="upgrade-name">{upgrade.name}</div>
                 <div className={`upgrade-cost${isAffordable ? ' affordable' : ' unaffordable'}`}>
-                  {upgrade.cost} XP
+                  {upgrade.cost} {t('xp.unit')}
                 </div>
               </div>
               <div className="upgrade-description">{upgrade.description}</div>
@@ -158,13 +162,13 @@ function UpgradesList({ character, onPurchase }: {
                     className="btn btn-sm btn-primary"
                     onClick={() => handlePurchase(upgrade)}
                   >
-                    Confirm — {upgrade.cost} XP
+                    {t('downtime.confirm', { n: upgrade.cost })}
                   </button>
                   <button
                     className="btn btn-sm btn-ghost"
                     onClick={() => setConfirmingUpgrade(null)}
                   >
-                    Cancel
+                    {t('cancel')}
                   </button>
                 </div>
               )}
@@ -175,7 +179,7 @@ function UpgradesList({ character, onPurchase }: {
 
       {!showAll && suggested.length < UPGRADE_CATALOG.length && categoryFilter === 'All' && (
         <button className="btn btn-ghost upgrade-see-all" onClick={() => setShowAll(true)}>
-          Show All Upgrades
+          {t('downtime.showAll')}
         </button>
       )}
     </>
@@ -183,61 +187,62 @@ function UpgradesList({ character, onPurchase }: {
 }
 
 function XpLedger({ character }: { character: Character }) {
+  const t = useT();
   const transactions = buildTransactionLog(character);
 
   if (transactions.length === 0) {
     return (
       <div className="ledger-empty">
         <div className="ledger-empty-icon">✦</div>
-        <div>No XP history yet.</div>
-        <div className="ledger-empty-sub">Complete episodes to begin your chronicle of growth.</div>
+        <div>{t('downtime.ledger.empty')}</div>
+        <div className="ledger-empty-sub">{t('downtime.ledger.emptySub')}</div>
       </div>
     );
   }
 
   const totalEarned = transactions
-    .filter(t => t.type === 'award')
-    .reduce((s, t) => s + t.amount, 0);
+    .filter(tx => tx.type === 'award')
+    .reduce((s, tx) => s + tx.amount, 0);
   const totalSpent = transactions
-    .filter(t => t.type === 'spend')
-    .reduce((s, t) => s + t.amount, 0);
+    .filter(tx => tx.type === 'spend')
+    .reduce((s, tx) => s + tx.amount, 0);
 
   return (
     <div className="ledger">
       <div className="ledger-summary">
         <div className="ledger-summary-item">
-          <span className="ledger-summary-label">Earned</span>
+          <span className="ledger-summary-label">{t('downtime.ledger.earned')}</span>
           <span className="ledger-summary-value ledger-earned">+{totalEarned}</span>
         </div>
         <div className="ledger-summary-divider" />
         <div className="ledger-summary-item">
-          <span className="ledger-summary-label">Spent</span>
+          <span className="ledger-summary-label">{t('downtime.ledger.spent')}</span>
           <span className="ledger-summary-value ledger-spent">−{totalSpent}</span>
         </div>
         <div className="ledger-summary-divider" />
         <div className="ledger-summary-item">
-          <span className="ledger-summary-label">Remaining</span>
+          <span className="ledger-summary-label">{t('downtime.ledger.remaining')}</span>
           <span className="ledger-summary-value">{character.xp ?? 0}</span>
         </div>
       </div>
 
       <div className="ledger-list">
-        {transactions.map(t => (
-          <div key={t.id} className={`ledger-entry ledger-entry--${t.type}`}>
+        {transactions.map(tx => (
+          <div key={tx.id} className={`ledger-entry ledger-entry--${tx.type}`}>
             <div className="ledger-entry-sign">
-              {t.type === 'award' ? '+' : '−'}
+              {tx.type === 'award' ? '+' : '−'}
             </div>
             <div className="ledger-entry-body">
-              <div className="ledger-entry-reason">{t.reason}</div>
+              <div className="ledger-entry-reason">{tx.reason}</div>
               <div className="ledger-entry-meta">
-                <span className="ledger-entry-category">{t.category}</span>
-                {t.source && (
-                  <span className="ledger-entry-source">{t.source}</span>
+                <span className="ledger-entry-category">{tx.category}</span>
+                {tx.source && (
+                  <span className="ledger-entry-source">{tx.source}</span>
                 )}
               </div>
             </div>
             <div className="ledger-entry-amount">
-              {t.type === 'award' ? '+' : '−'}{t.amount}
+              {tx.type === 'award' ? '+' : '−'}{tx.amount}
             </div>
           </div>
         ))}
@@ -247,6 +252,7 @@ function XpLedger({ character }: { character: Character }) {
 }
 
 export function UpgradeScreen({ character, onDone }: Props) {
+  const t = useT();
   const [activeTab, setActiveTab] = useState<Tab>('upgrades');
   const [purchasedName, setPurchasedName] = useState<string | null>(null);
   const [currentChar, setCurrentChar] = useState(character);
@@ -254,16 +260,14 @@ export function UpgradeScreen({ character, onDone }: Props) {
   function handlePurchase(updated: Character, name: string) {
     setCurrentChar(updated);
     setPurchasedName(name);
-    // Stay on the downtime screen — player can make multiple purchases
   }
 
   return (
     <div className="upgrade-screen">
-      {/* Header */}
       <div className="upgrade-header">
         <div className="upgrade-header-left">
-          <h2>Downtime</h2>
-          <div className="upgrade-header-sub">Spend your time in reflection and study</div>
+          <h2>{t('downtime.title')}</h2>
+          <div className="upgrade-header-sub">{t('downtime.sub')}</div>
         </div>
         <div className="upgrade-header-right">
           <XpHUD xp={currentChar.xp ?? 0} />
@@ -271,28 +275,25 @@ export function UpgradeScreen({ character, onDone }: Props) {
         </div>
       </div>
 
-      {/* Purchase banner */}
       {purchasedName && (
         <PurchasedBanner name={purchasedName} onDismiss={() => setPurchasedName(null)} />
       )}
 
-      {/* Tab strip */}
       <div className="upgrade-tab-strip">
         <button
           className={`upgrade-tab-btn${activeTab === 'upgrades' ? ' active' : ''}`}
           onClick={() => setActiveTab('upgrades')}
         >
-          Upgrades
+          {t('downtime.tab.upgrades')}
         </button>
         <button
           className={`upgrade-tab-btn${activeTab === 'history' ? ' active' : ''}`}
           onClick={() => setActiveTab('history')}
         >
-          History
+          {t('downtime.tab.history')}
         </button>
       </div>
 
-      {/* Content */}
       <div className="upgrade-content">
         {activeTab === 'upgrades' && (
           <UpgradesList character={currentChar} onPurchase={handlePurchase} />

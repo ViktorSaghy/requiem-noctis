@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import type { DiceResult } from '../engine';
+import { useT } from '../engine/i18n';
 
 interface Props {
   result: DiceResult;
@@ -28,14 +29,8 @@ function resultClass(result: DiceResult, difficulty: number): string {
   return 'failure';
 }
 
-function resultLabel(result: DiceResult, difficulty: number): string {
-  if (result.bestialFailure) return 'Bestial Failure';
-  if (result.messyCritical) return `Messy Critical — ${result.successes} successes`;
-  if (result.successes >= difficulty) return `Success — ${result.successes} successes`;
-  return `Failure — ${result.successes} successes`;
-}
-
 export function DiceOverlay({ result, phase, difficulty, label, clanCompulsion, onReveal, onConfirm }: Props) {
+  const t = useT();
   const [displayValues, setDisplayValues] = useState<{ v: number; h: boolean }[]>([]);
 
   useEffect(() => {
@@ -57,6 +52,13 @@ export function DiceOverlay({ result, phase, difficulty, label, clanCompulsion, 
     return () => { clearInterval(interval); clearTimeout(timer); };
   }, [phase, onReveal]);
 
+  function getResultLabel(): string {
+    if (result.bestialFailure) return t('dice.bestialFailure');
+    if (result.messyCritical) return t('dice.messyCritical', { n: result.successes });
+    if (result.successes >= difficulty) return t('dice.success', { n: result.successes });
+    return t('dice.failure', { n: result.successes });
+  }
+
   return (
     <div className="dice-overlay">
       <div className="dice-overlay-title">{label}</div>
@@ -70,22 +72,22 @@ export function DiceOverlay({ result, phase, difficulty, label, clanCompulsion, 
       {phase === 'revealed' && (
         <>
           <div className={`result-badge ${resultClass(result, difficulty)}`}>
-            {resultLabel(result, difficulty)}
+            {getResultLabel()}
           </div>
           {clanCompulsion && result.messyCritical && (
             <div className="compulsion-overlay">
-              <div className="compulsion-overlay-label">Compulsion Triggered</div>
+              <div className="compulsion-overlay-label">{t('dice.compulsionTriggered')}</div>
               <div className="compulsion-overlay-text">{clanCompulsion}</div>
             </div>
           )}
           <button className="btn btn-primary btn-lg" onClick={onConfirm}>
-            Continue
+            {t('game.continue')}
           </button>
         </>
       )}
       {phase === 'rolling' && (
         <div style={{ color: 'var(--text-dim)', fontSize: '0.85rem', fontFamily: 'var(--display)', letterSpacing: '0.1em' }}>
-          Rolling…
+          {t('dice.rolling')}
         </div>
       )}
     </div>

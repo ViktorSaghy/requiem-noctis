@@ -1,4 +1,5 @@
 import type { Chronicle } from '../engine';
+import { useT } from '../engine/i18n';
 
 interface Props {
   chronicles: Chronicle[];
@@ -7,11 +8,13 @@ interface Props {
 }
 
 export function StorySelect({ chronicles, onSelect, onBack }: Props) {
+  const t = useT();
+
   return (
     <div className="story-screen">
       <div className="story-header">
-        <h2>Choose a Chronicle</h2>
-        <p>Select your story — each is a complete VTM 5e scenario</p>
+        <h2>{t('story.heading')}</h2>
+        <p>{t('story.sub')}</p>
       </div>
       <div className="story-grid">
         {chronicles.map(c => (
@@ -29,7 +32,7 @@ export function StorySelect({ chronicles, onSelect, onBack }: Props) {
         ))}
       </div>
       <div className="story-back">
-        <button className="btn btn-ghost" onClick={onBack}>← Back</button>
+        <button className="btn btn-ghost" onClick={onBack}>{t('back')}</button>
       </div>
     </div>
   );

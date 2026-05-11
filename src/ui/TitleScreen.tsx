@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { loadGame } from '../engine';
+import { useT } from '../engine/i18n';
 
 interface Props {
   onNewGame: () => void;
@@ -7,6 +8,7 @@ interface Props {
 }
 
 export function TitleScreen({ onNewGame, onContinue }: Props) {
+  const t = useT();
   const [hasSave, setHasSave] = useState(false);
 
   useEffect(() => {
@@ -20,20 +22,20 @@ export function TitleScreen({ onNewGame, onContinue }: Props) {
         style={{ backgroundImage: 'url(/backgrounds/background-splash-horizontal.jpeg)' }}
       />
       <div className="title-content">
-        <p className="title-eyebrow">A Chronicle of Darkness</p>
+        <p className="title-eyebrow">{t('title.eyebrow')}</p>
         <h1 className="title-heading">Requiem<br />Noctis</h1>
-        <p className="title-sub">Vienna, 1938 — the night the city changed</p>
+        <p className="title-sub">{t('title.subtitle')}</p>
         <div className="title-actions">
           <button className="btn btn-primary btn-lg btn-full" onClick={onNewGame}>
-            New Game
+            {t('title.newGame')}
           </button>
           {hasSave && (
             <button className="btn btn-gold btn-full" onClick={onContinue}>
-              Continue
+              {t('title.continue')}
             </button>
           )}
         </div>
-        <p className="title-credit">Vampire: The Masquerade 5th Edition</p>
+        <p className="title-credit">{t('title.credit')}</p>
       </div>
     </div>
   );

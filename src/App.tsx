@@ -23,6 +23,7 @@ import { BloodGamesChronicle } from '../content/blood-games/scenes';
 import { Audio } from './audio';
 import type { AppSettings } from './engine/settings';
 import { loadSettings } from './engine/settings';
+import { LangContext } from './engine/i18n';
 
 type Screen = 'title' | 'story' | 'create' | 'game' | 'ending' | 'xp-recap' | 'downtime' | 'settings' | 'credits';
 
@@ -184,7 +185,7 @@ export default function App() {
   }, [game]);
 
   return (
-    <>
+    <LangContext.Provider value={settings.language ?? 'en'}>
       {screen === 'title' && (
         <TitleScreen onNewGame={handleNewGame} onContinue={handleContinue} />
       )}
@@ -260,6 +261,6 @@ export default function App() {
       )}
 
       <Toast message={toast} />
-    </>
+    </LangContext.Provider>
   );
 }

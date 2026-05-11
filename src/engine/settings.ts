@@ -1,3 +1,5 @@
+import type { Language } from './i18n';
+
 export interface AppSettings {
   musicEnabled: boolean;
   sfxEnabled: boolean;
@@ -5,6 +7,7 @@ export interface AppSettings {
   musicVolume: number;
   sfxVolume: number;
   devMode: boolean;
+  language: Language;
 }
 
 const KEY = 'requiem_noctis_settings';
@@ -16,6 +19,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   musicVolume: 1.0,
   sfxVolume: 1.0,
   devMode: false,
+  language: 'en',
 };
 
 export function loadSettings(): AppSettings {

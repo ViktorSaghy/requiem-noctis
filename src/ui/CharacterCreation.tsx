@@ -9,6 +9,9 @@ import {
 } from '../engine';
 import type { Character, ClanName } from '../engine/character';
 import type { Attributes } from '../engine/character';
+import { useT } from '../engine/i18n';
+import type { TranslationKey } from '../engine/i18n';
+
 interface Props {
   onComplete: (c: Character) => void;
   onBack: () => void;
@@ -16,13 +19,6 @@ interface Props {
 
 type Step = 'identity' | 'attributes' | 'skills' | 'disciplines' | 'review';
 const STEPS: Step[] = ['identity', 'attributes', 'skills', 'disciplines', 'review'];
-const STEP_TITLES: Record<Step, string> = {
-  identity: 'Identity',
-  attributes: 'Attributes',
-  skills: 'Skills',
-  disciplines: 'Disciplines',
-  review: 'Review',
-};
 
 type AttrCategory = 'Physical' | 'Social' | 'Mental';
 const ATTR_CATS: Record<AttrCategory, (keyof Attributes)[]> = {
@@ -37,9 +33,7 @@ const SKILL_CATS: Record<SkillCat, string[]> = {
   Social:   ['AnimalKen', 'Etiquette', 'Insight', 'Intimidation', 'Leadership', 'Performance', 'Persuasion', 'Streetwise', 'Subterfuge'],
   Mental:   ['Academics', 'Awareness', 'Finance', 'Investigation', 'Medicine', 'Occult', 'Politics', 'Science', 'Technology'],
 };
-const SKILL_CAT_BUDGETS = [8, 6, 4]; // primary, secondary, tertiary
-
-const PRIORITY_LABELS = ['Primary (+5)', 'Secondary (+4)', 'Tertiary (+3)'];
+const SKILL_CAT_BUDGETS = [8, 6, 4];
 
 // ── Name Generator ─────────────────────────────────────────────────────────
 
@@ -163,7 +157,6 @@ const TEMPLATES: TemplateChar[] = [
     concept: 'Fallen Industrialist',
     attrs: { Strength:2, Dexterity:2, Stamina:2, Charisma:3, Manipulation:4, Composure:2, Intelligence:3, Wits:2, Resolve:2 },
     priorities: { Social: 0, Mental: 1, Physical: 2 },
-    // Social primary (8): Persuasion 3, Etiquette 2, Subterfuge 3 = 8 | Mental secondary (6): Finance 3, Politics 2, Investigation 1 = 6 | Physical tertiary (4): Stealth 2, Drive 2 = 4
     skillPriorities: { Social: 0, Mental: 1, Physical: 2 },
     skills: { Persuasion:3, Etiquette:2, Subterfuge:3, Finance:3, Politics:2, Investigation:1, Stealth:2, Drive:2 },
     discPowers: ['Dominate', 'Presence', 'Fortitude'],
@@ -175,7 +168,6 @@ const TEMPLATES: TemplateChar[] = [
     concept: 'Forgotten Muse',
     attrs: { Strength:2, Dexterity:3, Stamina:2, Charisma:4, Manipulation:2, Composure:2, Intelligence:2, Wits:2, Resolve:2 },
     priorities: { Social: 0, Physical: 1, Mental: 2 },
-    // Social primary (8): Performance 3, Persuasion 3, Etiquette 2 = 8 | Mental secondary (6): Insight 3, Awareness 2, Occult 1 = 6 | Physical tertiary (4): Stealth 2, Athletics 2 = 4
     skillPriorities: { Social: 0, Mental: 1, Physical: 2 },
     skills: { Performance:3, Persuasion:3, Etiquette:2, Insight:3, Awareness:2, Occult:1, Stealth:2, Athletics:2 },
     discPowers: ['Auspex', 'Presence', 'Celerity'],
@@ -187,7 +179,6 @@ const TEMPLATES: TemplateChar[] = [
     concept: 'Penitent Prophet',
     attrs: { Strength:2, Dexterity:2, Stamina:2, Charisma:2, Manipulation:3, Composure:2, Intelligence:3, Wits:3, Resolve:2 },
     priorities: { Mental: 0, Social: 1, Physical: 2 },
-    // Mental primary (8): Occult 3, Academics 2, Awareness 2, Investigation 1 = 8 | Social secondary (6): Intimidation 3, Insight 2, Subterfuge 1 = 6 | Physical tertiary (4): Stealth 2, Survival 2 = 4
     skillPriorities: { Mental: 0, Social: 1, Physical: 2 },
     skills: { Occult:3, Academics:2, Awareness:2, Investigation:1, Intimidation:3, Insight:2, Subterfuge:1, Stealth:2, Survival:2 },
     discPowers: ['Auspex', 'Dominate', 'Obfuscate'],
@@ -199,7 +190,6 @@ const TEMPLATES: TemplateChar[] = [
     concept: 'Spymaster Without a Court',
     attrs: { Strength:2, Dexterity:3, Stamina:2, Charisma:1, Manipulation:3, Composure:2, Intelligence:4, Wits:2, Resolve:2 },
     priorities: { Mental: 0, Physical: 1, Social: 2 },
-    // Mental primary (8): Investigation 3, Awareness 2, Occult 2, Technology 1 = 8 | Physical secondary (6): Stealth 3, Larceny 2, Athletics 1 = 6 | Social tertiary (4): Subterfuge 3, Insight 1 = 4
     skillPriorities: { Mental: 0, Physical: 1, Social: 2 },
     skills: { Investigation:3, Awareness:2, Occult:2, Technology:1, Stealth:3, Larceny:2, Athletics:1, Subterfuge:3, Insight:1 },
     discPowers: ['Obfuscate', 'Animalism', 'Potence'],
@@ -211,7 +201,6 @@ const TEMPLATES: TemplateChar[] = [
     concept: 'Blood Games Champion',
     attrs: { Strength:4, Dexterity:2, Stamina:2, Charisma:2, Manipulation:2, Composure:3, Intelligence:2, Wits:2, Resolve:2 },
     priorities: { Physical: 0, Social: 1, Mental: 2 },
-    // Physical primary (8): Brawl 3, Athletics 3, Survival 2 = 8 | Social secondary (6): Intimidation 3, Streetwise 2, Leadership 1 = 6 | Mental tertiary (4): Awareness 2, Investigation 2 = 4
     skillPriorities: { Physical: 0, Social: 1, Mental: 2 },
     skills: { Brawl:3, Athletics:3, Survival:2, Intimidation:3, Streetwise:2, Leadership:1, Awareness:2, Investigation:2 },
     discPowers: ['Celerity', 'Potence', 'Presence'],
@@ -221,6 +210,7 @@ const TEMPLATES: TemplateChar[] = [
 // ── Component ──────────────────────────────────────────────────────────────
 
 export function CharacterCreation({ onComplete, onBack }: Props) {
+  const t = useT();
   const portraitEra = 'modern' as const;
   const [step, setStep] = useState<Step>('identity');
   const [name, setName] = useState('');
@@ -240,6 +230,20 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
 
   const clanData = CLANS[clan];
   const clanDiscs = clanData.disciplines;
+
+  const PRIORITY_LABELS = [
+    t('creation.priority.primary'),
+    t('creation.priority.secondary'),
+    t('creation.priority.tertiary'),
+  ];
+
+  const STEP_TITLES: Record<Step, string> = {
+    identity: t('creation.steps.identity'),
+    attributes: t('creation.steps.attributes'),
+    skills: t('creation.steps.skills'),
+    disciplines: t('creation.steps.disciplines'),
+    review: t('creation.steps.review'),
+  };
 
   const priorityFor = (cat: AttrCategory): number => {
     const order = Object.entries(priorities).sort((a, b) => a[1] - b[1]);
@@ -314,15 +318,15 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
     });
   }
 
-  function applyTemplate(t: TemplateChar) {
-    setName(t.name);
-    setClan(t.clan);
-    setGender(t.gender);
-    setAttrs(t.attrs);
-    setPriorities(t.priorities);
-    setSkillPriorities(t.skillPriorities);
-    setSkills(t.skills);
-    setDiscPowers(t.discPowers);
+  function applyTemplate(tmpl: TemplateChar) {
+    setName(tmpl.name);
+    setClan(tmpl.clan);
+    setGender(tmpl.gender);
+    setAttrs(tmpl.attrs);
+    setPriorities(tmpl.priorities);
+    setSkillPriorities(tmpl.skillPriorities);
+    setSkills(tmpl.skills);
+    setDiscPowers(tmpl.discPowers);
     setStep('review');
   }
 
@@ -359,10 +363,22 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
     onComplete(char);
   }
 
+  function tCat(cat: string): string {
+    return t(`cat.${cat.toLowerCase()}` as TranslationKey);
+  }
+
+  function tAttr(key: string): string {
+    return t(`attr.${key}` as TranslationKey);
+  }
+
+  function tSkill(key: string): string {
+    return t(`skill.${key}` as TranslationKey);
+  }
+
   return (
     <div className="creation-screen">
       <div className="creation-header">
-        <div className="creation-step-label">Step {stepIndex + 1} of {STEPS.length}</div>
+        <div className="creation-step-label">{t('creation.step', { n: stepIndex + 1, total: STEPS.length })}</div>
         <div className="creation-step-title">{STEP_TITLES[step]}</div>
         <div className="step-dots">
           {STEPS.map((s, i) => (
@@ -377,39 +393,37 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
       <div className="creation-body">
         {step === 'identity' && (
           <>
-            {/* Template Characters */}
             <div className="field">
-              <label>Quick Start</label>
+              <label>{t('creation.quickStart')}</label>
               <div className="template-row">
-                {TEMPLATES.map(t => (
+                {TEMPLATES.map(tmpl => (
                   <div
-                    key={t.name}
+                    key={tmpl.name}
                     className="template-card"
-                    onClick={() => applyTemplate(t)}
+                    onClick={() => applyTemplate(tmpl)}
                   >
                     <img
                       className="template-portrait"
-                      src={portraitPath(portraitEra, t.clan, t.gender)}
+                      src={portraitPath(portraitEra, tmpl.clan, tmpl.gender)}
                       alt=""
                       onError={e => { e.currentTarget.style.display = 'none'; }}
                     />
-                    <div className="template-clan">{t.clan}</div>
-                    <div className="template-name">{t.name}</div>
-                    <div className="template-concept">{t.concept}</div>
+                    <div className="template-clan">{tmpl.clan}</div>
+                    <div className="template-name">{tmpl.name}</div>
+                    <div className="template-concept">{tmpl.concept}</div>
                   </div>
                 ))}
               </div>
             </div>
 
-            {/* Name + Generator */}
             <div className="field">
-              <label>Character Name</label>
+              <label>{t('creation.characterName')}</label>
               <div className="name-field-row">
                 <input
                   type="text"
                   value={name}
                   onChange={e => setName(e.target.value)}
-                  placeholder="Enter your name"
+                  placeholder={t('creation.namePlaceholder')}
                   autoFocus
                 />
                 <button
@@ -417,20 +431,20 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
                   type="button"
                   onClick={() => setName(generateName(clan, gender))}
                 >
-                  Generate
+                  {t('creation.generate')}
                 </button>
               </div>
             </div>
 
             <div className="field">
-              <label>Gender</label>
+              <label>{t('creation.gender')}</label>
               <select value={gender} onChange={e => setGender(e.target.value as 'male' | 'female')}>
-                <option value="male">Male</option>
-                <option value="female">Female</option>
+                <option value="male">{t('male')}</option>
+                <option value="female">{t('female')}</option>
               </select>
             </div>
             <div className="field">
-              <label>Clan</label>
+              <label>{t('creation.clan')}</label>
             </div>
             <div className="clan-grid">
               {(Object.keys(CLANS) as ClanName[]).map(c => (
@@ -489,15 +503,16 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
         {step === 'attributes' && (
           <>
             <div className="panel" style={{ marginBottom: '1rem', fontSize: '0.8rem', color: 'var(--text-dim)' }}>
-              Assign priority order to each category. Primary gets +5 points, Secondary +4, Tertiary +3.
-              All attributes start at 1.
+              {t('creation.attr.hint')}
             </div>
             {(Object.keys(ATTR_CATS) as AttrCategory[]).map(cat => (
               <div key={cat} className="attr-section">
                 <div className="attr-section-title">
-                  <span>{cat}</span>
+                  <span>{tCat(cat)}</span>
                   <span style={{ color: 'var(--text-dim)' }}>
-                    {attrRemaining(cat) >= 0 ? `${attrRemaining(cat)} pts left` : 'over budget!'}
+                    {attrRemaining(cat) >= 0
+                      ? t('creation.ptsLeft', { n: attrRemaining(cat) })
+                      : t('creation.overBudget')}
                   </span>
                 </div>
                 <div className="priority-row">
@@ -513,7 +528,7 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
                 </div>
                 {ATTR_CATS[cat].map(attr => (
                   <div key={attr} className="attr-row">
-                    <div className="attr-name">{attr}</div>
+                    <div className="attr-name">{tAttr(attr)}</div>
                     <div className="attr-controls">
                       <button
                         className="stepper-btn"
@@ -537,15 +552,16 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
         {step === 'skills' && (
           <>
             <div className="panel" style={{ marginBottom: '0.75rem', fontSize: '0.8rem', color: 'var(--text-dim)' }}>
-              Assign skill priorities. Primary gets 8 pts, Secondary 6, Tertiary 4. Max 5 per skill.
+              {t('creation.skill.hint')}
             </div>
-            {/* Skill priority selection */}
             {(Object.keys(SKILL_CATS) as SkillCat[]).map(cat => (
               <div key={cat} className="attr-section" style={{ marginBottom: '0.5rem' }}>
                 <div className="attr-section-title">
-                  <span>{cat}</span>
+                  <span>{tCat(cat)}</span>
                   <span style={{ color: skillRemainingInCat(cat) < 0 ? 'var(--crimson-light)' : 'var(--text-dim)' }}>
-                    {skillPriorityFor(cat) > 0 ? `${skillRemainingInCat(cat)} pts left` : 'No priority set'}
+                    {skillPriorityFor(cat) > 0
+                      ? t('creation.ptsLeft', { n: skillRemainingInCat(cat) })
+                      : t('creation.noPriority')}
                   </span>
                 </div>
                 <div className="priority-row">
@@ -570,13 +586,13 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
                       className={`skill-tab ${skillTab === cat ? 'active' : ''}`}
                       onClick={() => setSkillTab(cat)}
                     >
-                      {cat} <span style={{ fontSize: '0.65rem', opacity: 0.7 }}>({skillRemainingInCat(cat)} left)</span>
+                      {tCat(cat)} <span style={{ fontSize: '0.65rem', opacity: 0.7 }}>({t('creation.skillLeft', { n: skillRemainingInCat(cat) })})</span>
                     </button>
                   ))}
                 </div>
                 {SKILL_CATS[skillTab].map(sk => (
                   <div key={sk} className="attr-row">
-                    <div className="attr-name">{sk}</div>
+                    <div className="attr-name">{tSkill(sk)}</div>
                     <div className="attr-controls">
                       <button
                         className="stepper-btn"
@@ -599,9 +615,9 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
 
         {step === 'disciplines' && (
           <div className="disc-section">
-            <div className="disc-title">{clan} Disciplines</div>
+            <div className="disc-title">{t('creation.discTitle', { clan })}</div>
             <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>
-              Select up to 3 powers (1 dot each) from your clan disciplines.
+              {t('creation.discHint')}
             </p>
             {clanDiscs.map(disc => {
               const sel = discPowers.includes(disc);
@@ -614,13 +630,13 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
                   <div className={`disc-dot ${sel ? '' : 'empty'}`} />
                   <div className="disc-power-name">{disc}</div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
-                    {sel ? 'Dot 1' : '—'}
+                    {sel ? t('creation.discDot') : '—'}
                   </div>
                 </div>
               );
             })}
             <div style={{ marginTop: '1rem', fontSize: '0.8rem', color: 'var(--text-dim)' }}>
-              Selected: {discPowers.length} / 3
+              {t('creation.discSelected', { n: discPowers.length })}
             </div>
           </div>
         )}
@@ -630,7 +646,7 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
           return (
             <>
               <div className="review-block">
-                <div className="review-label">Identity</div>
+                <div className="review-label">{t('creation.review.identity')}</div>
                 <div className="review-identity-card">
                   <img
                     className="review-portrait"
@@ -648,38 +664,38 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
                   <div>
                     <strong style={{ fontFamily: 'var(--display)', color: 'var(--gold)', display: 'block' }}>{name}</strong>
                     <span style={{ color: 'var(--text-dim)', fontSize: '0.85rem' }}>
-                      {gender === 'male' ? 'Male' : 'Female'} · {clan}
+                      {gender === 'male' ? t('male') : t('female')} · {clan}
                     </span>
                   </div>
                 </div>
               </div>
               <div className="review-block">
-                <div className="review-label">Attributes</div>
+                <div className="review-label">{t('creation.review.attributes')}</div>
                 <div className="review-attrs">
                   {(Object.keys(attrs) as (keyof Attributes)[]).map(k => (
                     <div key={k} className="review-attr">
                       <div className="review-attr-val">{attrs[k]}</div>
-                      <div className="review-attr-name">{k.slice(0, 3)}</div>
+                      <div className="review-attr-name">{tAttr(k).slice(0, 3)}</div>
                     </div>
                   ))}
                 </div>
               </div>
               <div className="review-block">
-                <div className="review-label">Derived</div>
+                <div className="review-label">{t('creation.review.derived')}</div>
                 <div className="card">
                   <div style={{ display: 'flex', gap: '1.5rem', fontSize: '0.9rem' }}>
-                    <div>Health <strong style={{ color: 'var(--gold)' }}>{deriveHealth(base)}</strong></div>
-                    <div>Willpower <strong style={{ color: 'var(--gold)' }}>{deriveWillpower(base)}</strong></div>
-                    <div>Humanity <strong style={{ color: 'var(--gold)' }}>7</strong></div>
+                    <div>{t('creation.health')} <strong style={{ color: 'var(--gold)' }}>{deriveHealth(base)}</strong></div>
+                    <div>{t('creation.willpower')} <strong style={{ color: 'var(--gold)' }}>{deriveWillpower(base)}</strong></div>
+                    <div>{t('creation.humanity')} <strong style={{ color: 'var(--gold)' }}>7</strong></div>
                   </div>
                 </div>
               </div>
               <div className="review-block">
-                <div className="review-label">Disciplines</div>
+                <div className="review-label">{t('creation.review.disciplines')}</div>
                 <div className="card" style={{ fontSize: '0.9rem' }}>
                   {discPowers.length > 0
                     ? discPowers.join(', ')
-                    : <span style={{ color: 'var(--text-dim)' }}>None selected</span>
+                    : <span style={{ color: 'var(--text-dim)' }}>{t('creation.noneSelected')}</span>
                   }
                 </div>
               </div>
@@ -690,15 +706,15 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
 
       <div className="creation-footer">
         <button className="btn btn-ghost" onClick={stepIndex === 0 ? onBack : () => setStep(STEPS[stepIndex - 1])}>
-          ← Back
+          {t('back')}
         </button>
         {step !== 'review' ? (
           <button className="btn btn-primary" onClick={advance} disabled={!canAdvance()}>
-            Next →
+            {t('next')}
           </button>
         ) : (
           <button className="btn btn-primary" onClick={finish}>
-            Choose Chronicle →
+            {t('creation.chooseChronicle')}
           </button>
         )}
       </div>

@@ -1,13 +1,8 @@
 import type { Ending } from '../engine';
 import { Audio } from '../audio';
 import { useEffect } from 'react';
-
-const TYPE_LABELS: Record<string, string> = {
-  dead_end:    'Dead End',
-  bad_end:     'Bad End',
-  good_end:    'Good End',
-  perfect_end: 'Perfect End',
-};
+import { useT } from '../engine/i18n';
+import type { TranslationKey } from '../engine/i18n';
 
 interface Props {
   ending: Ending;
@@ -15,10 +10,14 @@ interface Props {
 }
 
 export function EndingScreen({ ending, onPlayAgain }: Props) {
+  const t = useT();
+
   useEffect(() => {
     Audio.setMood('ending');
     return () => void Audio.stopMood();
   }, []);
+
+  const typeKey = `ending.${ending.type}` as TranslationKey;
 
   return (
     <div className="ending-screen">
@@ -28,13 +27,13 @@ export function EndingScreen({ ending, onPlayAgain }: Props) {
         </div>
       )}
       <div className={`ending-type-badge ${ending.type}`}>
-        {TYPE_LABELS[ending.type] ?? ending.type}
+        {t(typeKey)}
       </div>
       <h1 className="ending-title">{ending.title}</h1>
       <p className="ending-text">{ending.text}</p>
       <div className="ending-actions">
         <button className="btn btn-primary btn-full" onClick={onPlayAgain}>
-          Play Again
+          {t('ending.playAgain')}
         </button>
       </div>
     </div>

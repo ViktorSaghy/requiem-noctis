@@ -1,6 +1,7 @@
 import { Audio } from '../audio';
 import type { AppSettings } from '../engine/settings';
 import { saveSettings } from '../engine/settings';
+import { useT } from '../engine/i18n';
 
 interface Props {
   settings: AppSettings;
@@ -10,6 +11,8 @@ interface Props {
 }
 
 export function SettingsPanel({ settings, onChange, onBack, onCredits }: Props) {
+  const t = useT();
+
   function update(patch: Partial<AppSettings>) {
     const next = { ...settings, ...patch };
     onChange(next);
@@ -24,40 +27,58 @@ export function SettingsPanel({ settings, onChange, onBack, onCredits }: Props) 
   return (
     <div className="settings-screen">
       <div className="settings-header">
-        <button className="btn btn-ghost btn-sm" onClick={onBack}>← Back</button>
-        <div className="settings-title">Settings</div>
+        <button className="btn btn-ghost btn-sm" onClick={onBack}>{t('back')}</button>
+        <div className="settings-title">{t('settings.title')}</div>
       </div>
 
       <div className="settings-body">
         <div className="settings-section">
-          <div className="settings-section-label">Audio</div>
-
+          <div className="settings-section-label">{t('settings.language')}</div>
           <div className="settings-row">
-            <span className="settings-row-label">Music</span>
             <button
-              className={`toggle-btn ${settings.musicEnabled ? 'on' : 'off'}`}
-              onClick={() => update({ musicEnabled: !settings.musicEnabled })}
+              className={`toggle-btn ${settings.language === 'en' ? 'on' : 'off'}`}
+              onClick={() => update({ language: 'en' })}
             >
-              {settings.musicEnabled ? 'ON' : 'OFF'}
+              English
             </button>
-          </div>
-
-          <div className="settings-row">
-            <span className="settings-row-label">Sound Effects</span>
             <button
-              className={`toggle-btn ${settings.sfxEnabled ? 'on' : 'off'}`}
-              onClick={() => update({ sfxEnabled: !settings.sfxEnabled })}
+              className={`toggle-btn ${settings.language === 'hu' ? 'on' : 'off'}`}
+              onClick={() => update({ language: 'hu' })}
             >
-              {settings.sfxEnabled ? 'ON' : 'OFF'}
+              Magyar
             </button>
           </div>
         </div>
 
         <div className="settings-section">
-          <div className="settings-section-label">Volume</div>
+          <div className="settings-section-label">{t('settings.audio')}</div>
+
+          <div className="settings-row">
+            <span className="settings-row-label">{t('settings.music')}</span>
+            <button
+              className={`toggle-btn ${settings.musicEnabled ? 'on' : 'off'}`}
+              onClick={() => update({ musicEnabled: !settings.musicEnabled })}
+            >
+              {settings.musicEnabled ? t('on') : t('off')}
+            </button>
+          </div>
+
+          <div className="settings-row">
+            <span className="settings-row-label">{t('settings.sfx')}</span>
+            <button
+              className={`toggle-btn ${settings.sfxEnabled ? 'on' : 'off'}`}
+              onClick={() => update({ sfxEnabled: !settings.sfxEnabled })}
+            >
+              {settings.sfxEnabled ? t('on') : t('off')}
+            </button>
+          </div>
+        </div>
+
+        <div className="settings-section">
+          <div className="settings-section-label">{t('settings.volume')}</div>
 
           <div className="settings-row settings-row-slider">
-            <span className="settings-row-label">Master</span>
+            <span className="settings-row-label">{t('settings.master')}</span>
             <input
               type="range" min="0" max="1" step="0.05"
               value={settings.masterVolume}
@@ -68,7 +89,7 @@ export function SettingsPanel({ settings, onChange, onBack, onCredits }: Props) 
           </div>
 
           <div className="settings-row settings-row-slider">
-            <span className="settings-row-label">Music</span>
+            <span className="settings-row-label">{t('settings.music')}</span>
             <input
               type="range" min="0" max="1" step="0.05"
               value={settings.musicVolume}
@@ -79,7 +100,7 @@ export function SettingsPanel({ settings, onChange, onBack, onCredits }: Props) 
           </div>
 
           <div className="settings-row settings-row-slider">
-            <span className="settings-row-label">Effects</span>
+            <span className="settings-row-label">{t('settings.effects')}</span>
             <input
               type="range" min="0" max="1" step="0.05"
               value={settings.sfxVolume}
@@ -91,26 +112,26 @@ export function SettingsPanel({ settings, onChange, onBack, onCredits }: Props) 
         </div>
 
         <div className="settings-section">
-          <div className="settings-section-label">Developer</div>
+          <div className="settings-section-label">{t('settings.developer')}</div>
           <div className="settings-row">
-            <span className="settings-row-label">Dev Mode</span>
+            <span className="settings-row-label">{t('settings.devMode')}</span>
             <button
               className={`toggle-btn ${settings.devMode ? 'on' : 'off'}`}
               onClick={() => update({ devMode: !settings.devMode })}
             >
-              {settings.devMode ? 'ON' : 'OFF'}
+              {settings.devMode ? t('on') : t('off')}
             </button>
           </div>
           {settings.devMode && (
             <p className="settings-dev-note">
-              Scene IDs and active flags are visible in the Story tab.
+              {t('settings.devNote')}
             </p>
           )}
         </div>
 
         <div className="settings-section">
           <button className="btn btn-primary btn-full" onClick={onCredits}>
-            Credits
+            {t('settings.credits')}
           </button>
         </div>
       </div>

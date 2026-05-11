@@ -25,7 +25,7 @@ export function TitleScreen({ onNewGame, onContinue }: Props) {
         <p className="title-sub">Vienna, 1938 — the night the city changed</p>
         <div className="title-actions">
           <button className="btn btn-primary btn-lg btn-full" onClick={onNewGame}>
-            New Chronicle
+            New Game
           </button>
           {hasSave && (
             <button className="btn btn-gold btn-full" onClick={onContinue}>

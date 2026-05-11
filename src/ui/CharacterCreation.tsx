@@ -9,10 +9,7 @@ import {
 } from '../engine';
 import type { Character, ClanName } from '../engine/character';
 import type { Attributes } from '../engine/character';
-import type { Chronicle } from '../engine';
-
 interface Props {
-  chronicle: Chronicle;
   onComplete: (c: Character) => void;
   onBack: () => void;
 }
@@ -223,7 +220,8 @@ const TEMPLATES: TemplateChar[] = [
 
 // ── Component ──────────────────────────────────────────────────────────────
 
-export function CharacterCreation({ chronicle, onComplete, onBack }: Props) {
+export function CharacterCreation({ onComplete, onBack }: Props) {
+  const portraitEra = 'modern' as const;
   const [step, setStep] = useState<Step>('identity');
   const [name, setName] = useState('');
   const [clan, setClan] = useState<ClanName>('Ventrue');
@@ -391,7 +389,7 @@ export function CharacterCreation({ chronicle, onComplete, onBack }: Props) {
                   >
                     <img
                       className="template-portrait"
-                      src={portraitPath(chronicle.era, t.clan, t.gender)}
+                      src={portraitPath(portraitEra, t.clan, t.gender)}
                       alt=""
                       onError={e => { e.currentTarget.style.display = 'none'; }}
                     />
@@ -443,10 +441,10 @@ export function CharacterCreation({ chronicle, onComplete, onBack }: Props) {
                 >
                   <img
                     className="clan-portrait-thumb"
-                    src={portraitPath(chronicle.era, c, gender)}
+                    src={portraitPath(portraitEra, c, gender)}
                     alt=""
                     onError={e => {
-                      const fallback = portraitPath(chronicle.era, c);
+                      const fallback = portraitPath(portraitEra, c);
                       if (e.currentTarget.src !== fallback) {
                         e.currentTarget.src = fallback;
                       } else {
@@ -463,10 +461,10 @@ export function CharacterCreation({ chronicle, onComplete, onBack }: Props) {
               <div className="clan-info-card">
                 <img
                   className="clan-portrait-large"
-                  src={portraitPath(chronicle.era, clan, gender)}
+                  src={portraitPath(portraitEra, clan, gender)}
                   alt={clan}
                   onError={e => {
-                    const fallback = portraitPath(chronicle.era, clan);
+                    const fallback = portraitPath(portraitEra, clan);
                     if (e.currentTarget.src !== fallback) {
                       e.currentTarget.src = fallback;
                     } else {
@@ -636,10 +634,10 @@ export function CharacterCreation({ chronicle, onComplete, onBack }: Props) {
                 <div className="review-identity-card">
                   <img
                     className="review-portrait"
-                    src={portraitPath(chronicle.era, clan, gender)}
+                    src={portraitPath(portraitEra, clan, gender)}
                     alt={clan}
                     onError={e => {
-                      const fallback = portraitPath(chronicle.era, clan);
+                      const fallback = portraitPath(portraitEra, clan);
                       if (e.currentTarget.src !== fallback) {
                         e.currentTarget.src = fallback;
                       } else {
@@ -700,7 +698,7 @@ export function CharacterCreation({ chronicle, onComplete, onBack }: Props) {
           </button>
         ) : (
           <button className="btn btn-primary" onClick={finish}>
-            Begin Chronicle
+            Choose Chronicle →
           </button>
         )}
       </div>

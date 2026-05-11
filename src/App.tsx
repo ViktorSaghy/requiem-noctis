@@ -36,6 +36,7 @@ export default function App() {
   const [settings, setSettings] = useState<AppSettings>(() => loadSettings());
   const [toast, setToast] = useState<ToastMessage | null>(null);
   const [pendingXpRecord, setPendingXpRecord] = useState<XpAwardRecord | null>(null);
+  const [pendingCharacter, setPendingCharacter] = useState<Character | null>(null);
 
   const [audioUnlocked, setAudioUnlocked] = useState(false);
   const game = useGame();
@@ -77,7 +78,7 @@ export default function App() {
   }, [screen, audioUnlocked]);
 
   const handleNewGame = useCallback(() => {
-    setScreen('story');
+    setScreen('create');
   }, []);
 
   const handleContinue = useCallback(async () => {
@@ -87,13 +88,19 @@ export default function App() {
 
   const handleStorySelect = useCallback((c: Chronicle) => {
     setSelectedChronicle(c);
-    setScreen('create');
-  }, []);
+    if (pendingCharacter) {
+      game.start(pendingCharacter, c);
+      setPendingCharacter(null);
+      setScreen('game');
+    } else {
+      setScreen('create');
+    }
+  }, [pendingCharacter, game]);
 
   const handleCharacterComplete = useCallback((char: Character) => {
-    game.start(char, selectedChronicle);
-    setScreen('game');
-  }, [game, selectedChronicle]);
+    setPendingCharacter(char);
+    setScreen('story');
+  }, []);
 
   const handleEndingReady = useCallback((id: string) => {
     setEndingId(id);
@@ -194,9 +201,8 @@ export default function App() {
 
       {screen === 'create' && (
         <CharacterCreation
-          chronicle={selectedChronicle}
           onComplete={handleCharacterComplete}
-          onBack={() => setScreen('story')}
+          onBack={() => setScreen('title')}
         />
       )}
 

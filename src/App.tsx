@@ -31,10 +31,9 @@ const CHRONICLES: Chronicle[] = [AshAndIvory, BloodGamesChronicle];
 export default function App() {
   const [screen, setScreen] = useState<Screen>('title');
   const [prevScreen, setPrevScreen] = useState<Screen>('title');
-  const [selectedChronicle, setSelectedChronicle] = useState<Chronicle>(CHRONICLES[0]);
   const [endingId, setEndingId] = useState<string | null>(null);
   const [settings, setSettings] = useState<AppSettings>(() => loadSettings());
-  const [toast, setToast] = useState<ToastMessage | null>(null);
+  const [toast] = useState<ToastMessage | null>(null);
   const [pendingXpRecord, setPendingXpRecord] = useState<XpAwardRecord | null>(null);
   const [pendingCharacter, setPendingCharacter] = useState<Character | null>(null);
 
@@ -87,7 +86,6 @@ export default function App() {
   }, [game]);
 
   const handleStorySelect = useCallback((c: Chronicle) => {
-    setSelectedChronicle(c);
     if (pendingCharacter) {
       game.start(pendingCharacter, c);
       setPendingCharacter(null);

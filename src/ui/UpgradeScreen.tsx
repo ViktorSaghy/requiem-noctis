@@ -8,8 +8,7 @@ import { XpHUD } from './XpHUD';
 
 interface Props {
   character: Character;
-  onUpgrade: (updated: Character) => void;
-  onClose: () => void;
+  onDone: (updated: Character) => void; // called exactly once when player leaves downtime
 }
 
 type Tab = 'upgrades' | 'history';
@@ -247,7 +246,7 @@ function XpLedger({ character }: { character: Character }) {
   );
 }
 
-export function UpgradeScreen({ character, onUpgrade, onClose }: Props) {
+export function UpgradeScreen({ character, onDone }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>('upgrades');
   const [purchasedName, setPurchasedName] = useState<string | null>(null);
   const [currentChar, setCurrentChar] = useState(character);
@@ -255,7 +254,7 @@ export function UpgradeScreen({ character, onUpgrade, onClose }: Props) {
   function handlePurchase(updated: Character, name: string) {
     setCurrentChar(updated);
     setPurchasedName(name);
-    onUpgrade(updated);
+    // Stay on the downtime screen — player can make multiple purchases
   }
 
   return (
@@ -268,7 +267,7 @@ export function UpgradeScreen({ character, onUpgrade, onClose }: Props) {
         </div>
         <div className="upgrade-header-right">
           <XpHUD xp={currentChar.xp ?? 0} />
-          <button className="btn btn-ghost upgrade-close-btn" onClick={onClose} aria-label="Close">✕</button>
+          <button className="btn btn-ghost upgrade-close-btn" onClick={() => onDone(currentChar)} aria-label="Close">✕</button>
         </div>
       </div>
 

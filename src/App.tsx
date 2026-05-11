@@ -238,8 +238,7 @@ export default function App() {
       {screen === 'downtime' && game.state && (
         <UpgradeScreen
           character={game.state.character}
-          onUpgrade={handleDowntimeComplete}
-          onClose={() => setScreen('ending')}
+          onDone={handleDowntimeComplete}
         />
       )}
 

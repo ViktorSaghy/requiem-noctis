@@ -10,6 +10,7 @@ export const AshAndIvory: Chronicle = {
   subtitle: 'A Noir of Borrowed Time',
   setting: 'Vienna, Austria — March 1938',
   era: 'historical',
+  cover_image: '/backgrounds/chronicle_ash_and_ivory.jpeg',
   acts: {
     1: 'The Summons',
     2: 'The Hunt',

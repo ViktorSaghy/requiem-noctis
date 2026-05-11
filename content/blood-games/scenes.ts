@@ -6,6 +6,7 @@ export const BloodGamesChronicle: Chronicle = {
   subtitle: 'A Sabbat Trial of Fire',
   setting: 'Chicago, 1997',
   era: 'modern',
+  cover_image: '/backgrounds/chronicle_blood_games.jpeg',
   acts: {
     1: 'The Vaulderie',
     2: 'Trial by Combat',

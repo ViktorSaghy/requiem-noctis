@@ -137,6 +137,7 @@ export interface Chronicle {
   subtitle?: string;
   setting: string;
   era: 'modern' | 'historical';
+  cover_image?: string;
   acts: Record<number, string>;
   npcs: Record<string, NPC>;
   endings: Record<string, Ending>;

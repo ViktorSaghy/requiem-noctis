@@ -20,7 +20,7 @@ export function StorySelect({ chronicles, onSelect, onBack }: Props) {
         {chronicles.map(c => (
           <div key={c.id} className="story-card" onClick={() => onSelect(c)}>
             <img
-              src="/backgrounds/ash-cafe.png"
+              src={c.cover_image ?? '/backgrounds/ash-cafe.png'}
               alt={c.title}
               className="story-card-thumb"
             />

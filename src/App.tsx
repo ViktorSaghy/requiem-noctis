@@ -177,17 +177,16 @@ export default function App() {
   }, [screen]);
 
   const handleCredits = useCallback(() => {
-    setPrevScreen(screen);
     setScreen('credits');
-  }, [screen]);
+  }, []);
 
   const handleSettingsBack = useCallback(() => {
     setScreen(prevScreen);
   }, [prevScreen]);
 
   const handleCreditsBack = useCallback(() => {
-    setScreen(prevScreen);
-  }, [prevScreen]);
+    setScreen('settings');
+  }, []);
 
   const handleBackToTitle = useCallback(() => {
     setScreen('title');

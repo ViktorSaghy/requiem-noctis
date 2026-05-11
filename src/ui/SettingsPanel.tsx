@@ -129,8 +129,8 @@ export function SettingsPanel({ settings, onChange, onBack, onCredits }: Props) 
           )}
         </div>
 
-        <div className="settings-section">
-          <button className="btn btn-primary btn-full" onClick={onCredits}>
+        <div className="settings-section settings-section-credits">
+          <button className="settings-credits-link" onClick={onCredits}>
             {t('settings.credits')}
           </button>
         </div>

@@ -150,7 +150,7 @@ const en = {
   'game.menu.save': 'Save',
   'game.menu.load': 'Load',
   'game.menu.settings': 'Settings',
-  'game.menu.backToTitle': 'Back to Title',
+  'game.menu.backToTitle': 'Save & Exit',
   'game.devScene': 'Scene',
   'game.devFlags': 'Flags',
 
@@ -395,7 +395,7 @@ const hu: TranslationDict = {
   'game.menu.save': 'Mentés',
   'game.menu.load': 'Betöltés',
   'game.menu.settings': 'Beállítások',
-  'game.menu.backToTitle': 'Vissza a főmenübe',
+  'game.menu.backToTitle': 'Mentés & Kilépés',
   'game.devScene': 'Jelenet',
   'game.devFlags': 'Jelzők',
 

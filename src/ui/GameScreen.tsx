@@ -253,7 +253,18 @@ function MenuPane({
       </div>
       <div className="menu-section">
         <button className="btn btn-full" style={{ marginBottom: '0.5rem' }} onClick={onSettings}>{t('game.menu.settings')}</button>
-        <button className="btn btn-danger btn-full" onClick={onBackToTitle}>{t('game.menu.backToTitle')}</button>
+        <button
+          className="btn btn-full"
+          disabled={busy}
+          onClick={async () => {
+            setBusy(true);
+            await onSaveSlot('auto');
+            setBusy(false);
+            onBackToTitle();
+          }}
+        >
+          {t('game.menu.backToTitle')}
+        </button>
       </div>
     </div>
   );

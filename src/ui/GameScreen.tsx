@@ -272,9 +272,10 @@ function MenuPane({
 
 // ─────────────── STORY ACTIONS ───────────────
 
-function StoryActionsPanel({ scene, character, diceState, onGoTo, onBeginRoll }: {
+function StoryActionsPanel({ scene, character, flags, diceState, onGoTo, onBeginRoll }: {
   scene: NonNullable<GameState['chronicle']['scenes'][string]>;
   character: GameState['character'];
+  flags: GameState['flags'];
   diceState: GameState['diceState'];
   onGoTo: (id: string) => void;
   onBeginRoll: () => void;
@@ -295,7 +296,7 @@ function StoryActionsPanel({ scene, character, diceState, onGoTo, onBeginRoll }:
   // Returns true  → show normally
   function choiceAccess(choice: NonNullable<typeof scene.choices>[number]): null | boolean {
     if (choice.requires_clan && choice.requires_clan !== character.clan) return null;
-    if (choice.requires_flag && !character.clan) return null; // flag check via game.flags is done below
+    if (choice.requires_flag && !flags[choice.requires_flag]) return null;
     const disciplines = character.disciplines as Record<string, number | undefined>;
     if (choice.requires_discipline && !disciplines[choice.requires_discipline]) return false;
     if (choice.requires_hunger_gte != null && character.hunger < choice.requires_hunger_gte) return false;
@@ -568,6 +569,7 @@ export function GameScreen({
               <StoryActionsPanel
                 scene={scene}
                 character={character}
+                flags={game.flags}
                 diceState={diceState}
                 onGoTo={onGoTo}
                 onBeginRoll={onBeginRoll}

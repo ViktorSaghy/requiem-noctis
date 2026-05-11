@@ -20,6 +20,7 @@ import {
 } from './ui';
 import { AshAndIvory } from '../content/ash-ivory/scenes';
 import { BloodGamesChronicle } from '../content/blood-games/scenes';
+import { AshesOfTorpor } from '../content/ashes-of-torpor/scenes';
 import { Audio } from './audio';
 import type { AppSettings } from './engine/settings';
 import { loadSettings } from './engine/settings';
@@ -28,7 +29,7 @@ import { saveCharacter } from './engine/saves';
 
 type Screen = 'title' | 'story' | 'create' | 'game' | 'ending' | 'xp-recap' | 'downtime' | 'settings' | 'credits';
 
-const BASE_CHRONICLES: Chronicle[] = [AshAndIvory, BloodGamesChronicle];
+const BASE_CHRONICLES: Chronicle[] = [AshesOfTorpor, AshAndIvory, BloodGamesChronicle];
 
 export default function App() {
   const [screen, setScreen] = useState<Screen>('title');

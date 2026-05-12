@@ -90,7 +90,7 @@ export async function deleteSave(slot: string): Promise<void> {
 }
 
 export async function saveCharacter(character: Character): Promise<string> {
-  const id = `char_${Date.now()}`;
+  const id = character.id || `char_${Date.now()}`;
   const chars = await loadSavedCharacters();
   chars[id] = { ...character, id, savedAt: Date.now() };
   localStorage.setItem(

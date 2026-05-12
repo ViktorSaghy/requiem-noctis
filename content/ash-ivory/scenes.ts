@@ -1747,7 +1747,6 @@ export const AshAndIvory: Chronicle = {
         miriam_cobweb_connection: {
           title: 'Frekvenciák',
           narrative: "Nem szólsz. Oldalra nyúlsz — ahogy egy emlék felé nyúlsz, amely nem egészen a tiéd — és megtalálod a fonalát.\n\nA Pókháló két Malkavian között ugyanabban a szobában nem párbeszéd. Ütközés: az ő nyolcvan éve ebben a városban a saját töredésed ellen, mindkettő ugyanabba a pontba érkezve különböző szögekből.\n\nEgyszerre tudod a következőket: Vasile a 14-es szobában van. Brandt korábbi gyalogos, nem eredeti Ahnenerbe. Kesslernek hegszövete van Prágától, amely csúszóssá teszi az elméjét. Miriam tizenegy napja pakolt.\n\nHangosan mondja az egyetlen dolgot, amelyet a Pókháló nem hordoz jól: 'A vonat. A nyugati vonatot akarom.'\n\nMegvan az információ. Tartozol neki a vonattal.",
-          next: 'miriam_deal_made',
         },
         act3_resolution: {
           title: 'Hajnal Előtt',

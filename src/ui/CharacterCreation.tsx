@@ -628,6 +628,19 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
             </p>
             {clanDiscs.map(disc => {
               const sel = discPowers.includes(disc);
+              const DISC_L1_POWER: Record<string, string> = {
+                Animalism: 'Unleash the Beast — stir enemy\'s inner predator',
+                Auspex: 'Premonition — reduce all enemy attack pools',
+                BloodSorcery: 'Scorching Vitae — aggravated blood assault',
+                Celerity: 'Rapid Reflexes — boost your defense pool',
+                Dominate: 'Mesmerize — eye-contact stun (contested)',
+                Fortitude: 'Resilience — soak damage equal to dots',
+                Obfuscate: 'Cloak of Shadows — vanish from sight',
+                Oblivion: 'Void Touch — drain enemy Willpower',
+                Potence: 'Lethal Body — add dots to damage on hit',
+                Presence: 'Awe — enemies −1 to attacks',
+                Protean: 'Feral Claws — aggravated claw strike',
+              };
               return (
                 <div
                   key={disc}
@@ -637,7 +650,7 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
                   <div className={`disc-dot ${sel ? '' : 'empty'}`} />
                   <div className="disc-power-name">{disc}</div>
                   <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>
-                    {sel ? t('creation.discDot') : '—'}
+                    {DISC_L1_POWER[disc] ?? (sel ? t('creation.discDot') : '—')}
                   </div>
                 </div>
               );

@@ -104,13 +104,25 @@ export const UPGRADE_CATALOG: Upgrade[] = [
   { id: 'Occult_1', type: 'skill', name: 'Occult', description: 'Supernatural knowledge', category: 'Skills', target: 'Occult', newRating: 1, maxRating: 5, cost: 2, tags: ['SEER'] },
   { id: 'Awareness_1', type: 'skill', name: 'Awareness', description: 'Sense surroundings', category: 'Skills', target: 'Awareness', newRating: 1, maxRating: 5, cost: 2, tags: ['SEER'] },
   
-  // Disciplines
-  { id: 'Celerity_1', type: 'discipline', name: 'Celerity •', description: 'Superhuman speed', category: 'Disciplines', target: 'Celerity', newRating: 1, maxRating: 5, cost: 5, tags: ['PREDATOR'] },
-  { id: 'Potence_1', type: 'discipline', name: 'Potence •', description: 'Superhuman strength', category: 'Disciplines', target: 'Potence', newRating: 1, maxRating: 5, cost: 5, tags: ['PREDATOR'] },
-  { id: 'Auspex_1', type: 'discipline', name: 'Auspex •', description: 'Heightened senses', category: 'Disciplines', target: 'Auspex', newRating: 1, maxRating: 5, cost: 5, tags: ['SEER'] },
-  { id: 'Presence_1', type: 'discipline', name: 'Presence •', description: 'Supernatural charisma', category: 'Disciplines', target: 'Presence', newRating: 1, maxRating: 5, cost: 5, tags: ['DOMINANT'] },
-  { id: 'Obfuscate_1', type: 'discipline', name: 'Obfuscate •', description: 'Hide in plain sight', category: 'Disciplines', target: 'Obfuscate', newRating: 1, maxRating: 5, cost: 5, tags: ['PREDATOR'] },
-  { id: 'Fortitude_1', type: 'discipline', name: 'Fortitude •', description: 'Resilience', category: 'Disciplines', target: 'Fortitude', newRating: 1, maxRating: 5, cost: 5 },
+  // Disciplines — level 1 (5 XP each)
+  { id: 'Celerity_1',    type: 'discipline', name: 'Celerity •',      description: 'Rapid Reflexes — preternatural speed, boost defense',              category: 'Disciplines', target: 'Celerity',     newRating: 1, maxRating: 5, cost: 5,  tags: ['PREDATOR'] },
+  { id: 'Potence_1',     type: 'discipline', name: 'Potence •',       description: 'Lethal Body — add Potence to damage on a hit',                     category: 'Disciplines', target: 'Potence',      newRating: 1, maxRating: 5, cost: 5,  tags: ['PREDATOR'] },
+  { id: 'Auspex_1',     type: 'discipline', name: 'Auspex •',         description: 'Premonition — read incoming attacks, penalise enemy pools',        category: 'Disciplines', target: 'Auspex',       newRating: 1, maxRating: 5, cost: 5,  tags: ['SEER']     },
+  { id: 'Presence_1',   type: 'discipline', name: 'Presence •',       description: 'Awe — supernatural allure, enemies hesitate to strike',            category: 'Disciplines', target: 'Presence',     newRating: 1, maxRating: 5, cost: 5,  tags: ['DOMINANT'] },
+  { id: 'Obfuscate_1',  type: 'discipline', name: 'Obfuscate •',      description: 'Cloak of Shadows — stand still and vanish from sight',             category: 'Disciplines', target: 'Obfuscate',    newRating: 1, maxRating: 5, cost: 5,  tags: ['PREDATOR'] },
+  { id: 'Fortitude_1',  type: 'discipline', name: 'Fortitude •',      description: 'Resilience — soak incoming damage equal to Fortitude dots',        category: 'Disciplines', target: 'Fortitude',    newRating: 1, maxRating: 5, cost: 5  },
+  { id: 'Dominate_1',   type: 'discipline', name: 'Dominate •',       description: 'Mesmerize — eye-contact mind-lock, stun one enemy',                category: 'Disciplines', target: 'Dominate',     newRating: 1, maxRating: 5, cost: 5,  tags: ['DOMINANT'] },
+  { id: 'Animalism_1',  type: 'discipline', name: 'Animalism •',      description: 'Unleash the Beast — stir the predator within an enemy',            category: 'Disciplines', target: 'Animalism',    newRating: 1, maxRating: 5, cost: 5  },
+  { id: 'Protean_1',    type: 'discipline', name: 'Protean •',        description: 'Feral Claws — grow bone-hard claws for aggravated damage',         category: 'Disciplines', target: 'Protean',      newRating: 1, maxRating: 5, cost: 5  },
+  { id: 'Oblivion_1',   type: 'discipline', name: 'Oblivion •',       description: 'Void Touch — grave-cold shadow drains enemy Willpower',            category: 'Disciplines', target: 'Oblivion',     newRating: 1, maxRating: 5, cost: 5  },
+  { id: 'BloodSorcery_1', type: 'discipline', name: 'Blood Sorcery •', description: 'Scorching Vitae — corrupt your blood for aggravated assault',     category: 'Disciplines', target: 'BloodSorcery', newRating: 1, maxRating: 5, cost: 5,  tags: ['SEER']     },
+  // Disciplines — level 2 (10 XP each) — unlocks more powerful combat powers
+  { id: 'Celerity_2',    type: 'discipline', name: 'Celerity ••',     description: 'Fleetness — speed-enhanced Dex+Brawl+Celerity attack (Rouse)',     category: 'Disciplines', target: 'Celerity',     newRating: 2, maxRating: 5, cost: 10, tags: ['PREDATOR'] },
+  { id: 'Potence_2',     type: 'discipline', name: 'Potence ••',      description: 'Brutal Blow — aggravated strike with Potence damage bonus (Rouse)', category: 'Disciplines', target: 'Potence',      newRating: 2, maxRating: 5, cost: 10, tags: ['PREDATOR'] },
+  { id: 'Presence_2',   type: 'discipline', name: 'Presence ••',      description: 'Dread Gaze — primal terror, enemies −Presence dots to attacks (Rouse)', category: 'Disciplines', target: 'Presence', newRating: 2, maxRating: 5, cost: 10, tags: ['DOMINANT'] },
+  { id: 'Obfuscate_2',  type: 'discipline', name: 'Obfuscate ••',     description: 'Unseen Passage — move while hidden, enemies −3 to attacks (Rouse)', category: 'Disciplines', target: 'Obfuscate',   newRating: 2, maxRating: 5, cost: 10, tags: ['PREDATOR'] },
+  { id: 'Fortitude_2',  type: 'discipline', name: 'Fortitude ••',     description: 'Unswayable Mind — soak 2 damage, resist mental effects',           category: 'Disciplines', target: 'Fortitude',    newRating: 2, maxRating: 5, cost: 10 },
+  { id: 'Auspex_2',     type: 'discipline', name: 'Auspex ••',        description: 'Scry the Soul — deeper premonitions, enemies −2 to attack pools',  category: 'Disciplines', target: 'Auspex',       newRating: 2, maxRating: 5, cost: 10, tags: ['SEER']     },
   
   // Advantages
   { id: 'Ally_1', type: 'advantage', name: 'Ally •', description: 'Mortal contact with influence', category: 'Advantages', target: 'Ally', dots: 1, maxRating: 5, cost: 3, tags: ['WEALTH'] },

@@ -147,8 +147,9 @@ export function CombatStatusPanel({ combat, character, scenario }: {
           </div>
           <div className="cpp-badges">
             {cs.player.isFullDefense && <div className="cpp-badge">{t('combat.fullDefenseBadge')}</div>}
-            {cs.player.fortitudeShield > 0 && <div className="cpp-badge">FORTITUDE −{cs.player.fortitudeShield}</div>}
+            {cs.player.fortitudeShield > 0 && <div className="cpp-badge">RESILIENCE −{cs.player.fortitudeShield}</div>}
             {cs.player.auspexShield > 0 && <div className="cpp-badge">PREMONITION −{cs.player.auspexShield}</div>}
+            {cs.player.celerityBonus > 0 && <div className="cpp-badge">RAPID REFLEXES +{cs.player.celerityBonus} DEF</div>}
             {cs.player.isFrenzy && <div className="cpp-badge frenzy">{t('combat.frenzy')}</div>}
             {cs.player.compulsion && <div className="cpp-badge compulsion">{t('combat.compulsionBadge')}</div>}
           </div>

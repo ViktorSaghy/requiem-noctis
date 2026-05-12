@@ -2871,6 +2871,7 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--gol
   -webkit-tap-highlight-color: transparent;
 }
 .template-card:hover { border-color: var(--gold); background: rgba(201,168,76,0.06); }
+.template-card--selected { border-color: var(--gold) !important; background: rgba(201,168,76,0.10) !important; }
 .template-portrait {
   width: 100%;
   aspect-ratio: 1 / 1;
@@ -2891,6 +2892,93 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--gol
 }
 .template-name { font-size: 0.85rem; color: var(--gold); font-family: var(--display); margin-bottom: 0.15rem; }
 .template-concept { font-size: 0.7rem; color: var(--text-dim); font-style: italic; }
+
+/* ── Template detail panel ──────────────────────────────────────────────── */
+.template-detail {
+  margin-top: 0.75rem;
+  background: var(--bg-2);
+  border: 1px solid rgba(201,168,76,0.35);
+  border-radius: 4px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.template-detail-header {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+.template-detail-portrait {
+  width: 72px;
+  height: 72px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 3px;
+  border: 1px solid rgba(201,168,76,0.3);
+  flex-shrink: 0;
+}
+.template-detail-titles { display: flex; flex-direction: column; justify-content: center; gap: 0.15rem; }
+.template-detail-clan {
+  font-family: var(--display);
+  font-size: 0.6rem;
+  letter-spacing: 0.12em;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+}
+.template-detail-name { font-size: 1.05rem; color: var(--gold); font-family: var(--display); }
+.template-detail-concept { font-size: 0.75rem; color: var(--text-dim); font-style: italic; }
+.template-detail-background {
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: var(--text);
+  margin: 0;
+}
+.template-detail-hint {
+  font-size: 0.8rem;
+  line-height: 1.5;
+  color: var(--text-dim);
+  border-left: 2px solid rgba(201,168,76,0.4);
+  padding-left: 0.65rem;
+  font-style: italic;
+}
+.template-detail-hint-label {
+  color: var(--gold-dim);
+  font-style: normal;
+  font-family: var(--display);
+  font-size: 0.7rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+.template-detail-weapons { display: flex; flex-direction: column; gap: 0.35rem; }
+.template-detail-weapons-label {
+  font-size: 0.7rem;
+  color: var(--gold-dim);
+  font-family: var(--display);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.template-detail-weapon-chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.template-weapon-chip {
+  background: rgba(201,168,76,0.08);
+  border: 1px solid rgba(201,168,76,0.3);
+  border-radius: 3px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.75rem;
+  color: var(--text);
+}
+.template-weapon-chip--extra {
+  border-color: rgba(150,200,150,0.4);
+  background: rgba(150,200,150,0.06);
+  color: var(--text-dim);
+}
+.template-detail-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 0.25rem;
+}
 
 .name-field-row {
   display: flex;

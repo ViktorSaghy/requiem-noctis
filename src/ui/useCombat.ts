@@ -44,7 +44,7 @@ export function useCombat(
   character: Character,
   scenario: CombatScenario,
   onEnd: (nextSceneId: string, finalPlayer: PlayerCombatState) => void,
-  onDefeat: () => void,
+  onDefeat?: () => void,
 ): CombatHook {
   const [cs, setCs] = useState<CombatState>(() => initCombat(character, scenario.enemies));
   const [mode, setMode] = useState<CombatMode>('actions');
@@ -121,7 +121,8 @@ export function useCombat(
   function handleEnd() {
     if (cs.outcome === 'victory') onEnd(scenario.victory_next, cs.player);
     else if (cs.outcome === 'fled' && scenario.flee_next) onEnd(scenario.flee_next, cs.player);
-    else onDefeat();
+    else if (onDefeat) onDefeat();
+    else onEnd(scenario.defeat_next, cs.player);
   }
 
   const outcomeLabel = { victory: 'Victory', defeat: 'Defeated', fled: 'Escaped', ongoing: '' }[cs.outcome];

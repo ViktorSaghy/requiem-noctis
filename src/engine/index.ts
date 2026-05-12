@@ -401,6 +401,7 @@ export function useGame() {
       endingId: null,
       activeCompulsion: null,
       rouseLog: null,
+      chronicleStartCharacter: save.character,
     });
     return true;
   }, []);
@@ -438,6 +439,7 @@ export function useGame() {
       endingId: null,
       activeCompulsion: null,
       rouseLog: null,
+      chronicleStartCharacter: state.chronicleStartCharacter,
     });
     return true;
   }, [state]);

@@ -47,6 +47,7 @@ interface Props {
   onSettings: () => void;
   onBackToTitle: () => void;
   onApplyPostCombatDamage: (player: PlayerCombatState) => void;
+  onDefeat: () => void;
   devMode?: boolean;
 }
 
@@ -430,11 +431,12 @@ function SceneCard({ scene, character }: {
 
 // ─────────────── COMBAT WRAPPER ───────────────
 
-function CombatLayout({ game, sceneId, onApplyPostCombatDamage, onGoTo, activeTab, onTabChange, onSaveSlot, onLoadSlot, onSettings, onBackToTitle, bg }: {
+function CombatLayout({ game, sceneId, onApplyPostCombatDamage, onGoTo, onDefeat, activeTab, onTabChange, onSaveSlot, onLoadSlot, onSettings, onBackToTitle, bg }: {
   game: GameState;
   sceneId: string;
   onApplyPostCombatDamage: (player: PlayerCombatState) => void;
   onGoTo: (id: string) => void;
+  onDefeat: () => void;
   activeTab: GameTab;
   onTabChange: (tab: GameTab) => void;
   onSaveSlot: (slot: string) => Promise<void>;
@@ -448,10 +450,15 @@ function CombatLayout({ game, sceneId, onApplyPostCombatDamage, onGoTo, activeTa
   const scene = game.chronicle.scenes[sceneId]!;
   const scenario = scene.combat!;
 
-  const combat = useCombat(character, scenario, (nextSceneId, finalPlayer) => {
-    onApplyPostCombatDamage(finalPlayer);
-    onGoTo(nextSceneId);
-  });
+  const combat = useCombat(
+    character,
+    scenario,
+    (nextSceneId, finalPlayer) => {
+      onApplyPostCombatDamage(finalPlayer);
+      onGoTo(nextSceneId);
+    },
+    onDefeat,
+  );
 
   useEffect(() => {
     Audio.setMood('combat');
@@ -504,7 +511,7 @@ function CombatLayout({ game, sceneId, onApplyPostCombatDamage, onGoTo, activeTa
 
 export function GameScreen({
   game, onGoTo, onBeginRoll, onRevealRoll, onConfirmRoll, onEndingReady,
-  onSaveSlot, onLoadSlot, onSettings, onBackToTitle, onApplyPostCombatDamage, devMode,
+  onSaveSlot, onLoadSlot, onSettings, onBackToTitle, onApplyPostCombatDamage, onDefeat, devMode,
 }: Props) {
   const t = useT();
   const { character, chronicle, sceneId, diceState, endingId } = game;
@@ -572,6 +579,7 @@ export function GameScreen({
           sceneId={sceneId}
           onApplyPostCombatDamage={onApplyPostCombatDamage}
           onGoTo={onGoTo}
+          onDefeat={onDefeat}
           activeTab={activeTab}
           onTabChange={setActiveTab}
           onSaveSlot={onSaveSlot}

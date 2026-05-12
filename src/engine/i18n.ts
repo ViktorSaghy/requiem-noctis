@@ -186,6 +186,11 @@ const en = {
   'combat.victory': 'All enemies have entered Torpor.',
   'combat.defeat': 'You have been brought to Torpor.',
   'combat.fled': 'You fled the field of battle.',
+
+  'death.title': 'Torpor',
+  'death.flavor': 'Darkness takes you. Your body, broken and bloodless, surrenders to the long sleep. But the dead do not forget.',
+  'death.retry': 'Retry Chronicle',
+  'death.backTitle': 'Back to Title',
   'combat.logEmpty': 'The fight has not yet begun.',
   'combat.fullDefenseBadge': 'FULL DEFENSE',
   'combat.compulsionBadge': 'COMPULSION',
@@ -440,6 +445,11 @@ const hu: TranslationDict = {
   'combat.victory': 'Minden ellenség Torpor állapotba került.',
   'combat.defeat': 'Torpor állapotba kerültél.',
   'combat.fled': 'Elmenekültél a csatamezőről.',
+
+  'death.title': 'Torpor',
+  'death.flavor': 'A sötétség magába zár. Széttört, vértelen tested az örök álomnak adja magát. De a holtak nem felejtenek.',
+  'death.retry': 'Krónika újrakezdése',
+  'death.backTitle': 'Vissza a főmenübe',
   'combat.logEmpty': 'A harc még nem kezdődött el.',
   'combat.fullDefenseBadge': 'TELJES VÉDEKEZÉS',
   'combat.compulsionBadge': 'KÉNYSZER',

@@ -170,6 +170,7 @@ export interface GameState {
   downtimeAvailable?: boolean;
   activeCompulsion: string | null;
   rouseLog: RouseResult | null;
+  chronicleStartCharacter: Character;
 }
 
 const MOOD_BY_ACT: Record<number, 'exploration' | 'tension' | 'combat'> = {
@@ -229,6 +230,7 @@ export function useGame() {
       endingId: null,
       activeCompulsion: null,
       rouseLog: null,
+      chronicleStartCharacter: startChar,
     };
     autoSave(gs);
     setState(gs);
@@ -403,6 +405,11 @@ export function useGame() {
     return true;
   }, []);
 
+  const retryChronicle = useCallback(() => {
+    if (!state) return;
+    start(state.chronicleStartCharacter, state.chronicle);
+  }, [state, start]);
+
   const saveToSlot = useCallback(async (slot: string): Promise<void> => {
     if (!state) return;
     await saveGame({
@@ -435,5 +442,5 @@ export function useGame() {
     return true;
   }, [state]);
 
-  return { state, start, goTo, beginRoll, revealRoll, confirmRoll, hasFlag, resume, saveToSlot, loadFromSlot, applyPostCombatDamage, currentScene: state ? currentScene(state) : null };
+  return { state, start, goTo, beginRoll, revealRoll, confirmRoll, hasFlag, resume, retryChronicle, saveToSlot, loadFromSlot, applyPostCombatDamage, currentScene: state ? currentScene(state) : null };
 }

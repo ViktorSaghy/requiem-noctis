@@ -11,6 +11,7 @@ import {
   CharacterCreation,
   GameScreen,
   EndingScreen,
+  DeathScreen,
   SettingsPanel,
   CreditsScreen,
   UpgradeScreen,
@@ -27,7 +28,7 @@ import { loadSettings } from './engine/settings';
 import { LangContext } from './engine/i18n';
 import { saveCharacter } from './engine/saves';
 
-type Screen = 'title' | 'story' | 'create' | 'game' | 'ending' | 'xp-recap' | 'downtime' | 'settings' | 'credits';
+type Screen = 'title' | 'story' | 'create' | 'game' | 'ending' | 'xp-recap' | 'downtime' | 'settings' | 'credits' | 'death';
 
 const BASE_CHRONICLES: Chronicle[] = [AshesOfTorpor, AshAndIvory, BloodGamesChronicle];
 
@@ -193,6 +194,15 @@ export default function App() {
     setScreen('title');
   }, []);
 
+  const handleDefeat = useCallback(() => {
+    setScreen('death');
+  }, []);
+
+  const handleRetryChronicle = useCallback(() => {
+    game.retryChronicle();
+    setScreen('game');
+  }, [game]);
+
   const handleSaveSlot = useCallback(async (slot: string) => {
     await game.saveToSlot(slot);
   }, [game]);
@@ -240,7 +250,20 @@ export default function App() {
           onSettings={handleSettings}
           onBackToTitle={handleBackToTitle}
           onApplyPostCombatDamage={game.applyPostCombatDamage}
+          onDefeat={handleDefeat}
           devMode={settings.devMode}
+        />
+      )}
+
+      {screen === 'death' && (
+        <DeathScreen
+          onLoadSlot={async (slot) => {
+            const ok = await handleLoadSlot(slot);
+            if (ok) setScreen('game');
+            return ok;
+          }}
+          onRetry={handleRetryChronicle}
+          onBackToTitle={handleBackToTitle}
         />
       )}
 

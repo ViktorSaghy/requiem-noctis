@@ -198,6 +198,15 @@ const en = {
   'dice.failure': 'Failure — {n} successes',
   'dice.rolling': 'Rolling…',
   'dice.compulsionTriggered': 'Compulsion Triggered',
+  'dice.hungerRises': '🩸 Hunger rises',
+  'dice.hungerDice': '({n}🩸)',
+
+  // ── Rouse Check ───────────────────────────────────────────────────────────
+  'rouse.title': 'Rouse Check',
+  'rouse.success': 'Vitae holds — no hunger cost',
+  'rouse.fail': '🩸 Blood spent — Hunger {hunger}/5',
+  'rouse.die': 'Rolled {n}',
+  'compulsion.active': 'Compulsion Active',
 
   // ── Endings ───────────────────────────────────────────────────────────────
   'ending.dead_end': 'Dead End',
@@ -443,6 +452,15 @@ const hu: TranslationDict = {
   'dice.failure': 'Kudarc — {n} siker',
   'dice.rolling': 'Dobás…',
   'dice.compulsionTriggered': 'Kényszer aktiválódott',
+  'dice.hungerRises': '🩸 Éhség nő',
+  'dice.hungerDice': '({n}🩸)',
+
+  // ── Rouse Check ───────────────────────────────────────────────────────────
+  'rouse.title': 'Aktiváló dobás',
+  'rouse.success': 'A vér kitart — nincs éhségköltség',
+  'rouse.fail': '🩸 Vér elfogyott — Éhség {hunger}/5',
+  'rouse.die': 'Dobás: {n}',
+  'compulsion.active': 'Kényszer aktív',
 
   // ── Endings ───────────────────────────────────────────────────────────────
   'ending.dead_end': 'Zsákutca',

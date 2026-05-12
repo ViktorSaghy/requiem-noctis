@@ -911,6 +911,69 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--gol
   color: rgba(160, 60, 60, 0.7);
 }
 
+/* ── Rouse check result banner ───────────────────────────────────────────── */
+.rouse-log-banner {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.75rem 0 0;
+  padding: 0.55rem 0.75rem;
+  border-radius: 4px;
+  font-family: var(--display);
+  font-size: 0.7rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  line-height: 1.4;
+}
+.rouse-log-banner.rouse-success {
+  background: rgba(10, 50, 20, 0.5);
+  border: 1px solid rgba(60, 140, 70, 0.35);
+  color: #8fcf98;
+}
+.rouse-log-banner.rouse-fail {
+  background: rgba(80, 10, 10, 0.5);
+  border: 1px solid rgba(180, 50, 50, 0.4);
+  color: #e8a0a0;
+}
+.rouse-title {
+  font-weight: 700;
+  opacity: 0.75;
+}
+.rouse-die {
+  font-family: var(--serif);
+  font-size: 0.75rem;
+  opacity: 0.7;
+}
+.rouse-result { flex: 1; }
+
+/* ── Active compulsion banner (from messy critical) ──────────────────────── */
+.compulsion-active-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  margin: 0.75rem 0 0;
+  padding: 0.6rem 0.75rem;
+  background: rgba(110, 60, 0, 0.25);
+  border: 1px solid rgba(200, 140, 30, 0.4);
+  border-radius: 4px;
+}
+.compulsion-active-label {
+  font-family: var(--display);
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold);
+  opacity: 0.85;
+}
+.compulsion-active-text {
+  font-family: var(--serif);
+  font-size: var(--text-sm);
+  font-style: italic;
+  color: #e8c97a;
+  line-height: 1.5;
+}
+
 /* ── Locked choice ───────────────────────────────────────────────────────── */
 .choice-btn-locked {
   opacity: 0.38;
@@ -1079,6 +1142,12 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--gol
   font-size: var(--text-xl);
   color: var(--gold);
   font-weight: 600;
+}
+.check-hunger-dice {
+  font-size: 0.7rem;
+  color: #e09090;
+  margin-left: 0.35rem;
+  vertical-align: middle;
 }
 
 .roll-btn {
@@ -1890,6 +1959,25 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--gol
 .result-badge.failure  { background: rgba(100,100,120,0.15); border: 1px solid rgba(255,255,255,0.15); color: var(--text-dim); }
 .result-badge.bestial  { background: rgba(255,32,32,0.15); border: 1px solid #ff2020; color: #ff6060; }
 .result-badge.messy    { background: rgba(139,26,26,0.2); border: 1px solid var(--crimson); color: #e09090; }
+
+.dice-pool-info {
+  font-family: var(--display);
+  font-size: 0.7rem;
+  letter-spacing: 0.08em;
+  color: var(--text-dim);
+  margin-bottom: 0.75rem;
+}
+.hunger-rise-warning {
+  font-family: var(--display);
+  font-size: 0.75rem;
+  letter-spacing: 0.1em;
+  color: #e8a0a0;
+  margin-bottom: 0.75rem;
+  padding: 0.35rem 1rem;
+  background: rgba(139, 26, 26, 0.18);
+  border: 1px solid rgba(192, 57, 43, 0.35);
+  border-radius: 3px;
+}
 
 /* ── Ending Screen ──────────────────────────────────────────────────────── */
 .ending-screen {

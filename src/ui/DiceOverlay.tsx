@@ -59,9 +59,16 @@ export function DiceOverlay({ result, phase, difficulty, label, clanCompulsion, 
     return t('dice.failure', { n: result.successes });
   }
 
+  const hungerRises = result.messyCritical || result.bestialFailure;
+
   return (
     <div className="dice-overlay">
       <div className="dice-overlay-title">{label}</div>
+      {result.hungerDice > 0 && (
+        <div className="dice-pool-info">
+          {result.totalDice} dice · {result.hungerDice}🩸 hunger
+        </div>
+      )}
       <div className="dice-tray">
         {displayValues.map((d, i) => (
           <div key={i} className={dieClass(d.v, d.h, phase)}>
@@ -74,6 +81,11 @@ export function DiceOverlay({ result, phase, difficulty, label, clanCompulsion, 
           <div className={`result-badge ${resultClass(result, difficulty)}`}>
             {getResultLabel()}
           </div>
+          {hungerRises && (
+            <div className="hunger-rise-warning">
+              {t('dice.hungerRises')}
+            </div>
+          )}
           {clanCompulsion && result.messyCritical && (
             <div className="compulsion-overlay">
               <div className="compulsion-overlay-label">{t('dice.compulsionTriggered')}</div>

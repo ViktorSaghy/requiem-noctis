@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import type { Character } from './character';
+import { CLANS } from './character';
 import type { Chronicle, Scene, DiceCheck } from './story';
 import { rollDice, difficultyCheck } from './dice';
 import type { DiceResult } from './dice';
@@ -151,6 +152,13 @@ export interface DiceState {
   passed: boolean;
 }
 
+export interface RouseResult {
+  die: number;
+  success: boolean;
+  newHunger: number;
+  reason: string;
+}
+
 export interface GameState {
   character: Character;
   chronicle: Chronicle;
@@ -160,6 +168,8 @@ export interface GameState {
   diceState: DiceState;
   endingId: string | null;
   downtimeAvailable?: boolean;
+  activeCompulsion: string | null;
+  rouseLog: RouseResult | null;
 }
 
 const MOOD_BY_ACT: Record<number, 'exploration' | 'tension' | 'combat'> = {
@@ -217,17 +227,19 @@ export function useGame() {
       journal: [],
       diceState: { phase: 'idle', check: null, result: null, passed: false },
       endingId: null,
+      activeCompulsion: null,
+      rouseLog: null,
     };
     autoSave(gs);
     setState(gs);
   }, [autoSave]);
 
-  const goTo = useCallback((sceneId: string) => {
+  const goTo = useCallback((sceneId: string, opts?: { disciplineRouse?: boolean }) => {
     setState(prev => {
       if (!prev) return prev;
       if (prev.chronicle.endings[sceneId]) {
         Audio.setMood('ending');
-        return { ...prev, sceneId, endingId: sceneId };
+        return { ...prev, sceneId, endingId: sceneId, activeCompulsion: null, rouseLog: null };
       }
       const scene = prev.chronicle.scenes[sceneId];
       if (!scene) return prev;
@@ -237,7 +249,19 @@ export function useGame() {
       const journal = scene.title
         ? [{ entry: `Act ${scene.act} — ${scene.title}`, summary: extractFirstSentence(scene.narrative), time: Date.now() }, ...prev.journal]
         : prev.journal;
-      const character = applySceneDeltas(prev.character, scene);
+
+      // Rouse check for discipline-gated choices (1d10, success ≥ 6)
+      let rouseLog: RouseResult | null = null;
+      let rouseChar = prev.character;
+      if (opts?.disciplineRouse) {
+        const die = Math.ceil(Math.random() * 10);
+        const success = die >= 6;
+        const newHunger = success ? rouseChar.hunger : Math.min(5, rouseChar.hunger + 1);
+        rouseLog = { die, success, newHunger, reason: 'discipline' };
+        rouseChar = { ...rouseChar, hunger: newHunger };
+      }
+
+      const character = applySceneDeltas(rouseChar, scene);
       const next: GameState = {
         ...prev,
         character,
@@ -246,6 +270,8 @@ export function useGame() {
         journal,
         diceState: { phase: 'idle', check: null, result: null, passed: false },
         endingId: null,
+        activeCompulsion: null,
+        rouseLog,
       };
       if (scene.resolution) {
         const endingId = resolveEnding(prev.chronicle, flags);
@@ -291,12 +317,24 @@ export function useGame() {
   const confirmRoll = useCallback(() => {
     setState(prev => {
       if (!prev || prev.diceState.phase !== 'revealed') return prev;
-      const { check, passed } = prev.diceState;
+      const { check, passed, result } = prev.diceState;
       if (!check) return prev;
+
+      // V5 consequences: messy critical triggers compulsion + hunger rise;
+      // bestial failure triggers hunger rise (the Beast interferes)
+      let baseChar = prev.character;
+      let activeCompulsion: string | null = null;
+      if (result?.messyCritical) {
+        baseChar = { ...baseChar, hunger: Math.min(5, baseChar.hunger + 1) };
+        activeCompulsion = CLANS[baseChar.clan]?.compulsion ?? null;
+      } else if (result?.bestialFailure) {
+        baseChar = { ...baseChar, hunger: Math.min(5, baseChar.hunger + 1) };
+      }
+
       const nextId = passed ? check.success_next : check.fail_next;
       if (prev.chronicle.endings[nextId]) {
         Audio.setMood('ending');
-        return { ...prev, sceneId: nextId, flags: prev.flags, journal: prev.journal, diceState: { phase: 'idle', check: null, result: null, passed: false }, endingId: nextId };
+        return { ...prev, character: baseChar, sceneId: nextId, flags: prev.flags, journal: prev.journal, diceState: { phase: 'idle', check: null, result: null, passed: false }, endingId: nextId, activeCompulsion, rouseLog: null };
       }
       const scene = prev.chronicle.scenes[nextId];
       const flags = applyFlags(prev.flags, scene?.flags_set);
@@ -305,7 +343,7 @@ export function useGame() {
       const journal = scene?.title
         ? [{ entry: `Act ${scene.act} — ${scene.title}`, summary: extractFirstSentence(scene?.narrative), time: Date.now() }, ...prev.journal]
         : prev.journal;
-      const character = scene ? applySceneDeltas(prev.character, scene) : prev.character;
+      const character = scene ? applySceneDeltas(baseChar, scene) : baseChar;
       let endingId: string | null = null;
       if (scene?.resolution) endingId = resolveEnding(prev.chronicle, flags);
       else if (scene?.ending) { Audio.setMood('ending'); endingId = scene.ending; }
@@ -317,6 +355,8 @@ export function useGame() {
         journal,
         diceState: { phase: 'idle', check: null, result: null, passed: false },
         endingId,
+        activeCompulsion,
+        rouseLog: null,
       };
       if (!endingId) autoSave(next);
       return next;
@@ -357,6 +397,8 @@ export function useGame() {
       journal: save.journal,
       diceState: { phase: 'idle', check: null, result: null, passed: false },
       endingId: null,
+      activeCompulsion: null,
+      rouseLog: null,
     });
     return true;
   }, []);
@@ -387,6 +429,8 @@ export function useGame() {
       journal: save.journal,
       diceState: { phase: 'idle', check: null, result: null, passed: false },
       endingId: null,
+      activeCompulsion: null,
+      rouseLog: null,
     });
     return true;
   }, [state]);

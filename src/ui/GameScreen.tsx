@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo, Fragment } from 'react';
-import type { GameState } from '../engine';
+import type { GameState, RouseResult } from '../engine';
 import { listSaves, CLANS, portraitPath, getSceneImage, preloadImages } from '../engine';
 import type { SaveSlot, JournalEntry } from '../engine';
 import { XpHUD } from './XpHUD';
@@ -20,9 +20,24 @@ import type { TranslationKey } from '../engine/i18n';
 
 type GameTab = 'story' | 'character' | 'journal' | 'menu';
 
+function RouseLogBanner({ rouseLog }: { rouseLog: RouseResult }) {
+  const t = useT();
+  return (
+    <div className={`rouse-log-banner ${rouseLog.success ? 'rouse-success' : 'rouse-fail'}`}>
+      <span className="rouse-title">{t('rouse.title')}</span>
+      <span className="rouse-die">{t('rouse.die', { n: rouseLog.die })}</span>
+      <span className="rouse-result">
+        {rouseLog.success
+          ? t('rouse.success')
+          : t('rouse.fail', { hunger: rouseLog.newHunger })}
+      </span>
+    </div>
+  );
+}
+
 interface Props {
   game: GameState;
-  onGoTo: (id: string) => void;
+  onGoTo: (id: string, opts?: { disciplineRouse?: boolean }) => void;
   onBeginRoll: () => void;
   onRevealRoll: () => void;
   onConfirmRoll: () => void;
@@ -277,14 +292,15 @@ function StoryActionsPanel({ scene, character, flags, diceState, onGoTo, onBegin
   character: GameState['character'];
   flags: GameState['flags'];
   diceState: GameState['diceState'];
-  onGoTo: (id: string) => void;
+  onGoTo: (id: string, opts?: { disciplineRouse?: boolean }) => void;
   onBeginRoll: () => void;
 }) {
   const t = useT();
 
-  function handleChoice(nextId: string) {
+  function handleChoice(choice: NonNullable<typeof scene.choices>[number]) {
     void Audio.buttonTap();
-    onGoTo(nextId);
+    const shouldRouse = !!choice.requires_discipline && choice.rouse !== false;
+    onGoTo(choice.next, { disciplineRouse: shouldRouse });
   }
   function handleNext() {
     void Audio.buttonTap();
@@ -324,7 +340,7 @@ function StoryActionsPanel({ scene, character, flags, diceState, onGoTo, onBegin
                 className={`choice-btn${locked ? ' choice-btn-locked' : ''}`}
                 disabled={locked}
                 title={lockHint}
-                onClick={() => !locked && handleChoice(choice.next)}
+                onClick={() => !locked && handleChoice(choice)}
               >
                 {choice.icon && <span className="choice-icon">{choice.icon}</span>}
                 {locked && <span className="choice-lock-icon">🔒</span>}
@@ -345,7 +361,12 @@ function StoryActionsPanel({ scene, character, flags, diceState, onGoTo, onBegin
           <div className="check-stats">
             <div className="check-stat">
               <div className="check-stat-label">{t('game.pool')}</div>
-              <div className="check-stat-value">{scene.check.pool(character)}</div>
+              <div className="check-stat-value">
+                {scene.check.pool(character)}
+                {scene.check.hunger(character) > 0 && (
+                  <span className="check-hunger-dice">{t('dice.hungerDice', { n: scene.check.hunger(character) })}</span>
+                )}
+              </div>
             </div>
             <div className="check-stat">
               <div className="check-stat-label">{t('game.difficulty')}</div>
@@ -606,6 +627,17 @@ export function GameScreen({
                     <p className="narrative-clan-note">
                       {scene.clan_notes[game.character.clan as keyof typeof scene.clan_notes]}
                     </p>
+                  )}
+
+                  {/* Rouse check result from discipline choices */}
+                  {game.rouseLog && <RouseLogBanner rouseLog={game.rouseLog} />}
+
+                  {/* Active compulsion from messy critical */}
+                  {game.activeCompulsion && (
+                    <div className="compulsion-active-banner">
+                      <span className="compulsion-active-label">{t('compulsion.active')}</span>
+                      <span className="compulsion-active-text">{game.activeCompulsion}</span>
+                    </div>
                   )}
 
                   {/* Compulsion instinct — shown when hunger ≥ 4 */}

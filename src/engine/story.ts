@@ -31,6 +31,8 @@ export interface Choice {
   requires_clan?: ClanName;        // hidden entirely unless character.clan matches
   requires_hunger_gte?: number;    // shown disabled when hunger < threshold (teaches mechanic)
   requires_hunger_lte?: number;    // shown disabled when hunger > threshold
+  // Set false to suppress the automatic rouse check for discipline choices
+  rouse?: boolean;
 }
 
 export interface EnemySpec {

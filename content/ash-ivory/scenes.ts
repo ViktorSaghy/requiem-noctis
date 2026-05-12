@@ -130,11 +130,19 @@ export const AshAndIvory: Chronicle = {
       title: 'Kärntner Strasse, 2am',
       image: '/backgrounds/ash-cafe.png',
       narrative: "The envelope has been memorised. A single line: 'Courier Vasile is missing. The documents exist. Find them before dawn Thursday.'\n\nOutside the café window, Vienna has been celebrating for six hours. Wehrmacht trucks moving through the Ringstrasse to cheering crowds. A woman threw flowers. A man near the front wept. You could not tell which was sincere.\n\nThe café owner — Hofer, fifty years old — sets a glass of red wine in front of you that you did not order. His hands are shaking.\n\nYou have until Thursday dawn. Vasile runs identity documents for the Camarilla. If those documents reach the wrong hands, seventeen Kindred are exposed.\n\nHofer is watching you. He has not looked away once.",
+      clan_notes: {
+        Ventrue: "The mortal hierarchy just rearranged itself. Wehrmacht in the streets, Kindred networks unchanged — for now. Hofer is watching you for someone with recent café access and a reason to look for a specific description. That is either Camarilla politics or mortal intelligence, and the mortal option is more concerning. File Hofer as a managed problem and move.",
+        Toreador: "Vienna celebrating occupation is an aesthetic category error — the flowers look wrong, the trucks look wrong on streets built by people who understood beauty. You have been in this city twenty years and it has never looked quite like this. Hofer's hands are shaking in the particular way of a man with two masters who hopes they do not meet tonight.",
+        Brujah: "Wehrmacht trucks on the Ringstrasse at 2am, men in new uniforms enjoying themselves before they have paid for it. The anger arrives before the relevant information, which is a problem you recognise. Hofer is watching you for someone — note that, use it. The anger about the trucks is correct but not useful right now. Both things are true.",
+        Malkavian: "Hofer has been paid twice — once to watch, once not to appear to be watching, which he has entirely failed at. The wine is from the third shelf, not the second: he thinks you are worth more than you look. Vienna is celebrating something it will regret before spring, but the Cobweb filed that under Known. The interesting part is who paid Hofer — the answer has a smell to it, bureaucratic, recent, Bavarian.",
+        Nosferatu: "You have been in this café thirty-one times without Hofer knowing. Tonight he knew what to watch for, which means someone described you specifically and recently to a man who has been paid to look. The shaking hands are performed — he is not afraid, he is signaling. Someone is receiving that signal right now.",
+      },
       choices: [
         { text: 'Examine the envelope — someone sent this deliberately', next: 'examine_envelope', icon: '🔍' },
         { text: 'Hold Hofer\'s gaze. Force a conversation.', next: 'confront_hofer', icon: '👁' },
         { text: 'Leave immediately. Go to Vasile\'s address in Josefstadt.', next: 'josefstadt_direct', icon: '🚶' },
         { text: 'Find Miriam Szabo. The Malkavian has been in this city eighty years.', next: 'contact_miriam_initial', icon: '📞' },
+        { text: 'Read what the building knows — you were here before Hofer was born', next: 'start_nosferatu_read', requires_clan: 'Nosferatu', icon: '🐀' },
       ],
     },
 
@@ -262,10 +270,17 @@ export const AshAndIvory: Chronicle = {
       title: 'The Flat',
       narrative: "Vasile's flat has been searched professionally — drawers replaced not emptied, cushions repositioned not slashed.\n\nThey missed two things.\n\nFirst: a loose brick behind the fireplace. Inside: a woman's earring and a receipt for a café on Taborstrasse dated two days ago.\n\nSecond: on the inside of the wardrobe door, written very small in pencil: M.Sz. knows.\n\nMiriam Szabo. And under those words, in different ink: If found — do not trust the warehouse. It is watched.",
       flags_set: ['found_flat_clues', 'vasile_warned_about_warehouse', 'miriam_connection'],
+      clan_notes: {
+        Ventrue: "Two errors in a professional search — the loose brick and the wardrobe note. They were briefed for a specific type of search and blind outside it. M.Sz. knows means Vasile trusted someone enough to leave a record. The question is whether that trust was warranted.",
+        Gangrel: "The flat smells of someone who left fast but not panicked — Gangrel going down on his own terms if not his own choice. The searchers wore the same manufacturer's boot polish, moved in a taught pattern rather than an instinctive one. They would not have found the brick. You found it in eight seconds.",
+        Tremere: "There was a ward on the door — crude mortal occultism, no longer functioning, set by someone who half-understood the theory. Someone in Kessler's chain of command suggested it. The Ahnenerbe has access to genuine occult materials and almost certainly does not understand what those materials are. That changes the shape of the problem.",
+        Lasombra: "Vasile wrote the note in the corner of the wardrobe where no light falls. People put what they cannot say aloud in dark places. 'Do not trust the warehouse' is the more important note — written first, in different ink, the thing he needed to say before the thing he wanted to say.",
+      },
       choices: [
         { text: 'The café on Taborstrasse. That is where Miriam operates.', next: 'contact_miriam_with_clues', icon: '📞' },
         { text: 'Go to the warehouse anyway', next: 'warehouse_watched', icon: '🏭' },
         { text: 'Imperial Hotel. Kessler has Vasile.', next: 'imperial_approach_informed', icon: '🏨' },
+        { text: 'Let your senses loose — follow whoever took Vasile', next: 'josefstadt_scent_trail', requires_clan: 'Gangrel', icon: '🐺' },
       ],
     },
 
@@ -286,10 +301,17 @@ export const AshAndIvory: Chronicle = {
       image: '/backgrounds/ash-miriam.png',
       narrative: "The bookshop on Taborstrasse. Miriam Szabo is sitting in the back room with a Hungarian newspaper folded open to the crossword. She does not look up.\n\n'I wondered when you would come,' she says. Her accent is unguarded tonight. 'I sent the envelope. I used Camarilla materials because I wanted you to know it was real.'\n\nShe sets down the paper. When she looks at you, her eyes are sharper than the Malkavian reputation suggests.\n\n'I have what you are looking for. All of it. Vasile gave it to me before they took him.' A pause. 'But I want something in return.'",
       flags_set: ['miriam_contacted', 'miriam_has_documents', 'knows_miriam_sent_envelope'],
+      clan_notes: {
+        Ventrue: "The Malkavian reputation is doing work here — she is using it as camouflage for how precise she actually is. Her leverage is real, her information is current, her terms are clear. Either her madness does not touch the transactional parts of her, or she has decided not to let it. Possibly both. Worth dealing with carefully.",
+        Brujah: "She went around the Camarilla because competent people ask questions she does not want to answer — that is not madness, that is exact tactical thinking. She chose you specifically: new enough to be motivated, capable enough to be useful. You find yourself respecting that before you have decided whether to.",
+        Nosferatu: "You have a file on Miriam Szabo from 1921. Three havens in Vienna, two border contacts in Switzerland, a web of uncollected favours in Zurich and Basel. She is not performing clarity — she is simply choosing, tonight, not to perform madness. The distinction matters.",
+        Gangrel: "She smells of route maps — the particular readiness of someone who has already decided to leave and is waiting only on the method. The crossword is a prop; the newspaper is three days old. She is not confused. She is counting down.",
+      },
       choices: [
         { text: 'Ask what she wants', next: 'miriam_wants', icon: '🎭' },
         { text: 'Ask why she did not tell the Camarilla directly', next: 'miriam_why_hidden', icon: '🔍' },
         { text: 'Ask where Vasile is', next: 'miriam_vasile_location', icon: '❓' },
+        { text: 'Step into the Cobweb — find her frequency', next: 'miriam_cobweb_connection', requires_clan: 'Malkavian', icon: '🕸️' },
       ],
     },
 
@@ -410,6 +432,12 @@ export const AshAndIvory: Chronicle = {
       act: 1,
       title: 'The Cost of Restraint',
       narrative: "You have been in motion for three hours. The city is full of warm bodies — soldiers celebrating, civilians watching from windows, drunken revellers.\n\nThe hunger does not ignore this.\n\nIt is not an urge. It is a voice, and it is making a rational argument: you are going into something dangerous at reduced capacity. Feeding now is not weakness. It is preparation.\n\nThe argument is not wrong. That is the problem with the Beast — it is almost never entirely wrong.\n\nA Wehrmacht soldier has separated from his group. Sitting on a bench near the Naschmarkt, head back, half-asleep.",
+      clan_notes: {
+        Ventrue: "A separated Wehrmacht soldier — compromised, sleeping, visible. Not ideal stock, but these are not ideal circumstances. You are going into something dangerous at reduced capacity. The calculation is straightforward: the man on the bench will not remember by morning. Make the decision and move.",
+        Toreador: "The young musician at the Opernring bar is unhappy about the Anschluss in the way artists are unhappy — loudly, as if the quality of his suffering constitutes resistance. He is also unfinished in an interesting way, beauty that doesn't know what it becomes yet. The hunger notices the soldier. You notice the musician. The Beast rolls its eyes.",
+        Brujah: "The soldier has a Party pin. The musician has a pamphlet under his coat. You know which one you would prefer to feed from. You also know that preference is exactly the mechanism — the Beast doesn't have politics, it has leverage. It will make the moral argument as long as the moral argument gets it what it wants.",
+        Malkavian: "The soldier's blood would taste like this exact week — all of it, occupation and celebration and fear underneath both. The musician's blood would taste like something unresolved, a key that doesn't know its lock yet. The Beast makes the rational case for the soldier. You take the musician because you are curious about the key, and because the week already knows how it ends.",
+      },
       choices: [
         { text: 'Feed. You need full strength for what comes next.', next: 'hunger_feed_soldier', icon: '🩸' },
         { text: 'Resist. You do not feed from soldiers.', next: 'hunger_resist', icon: '✋' },
@@ -421,6 +449,12 @@ export const AshAndIvory: Chronicle = {
       act: 1,
       title: 'The Easy Choice',
       narrative: "You feed quickly. The soldier will not remember.\n\nHunger drops. Clarity returns. And with it, something else: the awareness of what you just did. A Wehrmacht soldier, drunk and separated, who has probably done things in the last six hours you would not want to know about.\n\nIt was the easy choice. The Beast made a rational argument. You agreed.\n\nThat is how it always starts.",
+      clan_notes: {
+        Ventrue: "The argument was sound. The man was compromised, non-combatant in any meaningful sense, and will remember nothing. What remains is the knowledge that the argument was sound — and that the Beast knows it was sound, and will remember that you agreed.",
+        Toreador: "The musician was available. You took the soldier instead. The Beast made the suggestion and you gave it a reason — which is worse than simply agreeing. Reasons can be applied again.",
+        Brujah: "You said you would not feed from soldiers. Then the Beast made its argument and you found yourself here. This is the mechanism working as designed. You are not the first Brujah to notice this. You will not be the last.",
+        Malkavian: "The week knew how it ended. You helped it end that way. The soldier's blood tasted exactly like the last six hours — occupation, adrenaline, the flat certainty of people who believe they are winning. You were right that it would. That is not comfort.",
+      },
       flags_set: ['fed_from_soldier', 'humanity_stain'],
       hunger_change: -2,
       next: 'act2_approach',
@@ -430,6 +464,12 @@ export const AshAndIvory: Chronicle = {
       act: 1,
       title: 'The Hard Choice',
       narrative: "You leave him there. Asleep on his bench, ignorant, warm.\n\nThe hunger settles, patient, into the back of your awareness. It will be there for everything that follows — every roll, every confrontation, every moment when you need to be faster or stronger than you are.\n\nYou chose restraint. It will cost something, somewhere. That is the deal.",
+      clan_notes: {
+        Ventrue: "Correct decision. Feeding from Wehrmacht soldiers in occupied Vienna carries an exposure risk that outweighs the operational benefit. The hunger will complicate what follows. That cost is acceptable. It was correctly calculated.",
+        Brujah: "The Beast had the right target: a soldier of the occupation, separated, drunk, easy to justify. It will return with a cleaner version next time. Know that this is the next iteration coming, not a reprieve.",
+        Gangrel: "The hunger is manageable. You have run on worse. There are three other feeding options within four blocks if it becomes critical. You made the right call. The Beast will be patient about it.",
+        Nosferatu: "There were three other options within four blocks. You could have fed cleanly and been done with it. You chose restraint as a statement. Worth noting whether the statement was for yourself or for something you imagine is watching.",
+      },
       flags_set: ['hunger_stays_high'],
       next: 'act2_approach',
     },
@@ -438,6 +478,12 @@ export const AshAndIvory: Chronicle = {
       act: 1,
       title: 'A Considered Approach',
       narrative: "The bar near the Opernring caters to a specific clientele — theatre people, artists, the kind of Viennese who have always known the night contains stranger things than most admit.\n\nA young musician, unhappy about the Anschluss in the way artists are unhappy — loudly, as if their unhappiness constitutes resistance. When you turn the full weight of your attention on him, he is entirely willing.\n\nA clean feed. A merciful one, by the standards of your existence.",
+      clan_notes: {
+        Ventrue: "Willing vessel, no exposure risk, civilian not military. This is the correct outcome. Note: the Beast's initial suggestion was the soldier. You redirected it. This is the arrangement working as it should.",
+        Toreador: "He will not remember the details. You will. The unfinished quality — a musician who does not yet know what the Anschluss has ended for him — will stay with you longer than the feeding itself. That is not a complaint.",
+        Brujah: "He had a pamphlet under his coat. You used that as your justification. The Beast used hunger as its justification. You arrived at the same place from different directions. The musician is unhurt. The reasoning is worth examining anyway.",
+        Malkavian: "The key tastes like an open question. You have swallowed a fragment of something the week has not resolved. The Cobweb will find it eventually. It finds everything eventually — that is both its purpose and its problem.",
+      },
       flags_set: ['clean_feed', 'humanity_intact'],
       hunger_change: -1,
       next: 'act2_approach',
@@ -518,6 +564,12 @@ export const AshAndIvory: Chronicle = {
       title: 'Brandt',
       image: '/backgrounds/ash-brandt.png',
       narrative: "He does not call for help. He does not reach for his weapon immediately. He turns to face you, hands visible, and says in careful German: 'I was expecting someone.'\n\nHis eyes focus on your collar. Not your face.\n\n'I know not to look at you directly,' he says. 'I know you can make me forget this conversation if I do.' A pause. 'I have been preparing for two years. I would like to talk before this becomes something neither of us wants.'",
+      clan_notes: {
+        Ventrue: "He controlled the frame immediately: visible hands, non-confrontational position, the language of mutual interest. Someone prepared him, or he developed these protocols himself over two years. Threat classification upward. He is not Kessler's tool — he is Kessler's peer in this.",
+        Tremere: "He knows not to make eye contact. The behavioral counter-protocols are specific enough to suggest documented occult knowledge somewhere in his chain of command — not improvised field adaptation. What Prague left him with has been refined. Note this.",
+        Nosferatu: "He blocked neither exit. He wants the conversation to happen, and he signalled that by not optimising his position. A man who spent two years preparing and chose, at the moment, to make it easy. That is either genuine or very good tradecraft.",
+        Malkavian: "He is afraid in the catalogued way — placed, measured, not suppressed. A fine tremor in his hands that he is managing. The fear is not of you specifically: it is of what happens if this conversation ends wrong. The Cobweb notes: he has been rehearsing what to say.",
+      },
       flags_set: ['brandt_confrontation', 'brandt_knows_player'],
       choices: [
         { text: 'Talk. He clearly knows things.', next: 'brandt_talk', icon: '🤝' },
@@ -531,6 +583,12 @@ export const AshAndIvory: Chronicle = {
       title: 'What Brandt Knows',
       image: '/backgrounds/ash-brandt.png',
       narrative: "'I was in Prague,' he says. Very still. 'I saw what your kind can do. I also saw what Kessler became after — the partial resistance, the obsession.'\n\nHe keeps his hands visible. Silver ammunition in his jacket.\n\n'Kessler's investigation ends tonight either way — he has received orders to consolidate in Berlin. But he will not leave without answers.'\n\nBrandt glances at your collar. 'The courier in Room 14 — he is going to break. Not because we are cruel. Because it has been three days and he has not fed and that is what that does to your kind, is it not? The hunger.'",
+      clan_notes: {
+        Ventrue: "He is handling this correctly: visible hands, intelligence without hostility, the offer framed as mutual interest rather than demand. He knew exactly what register to use. Someone briefed him on how to speak to Kindred, or he arrived at the right answer himself after two years of thinking. Either way, he is more dangerous and more useful than Kessler.",
+        Lasombra: "He positioned himself to cover both exits with one shot. He practiced this room. The silver ammunition is the significant detail — not standard Ahnenerbe issue, which means someone gave it to him specifically for this encounter, which means someone in that chain of command knows more than Prague. Kessler is not the ceiling of this problem.",
+        Tremere: "He has structured his behavior to minimize vulnerability to Dominate — no direct eye contact, controlled emotional state, counter-protocols that suggest actual occult knowledge somewhere in his chain of command. Prague is not the whole story. Treat this conversation as intelligence-gathering in both directions.",
+        Nosferatu: "He removed the backup weapon from his left jacket pocket sometime this afternoon — the wear pattern and absent weight make it clear. He wanted to reduce escalation risk. He has been wanting this conversation for two years and is being very careful not to appear like it. Give him what he needs to feel progress, and extract everything.",
+      },
       choices: [
         { text: 'He is right about everything. Negotiate.', next: 'brandt_negotiate', icon: '🤝' },
         { text: 'He knows too much. This conversation ends here.', next: 'brandt_fight_after_talk', icon: '⚔️' },
@@ -736,6 +794,12 @@ export const AshAndIvory: Chronicle = {
       act: 2,
       title: 'Finding Vasile',
       narrative: "The room at the end of the east corridor. Not locked — why lock the door when Brandt is the lock?\n\nVasile is against the wall. Three days without feeding. He looks at you and his first question is:\n\n'Did you get the documents?'",
+      clan_notes: {
+        Gangrel: "Three days. He is at the exact limit — still thinking, still choosing, but the hunger is behind every word. He asked about the documents first because that is what a Gangrel does: mission before survival, territory before self. He will not ask you for blood. Offer it anyway.",
+        Nosferatu: "He is performing composure. The haven he keeps in Pest — the one he has never mentioned to the Camarilla — he is thinking about it now, measuring distances. He trusts you enough to be here. Feed him before you move him. A hungry Gangrel in a hostile building is a liability he will not tell you about.",
+        Ventrue: "Three days without feeding. Operational capacity significantly degraded. He knows this and is concealing the extent. 'Can you walk' is the wrong question — 'can you perform under pressure' is the right one, and the answer is currently uncertain. Factor this.",
+        Toreador: "He is beautiful in the specific way of things under unbearable strain — a coherence that requires everything. He will not thank you. He cannot, right now. The hunger has taken that register. He asked about the documents because that is what he has left. Note this for later.",
+      },
       flags_set: ['vasile_found'],
       choices: [
         { text: 'Yes — they are safe', next: 'vasile_docs_safe', icon: '✓' },
@@ -803,6 +867,12 @@ export const AshAndIvory: Chronicle = {
       image: '/backgrounds/ash-kessler.png',
       narrative: "Kessler pours two cups of coffee. Sets one in front of you.\n\n'I know you will not drink it. But it seemed polite.'\n\nHe sits across the desk. The files between you contain six months of meticulous work. He does not hide them. He wants you to see them.\n\n'My name — my real name — is Hans Bremer. I suspect you know that.'",
       flags_set: ['kessler_confesses_name', 'kessler_direct_meeting'],
+      clan_notes: {
+        Ventrue: "He pours two cups and sets one in front of you — a power gesture, establishing equal standing before a negotiation. Take the cup, set it down without drinking, hold the silence. He has been thinking about Kindred for two years and developed opinions. Some are wrong in instructive ways. The accurate ones are the ones to worry about.",
+        Toreador: "He has not slept in three days. The tie is perfect. The files are at a precise angle. He is the kind of man who believes visible order constitutes control, and it has been working for him until tonight. There is something briefly touching about that, at a distance. He is about to understand that some things cannot be filed.",
+        Malkavian: "He is not afraid of you — he has decided not to be, which is different, and the decision has texture, a place where it was made at cost, nightly, for six months. 'Hans Bremer' sits in him like a stone he has learned to carry. He has been waiting for someone who knows the name. What he does not know is that the Cobweb filed this meeting under Certain.",
+        Tremere: "He has a ward on the door — mortal occultism, partially functional, set by someone who knew the theory without the practice. Someone in his chain of command provided it. The Ahnenerbe has access to genuine occult materials and does not understand their provenance. That is a larger problem than Kessler. Note it for later.",
+      },
       choices: [
         { text: 'Yes. What do you want from this conversation?', next: 'kessler_wants', icon: '🤝' },
         { text: 'Kill him. Six months of research dies with him.', next: 'kessler_kill', icon: '⚔️' },
@@ -998,6 +1068,36 @@ export const AshAndIvory: Chronicle = {
       },
     },
 
+    start_nosferatu_read: {
+      act: 1,
+      title: 'What the Building Knows',
+      narrative: "You have been in this café forty-three times. Twice in the last decade while Hofer was still learning the business from his father. You know the seam between wall and counter where sound carries from the kitchen. You know the chair nearest the window that faces two streets.\n\nSomeone else has learned that chair recently. The upholstery has a new wear pattern — six weeks of the same person sitting the same way.\n\nYou check the kitchen waste. A Bavarian cigarette brand, not Austrian. The order slips for the past four nights show two men ordering the same thing each time, leaving before the hour. Kessler's people. And from the window: a third, across the street, parked in a position that covers the front entrance.\n\nThree sets of eyes. Hofer is the least of your concerns.",
+      flags_set: ['kessler_knows_player', 'understands_double_watch', 'knows_three_watchers'],
+      choices: [
+        { text: 'Leave now — through the kitchen, they have the front covered', next: 'josefstadt_wise', icon: '🐀' },
+        { text: 'Find Miriam. She is further from Kessler\'s attention.', next: 'contact_miriam_initial', icon: '📞' },
+      ],
+    },
+
+    josefstadt_scent_trail: {
+      act: 1,
+      title: 'The Trail',
+      narrative: "You close your eyes and let the Beast read the room.\n\nVasile's scent is oldest — the specific cold-copper smell of a hungry Gangrel, and under it the road, the Eastern road, a dozen cities over the last three months. He was here two days ago. He left at speed, not by choice.\n\nThe second scent is mortal: leather, gun oil, a Bavarian tobacco brand sold in precisely two shops in Vienna. Whoever took Vasile was SS, or working alongside them. Military training in how they moved — the flat surfaces they touched, the non-obvious grip-points on the furniture. Two men, efficient, not angry.\n\nThey did not hurt him here. The taking was clean. That means they need him talking, not broken. Three days in, that window is closing.\n\nThe pencil pressure on the wardrobe note says Vasile was not afraid. Resigned, maybe. He had already decided how this ended.",
+      flags_set: ['found_flat_clues', 'vasile_warned_about_warehouse', 'miriam_connection', 'knows_vasile_calm'],
+      choices: [
+        { text: 'The café on Taborstrasse. Miriam knows.', next: 'contact_miriam_with_clues', icon: '📞' },
+        { text: 'Imperial Hotel directly — the scent trail says SS.', next: 'imperial_approach_informed', icon: '🏨' },
+      ],
+    },
+
+    miriam_cobweb_connection: {
+      act: 1,
+      title: 'Frequencies',
+      narrative: "You do not speak. You reach sideways — the way you reach for a memory that is not quite yours — and find her thread.\n\nThe Cobweb between two Malkavians in the same room is not a conversation. It is a collision: her eighty years in this city against your own particular fracture, both arriving at the same point from different angles.\n\nYou know the following simultaneously: Vasile is in Room 14. Brandt is former infantry, not original Ahnenerbe. Kessler has scar tissue from Prague that makes his mind slippery. Miriam has been packed for eleven days.\n\nShe says aloud the only thing the Cobweb doesn't carry well: 'The train. I want the train west.'\n\nYou have the information. You owe her the train.",
+      flags_set: ['miriam_contacted', 'miriam_has_documents', 'knows_miriam_sent_envelope', 'knows_vasile_location', 'knows_brandt', 'brandt_aware', 'kessler_hotel_imperial', 'miriam_deal'],
+      next: 'miriam_deal_made',
+    },
+
     act3_resolution: {
       act: 4,
       title: 'Before Dawn',
@@ -1043,11 +1143,19 @@ export const AshAndIvory: Chronicle = {
         start: {
           title: 'Kärntner Strasse, hajnali 2 óra',
           narrative: "A borítékot memorizálta. Egyetlen sor: 'Vasile futár eltűnt. A dokumentumok léteznek. Csütörtök hajnalig találd meg őket.'\n\nA kávéházon kívül Bécs hat óra óta ünnepel. Wehrmacht-teherautók hömpölyögnek a Ringstrasse-n, éljenző tömeg között. Egy nő virágot dobott. Egy férfi elöl sírt. Nem lehetett tudni, melyik volt őszinte.\n\nA kávéháztulajdonos — Hofer, ötvenéves — egy pohár vörös bort tesz eléd, amelyet nem rendeltél. Kezei remegnek.\n\nCsütörtök hajnalig van időd. Vasile személyi okmányokat futtat a Camarillának. Ha ezek a dokumentumok rossz kezekbe kerülnek, tizenhét Vérrokon leplezödik le.\n\nHofer figyel téged. Egyszer sem néz el.",
+          clan_notes: {
+            Ventrue: "A halandó hierarchia most rendezte át magát. Wehrmacht az utcákon, Vérrokon hálózatok változatlanok — egyelőre. Hofer valakinek figyeli a leírásod. Ez Camarilla-politika vagy halandó hírszerzés, és a halandó változat a nyugtalanítóbb. Kezelt problémának könyvelendő, tovább kell lépni.",
+            Toreador: "Bécs megszállást ünnepel — esztétikai kategória-tévedés. A virágok rosszul néznek ki, a teherautók rosszul néznek ki szépséget értő emberek által tervezett utcákon. Húsz éve vagy ebben a városban, és soha nem nézett ki ennyire így. Hofer kezei remegnek ahogy valakié remeg, akinek két gazdája van, és reméli, hogy ma éjjel nem találkoznak.",
+            Brujah: "Wehrmacht-teherautók a Ringstrasse-n, hajnali 2-kor, egyenruhás férfiak élvezik magukat, mielőtt megfizetnék az árát. A düh a releváns információ előtt érkezik, ami ismert probléma. Hofer valakinek figyel — jegyezd meg, használd. A teherautók miatti düh jogos, de most nem hasznos. Mindkettő igaz.",
+            Malkavian: "Hofert kétszer fizették — egyszer figyelni, egyszer nem figyelni látszani, amiben teljesen csődöt mondott. A bor a harmadik polcról van: úgy gondolja, több vagy, mint amennyinek látszol. Bécs valamit ünnepel, amit tavaszig megbán, de a Pókháló az Ismert kategóriába sorolta. Az érdekes kérdés a ki — a válasznak van illata, bürokratikus, friss, bajor.",
+            Nosferatu: "Harmincegyszer voltál ebben a kávéházban Hofer tudta nélkül. Ma éjjel tudta, mire figyeljen, ami azt jelenti, valaki nemrég pontosan leírt téged egy fizetett megfigyelőnek. A remegő kezek előadás — nem fél, jelez. Valaki most kapja azt a jelet.",
+          },
           choices: [
             'Vizsgáld meg a borítékot — valaki szándékosan küldte',
             "Tartsd Hofer tekintetét. Kényszeríts ki egy beszélgetést.",
             'Indulj azonnal. Menj Vasile Józsefváros utcai lakásához.',
             'Keresd meg Miriam Szabót. A Malkavian nyolcvan éve él ebben a városban.',
+            'Olvasd le, amit az épület tud — még Hofer születése előtt jártál itt',
           ],
         },
         examine_envelope: {
@@ -1127,10 +1235,17 @@ export const AshAndIvory: Chronicle = {
         josefstadt_flat: {
           title: 'A Lakás',
           narrative: "Vasile lakását szakszerűen kutatták át — a fiókokat visszahelyezték, nem kiürítették, a párnákat visszatették, nem felhasítottak.\n\nKét dolgot mulasztottak el.\n\nElőször: egy lazán illő tégla a kandalló mögött. Belül: egy nő fülbevalója és egy kétnapos kávéházi számla a Taborstrasse-ről.\n\nMásodszor: a szekrény ajtajának belső oldalán, nagyon apró ceruzaírással: Sz.M. tud.\n\nMiriam Szabó. És ez alatt, más tintával: Ha megtalálják — ne bízz a raktárban. Figyelik.",
+          clan_notes: {
+            Ventrue: "Két hiba a professzionális átkutatásban — a laza tégla és a szekrény-cédula. Adott típusú keresésre tájékoztatták és azon kívül vakok. A 'Sz.M. tud' azt jelenti, Vasile eléggé megbízott valakiben ahhoz, hogy nyomot hagyjon. A kérdés az, hogy ez a bizalom indokolt volt-e.",
+            Gangrel: "A lakás olyan valaki szagát árasztja, aki gyorsan ment, de nem pánikban — Gangrel, aki saját feltételein esik, ha nem is saját választásán. A kutatók ugyanannak a gyártónak a cipőkrémjét viselték, tanított mintában mozogtak, nem ösztönösben. A téglát nem találták volna meg. Te nyolc másodperc alatt megtaláltad.",
+            Tremere: "Az ajtón varázszár volt — nyers halandó okkultizmus, már nem működő, valaki által felállítva, aki félig értette az elméletet. Valaki Kessler parancsnoki láncában javasolta. Az Ahnenerbe hozzáfér valódi okkult anyagokhoz, és szinte biztosan nem érti, mik azok. Ez megváltoztatja a probléma alakját.",
+            Lasombra: "Vasile a szekrény azon sarkába írta a céduláját, ahova nem esik fény. Az emberek azt, amit nem mondhatnak hangosan, sötét helyekre teszik. 'Ne bízz a raktárban' a fontosabb cédula — először írta, más tintával, a dolog, amelyet el kellett mondania, mielőtt a dolgot, amelyet mondani akart.",
+          },
           choices: [
             'A Taborstrasse-i kávéház. Ott tevékenykedik Miriam.',
             'Menj a raktárhoz mégis',
             'Bécsi Imperial. Kessler fogva tartja Vasilét.',
+            'Engedd el az érzékeidet — kövesd, aki elvitte Vasilét',
           ],
         },
         josefstadt_spotted: {
@@ -1144,10 +1259,17 @@ export const AshAndIvory: Chronicle = {
         contact_miriam_initial: {
           title: 'Taborstrasse',
           narrative: "A könyvesbolt a Taborstrasse-n. Miriam Szabó hátul ül, egy magyar újság keresztrejtvényébe merülve. Fel sem néz.\n\n'Kíváncsi voltam, mikor jössz,' mondja. Az akcentusa ma éjjel védtelen. 'Én küldtem a borítékot. Camarilla anyagokat használtam, mert azt akartam, hogy tudj, valódi.'\n\nLeteszi az újságot. Amikor rád néz, a szeme élesebb, mint amit a Malkavian hírnév sejtet.\n\n'Amire keresel, megvan nekem. Minden. Vasile adta nekem, mielőtt elvitték.' Szünet. 'De cserébe valamit akarok.'",
+          clan_notes: {
+            Ventrue: "A Malkavian-hírnév itt dolgozik — takarásként használja, hogy mennyire pontos valójában. A tőkeáttétele valódi, az információi naprakészek, a feltételei tiszták. Akár az őrülete nem érinti a tranzakciós részeit, akár úgy döntött, nem engedi. Valószínűleg mindkettő. Érdemes óvatosan kezelni.",
+            Brujah: "Megkerülte a Camarillát, mert a hozzáértők olyan kérdéseket tesznek fel, amelyekre nem akar válaszolni — ez nem őrület, ez pontos taktikai gondolkodás. Téged választott: elég új ahhoz, hogy motivált légy, elég képes ahhoz, hogy hasznos légy. Azon kapod magad, hogy ezt tiszteled, mielőtt eldöntötted volna, hogy kellene-e.",
+            Nosferatu: "Van egy aktád Miriam Szabóról 1921-ből. Három rejtekhellyel Bécsben, két határkapcsolattal Svájcban, felhalmozódott szívességek hálójával Zürichben és Bázelben. Nem az érthetőséget játssza. Egyszerűen úgy dönt ma éjjel, hogy nem játssza az őrületet. A megkülönböztetés számít.",
+            Gangrel: "Útvonaltérképek illatát árasztja — valakinek sajátos készenlétét, aki már eldöntötte, hogy elmegy, és csak az eszközre vár. A keresztrejtvény kellék; az újság háromnapos. Nem zavaros. Visszaszámlál.",
+          },
           choices: [
             'Kérdezd meg, mit akar',
             'Kérdezd meg, miért nem szólt közvetlenül a Camarillának',
             'Kérdezd meg, hol van Vasile',
+            'Lépj be a Pókhálóba — keresd meg a frekvenciáját',
           ],
         },
         contact_miriam_with_clues: {
@@ -1221,6 +1343,12 @@ export const AshAndIvory: Chronicle = {
         hunger_pressure: {
           title: 'A Visszafogottság Ára',
           narrative: "Három óra óta vagy mozgásban. A város tele van meleg testekkel — ünneplő katonák, ablakból néző polgárok, részeg mulatozók.\n\nAz éhség nem veszi tudomásul ezt.\n\nNem ösztön. Egy hang, és racionális érveket hoz: veszélyes dologba mész csökkent kapacitással. A táplálkozás most nem gyengeség. Felkészülés.\n\nAz érv nem téves. Ez a probléma a Vadállattal — szinte soha nincs teljesen igaza.\n\nEgy Wehrmacht-katona levált a csoportjától. Padon ül a Naschmarkt közelében, fejét hátravetve, félig alszik.",
+          clan_notes: {
+            Ventrue: "Egy elszakadt Wehrmacht-katona — kompromittált, alvó, látható. Nem ideális alany, de most nem ideálisak a körülmények. Csökkentett kapacitással mész veszélyes dologba. A számítás egyértelmű: reggelig nem fog emlékezni. Hozd meg a döntést.",
+            Toreador: "A fiatal zenész az Opernring bárban boldogtalan az Anschluss miatt, ahogy a művészek boldogtalanok — hangosan, mintha a szenvedés minősége ellenzékiséget alkotna. Befejezetlen is egy érdekes módon, szépség, amely nem tudja még, mivé válik. Az éhség a katonát veszi észre. Te a zenészt veszed észre. A Vadállat szemét forgatja.",
+            Brujah: "A katonának párt-jelvénye van. A zenésznek röpirat van a kabátja alatt. Tudod, melyiktől ennél szívesebben. Azt is tudod, hogy ez a preferencia pontosan a mechanizmus — a Vadállatnak nincs politikája, csak tőkeáttétele van. Addig teszi meg az erkölcsi érvet, amíg az megszerzi, amit akar.",
+            Malkavian: "A katona vére ennek a pontos hétnek ízlene — mindenestül. A zenész vére valaminek ízlene, ami megoldatlan, egy kulcsnak, amely nem ismeri a zárját. A Vadállat ésszerű érvet tesz a katona mellett. A zenészt választod, mert kíváncsi vagy a kulcsra, és mert a hét már tudja, hogyan végződik.",
+          },
           choices: [
             'Táplálkozz. Teljes erőre van szükséged ahhoz, ami következik.',
             'Tartsd vissza magad. Nem táplálkozol katonáktól.',
@@ -1230,14 +1358,32 @@ export const AshAndIvory: Chronicle = {
         hunger_feed_soldier: {
           title: 'A Könnyű Döntés',
           narrative: "Gyorsan táplálkozol. A katona nem fog emlékezni.\n\nAz éhség csökken. A tisztaság visszatér. És vele valami más: a tudat, mit tettél épp. Egy részeg, elszakadt Wehrmacht-katona, aki valószínűleg tett dolgokat az elmúlt hat órában, amelyekről nem akarsz tudni.\n\nEz volt a könnyű döntés. A Vadállat racionális érveket hozott. Beleegyeztél.\n\nÍgy kezdődik mindig.",
+          clan_notes: {
+            Ventrue: "Az érv helyes volt. Az ember kompromittált volt, és semmire sem fog emlékezni. Ami marad: annak tudata, hogy az érv helyes volt — és hogy a Vadállat tudja, hogy az érv helyes volt, és emlékezni fog arra, hogy te is beleegyeztél.",
+            Toreador: "A zenész elérhető volt. Helyette a katonát választottad. A Vadállat javasolta, te meg indokoltad — ami rosszabb, mint puszta beleegyezés. Az indokok újra felhasználhatók.",
+            Brujah: "Azt mondtad, nem táplálkozol katonáktól. Aztán a Vadállat érvet hozott, és beleegyeztél. Ez a mechanizmus, ahogy tervezték. Nem te vagy az első Brujah, aki észreveszi. Nem te leszel az utolsó.",
+            Malkavian: "A hét tudta, hogyan végződik. Te is segítettél, hogy így végződjön. A katona vére pontosan úgy ízlett, mint az elmúlt hat óra — megszállás, adrenalin, a győztesek lapos bizonyossága. Igazad volt, hogy így lesz. Ez nem vigasz.",
+          },
         },
         hunger_resist: {
           title: 'A Nehéz Döntés',
           narrative: "Ott hagyod. Padon alva, tudatlan, meleg.\n\nAz éhség elcsendesedik, türelmesen, a tudatod hátterében. Ott lesz mindahhoz, ami következik — minden kihúzásnál, minden konfrontációnál, minden pillanatban, amikor gyorsabbnak vagy erősebbnek kellene lenned, mint amilyen vagy.\n\nA visszafogottságot választottad. Valahol valamibe fog kerülni. Ez az alku.",
+          clan_notes: {
+            Ventrue: "Helyes döntés. A Wehrmacht-katonáktól való táplálkozás kockázata megszállt Bécsben meghaladja a műveleti hasznot. Az éhség bonyolítani fogja, ami következik. Ez az ár elfogadható és helyesen számítottál.",
+            Brujah: "A Vadállatnak megvolt a maga célpontja: megszálló katona, elszakadt, részeg, könnyen igazolható. Legközelebb jobb verziót hoz. Tudd, hogy ez a következő verzió érkezik, nem megkönnyebbülés.",
+            Gangrel: "Az éhség kezelhető. Rosszabbal is futottál már. A városban négy tömbnyire három másik táplálkozási lehetőség van, ha kritikussá válik. Helyes döntést hoztál. A Vadállat türelmes lesz.",
+            Nosferatu: "Négy tömbnyire három másik lehetőség volt. Táplálkozhattál volna tisztán és végezhetted volna. A visszafogottságot nyilatkozatként választottad. Gondold át, kinek szólt a nyilatkozat — neked vagy valami általad képzelt figyelőnek.",
+          },
         },
         hunger_careful_feed: {
           title: 'Megfontolt Megközelítés',
           narrative: "Az Opernring melletti bár sajátos vendégkört vonz — színházi embereket, művészeket, az a fajta bécsi, aki mindig is tudta, hogy az éjszaka furcsább dolgokat is tartalmaz, mint amit a legtöbben bevallanak.\n\nEgy fiatal zenész, aki az Anschluss miatt boldogtalan, ahogy a művészek boldogtalanok — hangosan, mintha az elégedetlenségük ellenzékiséget alkotna. Amikor a figyelem teljes súlyát fordítod rá, teljesen hajlandónak mutatkozik.\n\nTiszta táplálkozás. Irgalmas is, a létezésed mértékeivel mérve.",
+          clan_notes: {
+            Ventrue: "Hajlandó alany, nincs leleplezési kockázat, civil, nem katonai. Ez a helyes kimenet. Megjegyzés: a Vadállat kezdetben a katonát jelölte. Te átirányítottad. Ez az egyezség, ahogy működnie kellene.",
+            Toreador: "Nem fog emlékezni a részletekre. Te fogod. A befejezetlen minőség — egy zenész, aki még nem tudja, az Anschluss mit zárt le számára — tovább marad veled, mint maga a táplálkozás. Ez nem panasz.",
+            Brujah: "Röpirat volt a kabátja alatt. Ezt használtad az indokoddá. A Vadállat az éhséget használta az indokáé. Különböző irányokból érkeztetek ugyanarra a helyre. A zenész sértetlen. Az érvelés ettől még vizsgálatot érdemel.",
+            Malkavian: "A kulcs nyitott kérdés ízét hordja. Elnyeltél valamit, amit a hét még nem oldott meg. A Pókháló megtalálja majd. Mindent megtalál végül — ez egyszerre a célja és a problémája.",
+          },
         },
         act2_approach: {
           title: 'Konvergencia',
@@ -1284,6 +1430,12 @@ export const AshAndIvory: Chronicle = {
         hotel_spotted_brandt: {
           title: 'Brandt',
           narrative: "Nem hív segítségért. Nem nyúl azonnal a fegyveréhez. Szembefordul veled, kezeit láthatóan tartva, és gondos németséggel mondja: 'Számítottam valakire.'\n\nA szeme a gallérodnál fókuszál. Nem az arcodnál.\n\n'Tudom, nem kell közvetlenül rád néznem,' mondja. 'Tudom, elfelejtetheted velem ezt a beszélgetést, ha mégis néznék.' Szünet. 'Két éve készülök erre. Szeretnék beszélni, mielőtt ez olyanná válik, amit egyikünk sem akar.'",
+          clan_notes: {
+            Ventrue: "Azonnal irányította a keretezést: látható kezek, nem konfrontatív elhelyezkedés, kölcsönös érdek nyelve. Valaki felkészítette, vagy két év alatt maga jutott el a helyes válaszokhoz. Fenyegetési szint felfelé. Nem Kessler eszköze — Kessler társa, ebben.",
+            Tremere: "Tudja, hogy ne nézzen szembe. A viselkedési ellen-protokollok elég specifikusak ahhoz, hogy a parancsnoki lánc valahol dokumentált okkult tudást jelezzenek — nem rögtönzött terepadaptációkat. Amit Prága hagyott benne, azt finomítottak. Jegyezd meg.",
+            Nosferatu: "Egyik kijáratot sem zárta le. Azt akarja, hogy a párbeszéd megtörténjen, és ezt azzal jelezte, hogy nem optimalizálta a pozícióját. Valaki, aki két évig készült, és a döntő pillanatban úgy döntött, megkönnyíti. Ez vagy őszinte, vagy nagyon jó titkosszolgálati technika.",
+            Malkavian: "Katalogizált módon fél — elhelyezve, mérve, nem elfojtva. Finom remegés a kezein, amelyet kezel. A félelem nem tőled, pontosan: attól van, mi történik, ha ez a párbeszéd rosszul végződik. A Pókháló megjegyzi: begyakorolta, mit fog mondani.",
+          },
           choices: [
             'Beszélj. Nyilván tud valamit.',
             'Cselekedj, mielőtt a fegyveréhez ér.',
@@ -1293,6 +1445,12 @@ export const AshAndIvory: Chronicle = {
         brandt_talk: {
           title: 'Amit Brandt Tud',
           narrative: "'Prágában voltam,' mondja. Nagyon mozdulatlan. 'Láttam, mire képes a fajtád. Azt is láttam, mi lett Kesslerből utána — a részleges ellenállás, a megszállottság.'\n\nKéztartása látható. Ezüst lőszer a zakójában.\n\n'Kessler nyomozása ma éjjel mindenképpen lezárul — parancsot kapott a berlini konszolidációra. De válaszok nélkül nem fog elmenni.'\n\nBrandt a gallérodnál pillant. 'A 14-es szobában lévő futár — meg fog törni. Nem azért, mert kegyetlenek vagyunk. Mert három napja nem táplálkozott, és ez az, amit az tesz a fajtáddal, nem igaz? Az éhség.'",
+          clan_notes: {
+            Ventrue: "Helyesen kezeli a helyzetet — látható kezek, ellenségesség nélküli hírszerzés, az ajánlat kölcsönös érdekként keretezve, nem követelésként. Pontosan tudta, milyen regisztert használjon. Valaki eligazította a Vérrokonokkal való kommunikációban, vagy maga jutott el a helyes válaszhoz két év gondolkodás után. Mindkét esetben veszélyesebb és hasznosabb Kesslernél.",
+            Lasombra: "Úgy helyezkedett el, hogy egyetlen lövéssel fed le mindkét kijáratot. Begyakorolta ezt a szobát. Az ezüst lőszer a lényeges részlet — nem az Ahnenerbe szokásos felszerelése, ami azt jelenti, valaki pontosan erre a találkozóra adta neki, ami azt jelenti, valaki a parancsnoki láncban többet tud, mint Prága. Kessler nem a plafon ebben a problémában.",
+            Tremere: "Úgy strukturálta a viselkedését, hogy minimalizálja a Dominálással szembeni sérülékenységét — nincs közvetlen szemkontaktus, kontrollált érzelmi állapot, ellen-protokollok, amelyek tényleges okkult tudást sejtetnek valahol a parancsnoki láncában. Prága nem az egész történet. Ezt a beszélgetést kétirányú hírszerzésként kezeld.",
+            Nosferatu: "Ma délután eltávolította a tartalék fegyvert a bal zsebéből — a kopásnyom és a hiányzó súly egyértelmű. Csökkenteni akarta az eszkalációs kockázatot. Két éve akarja ezt a beszélgetést, és nagyon vigyáz, hogy ne látsszon így. Add meg neki, amire szüksége van, hogy előrehaladást érezzen, és húzz ki belőle mindent.",
+          },
           choices: [
             'Mindenben igaza van. Tárgyalj.',
             'Túl sokat tud. Ez a beszélgetés itt ér véget.',
@@ -1404,6 +1562,12 @@ export const AshAndIvory: Chronicle = {
         vasile_rescue: {
           title: 'Vasile Megmentése',
           narrative: "A szoba a keleti folyosó végén. Nincs bezárva — miért zárnák be az ajtót, ha Brandt maga a zár?\n\nVasile a fal mellett. Három napja nem táplálkozott. Rád néz, és az első kérdése:\n\n'Megszerezted a dokumentumokat?'",
+          clan_notes: {
+            Gangrel: "Három nap. Pontosan a határon van — még gondolkodik, még választ, de az éhség minden szó mögött ott van. A dokumentumokról kérdezett először, mert így tesz a Gangrel: küldetés az életben maradás előtt, terület az önmaga előtt. Nem kér tőled vért. Kínáld fel mégis.",
+            Nosferatu: "Composure-t ad elő. A pesti búvóhelye, amelyet sosem említett a Camarillának — most arra gondol, távolságokat mér. Annyira megbízik benned, hogy itt van. Etesd meg, mielőtt mozdítod. Egy éhes Gangrel ellenséges épületben olyan kockázat, amelyről nem fog szólni neked.",
+            Ventrue: "Három nap táplálkozás nélkül. Műveleti kapacitás jelentősen csökkent. Tudja ezt, és elrejti a mértékét. 'Tudsz járni' a rossz kérdés — a helyes kérdés: 'tudsz-e teljesíteni nyomás alatt,' és erre a válasz jelenleg bizonytalan. Kalkulálj ezzel.",
+            Toreador: "Elviselhetetlen feszültség alatt lévő dolgok sajátos szépségével rendelkezik — egy mindent megkövetelő koherencia. Nem fog megköszönni. Most nem képes. Az éhség elvette azt a regisztert. A dokumentumokról kérdezett, mert az maradt meg neki. Jegyezd meg ezt.",
+          },
           choices: [
             'Igen — biztonságban vannak',
             'Nem — elégtek vagy elvesztek',
@@ -1441,6 +1605,12 @@ export const AshAndIvory: Chronicle = {
         kessler_meeting: {
           title: 'Kávé Hajnali 4-kor',
           narrative: "Kessler tölt két csésze kávét. Egyet eléd tesz.\n\n'Tudom, nem fogod meginni. De udvariasnak tűnt.'\n\nAz íróasztal mögé ül. A közöttetek lévő akták hat hónap aprólékos munkáját tartalmazzák. Nem rejti el őket. Láttatni akarja veled.\n\n'A nevem — az igazi nevem — Hans Bremer. Gyanítom, ezt tudod.'",
+          clan_notes: {
+            Ventrue: "Két csészét tölt és egyet eléd tesz — hatalmi gesztus, egyenlő állást teremtve tárgyalás előtt. Vedd fel a csészét, tedd le ivás nélkül, tartsd a csendet. Két éve gondolkodik a Vérrokonokról és véleményeket alakított ki. Néhány vélemény téves tanulságos módon. A pontos vélemények a veszélyesek.",
+            Toreador: "Három napja nem aludt. A nyakkendő tökéletes. Az akták pontos szögben vannak. Olyan ember, aki úgy véli, a látható rend kontrollt jelent, és ez eddig működött. Van valami röviden megható abban, távolságból nézve. Mindjárt megérti, hogy egyes dolgok nem iktathatók.",
+            Malkavian: "Nem fél tőled — úgy döntött, hogy nem fél, ami más, és a döntésnek textúrája van, egy hely, ahol meghozták, naponta, hat hónapig. 'Hans Bremer' úgy ül benne, mint egy kő, amelyet megtanult hordozni. Valakit várt, aki tudja a nevet. Amit nem tud, hogy a Pókháló ezt a találkozást a Biztos kategóriába sorolta.",
+            Tremere: "Varázszár van az ajtón — halandó okkultizmus, részben működő, valaki által elhelyezve, aki ismerte az elméletet, de nem a gyakorlatot. Valaki a parancsnoki láncában javasolta. Az Ahnenerbe hozzáfér valódi okkult anyagokhoz, és szinte biztosan nem érti a származásukat. Ez nagyobb probléma, mint Kessler. Jegyezd meg.",
+          },
           choices: [
             'Igen. Mit akarsz ebből a beszélgetésből?',
             'Öld meg. Hat hónap kutatás vele hal.',
@@ -1557,6 +1727,27 @@ export const AshAndIvory: Chronicle = {
             success_text: 'Előre érsz.',
             fail_text: 'A hívás összeköttetésbe lép. Az emberei ezüsttel érkeznek.',
           },
+        },
+        start_nosferatu_read: {
+          title: 'Amit az Épület Tud',
+          narrative: "Negyvenháromszor voltál ebben a kávéházban. Kétszer az elmúlt évtizedben, amikor Hofer még az apjától tanulta az üzletet. Ismered a rés a fal és a pult között, ahol a hang átjön a konyháról. Ismered az ablak melletti széket, amely két utcát lát.\n\nValaki más nemrég megtanulta azt a széket. A kárpiton új kopásnyom van — hat hét ugyanazon embertől, ugyanúgy ülve.\n\nMegnézed a konyhai hulladékot. Bajor cigarettamárka, nem osztrák. Az elmúlt négy éjszaka rendelési céduláin két férfi rendel ugyanolyan dolgot minden alkalommal, és az óra előtt távoznak. Kessler emberei. Az ablakból: egy harmadik, az utca másik oldalán, olyan pozícióban parkolva, amely lefedi a főbejáratot.\n\nHárom szempár. Hofer a legkevésbé aggasztó.",
+          choices: [
+            'Menj el most — a konyhán át, a bejáratot fedik',
+            'Keresd meg Miriamot. Messzebb van Kessler figyelmétől.',
+          ],
+        },
+        josefstadt_scent_trail: {
+          title: 'A Nyom',
+          narrative: "Lehunyod a szemed és hagyod, hogy a Vadállat olvassa a szobát.\n\nVasile szaga a legrégibb — egy éhes Gangrel sajátos hideg-réz illata, és alatta az út, a keleti út, tucat város az elmúlt három hónapban. Két napja volt itt. Gyorsan ment, nem saját választásából.\n\nA második szag halandó: bőr, fegyverolaj, bajor dohánymárka, amelyet pontosan két boltban árulnak Bécsben. Aki elvitte Vasilét, SS volt, vagy mellettük dolgozott. Katonai kiképzés a mozgásukban — a sima felületek, amelyeket érintettek, a nem nyilvánvaló fogópontok a bútoron. Két férfi, hatékonyan, nem dühösen.\n\nItt nem bántották. A fogás tiszta volt. Ez azt jelenti, hogy beszélni akarják, nem eltörni. Három napja ez az ablak zárul.\n\nA szekrény-cédula ceruzanyomása azt mondja, Vasile nem félt. Belenyugodott, talán. Már eldöntötte, hogyan végződik ez.",
+          choices: [
+            'A Taborstrasse-i kávéház. Miriam tudja.',
+            'Bécsi Imperial közvetlenül — a nyom SS-t mond.',
+          ],
+        },
+        miriam_cobweb_connection: {
+          title: 'Frekvenciák',
+          narrative: "Nem szólsz. Oldalra nyúlsz — ahogy egy emlék felé nyúlsz, amely nem egészen a tiéd — és megtalálod a fonalát.\n\nA Pókháló két Malkavian között ugyanabban a szobában nem párbeszéd. Ütközés: az ő nyolcvan éve ebben a városban a saját töredésed ellen, mindkettő ugyanabba a pontba érkezve különböző szögekből.\n\nEgyszerre tudod a következőket: Vasile a 14-es szobában van. Brandt korábbi gyalogos, nem eredeti Ahnenerbe. Kesslernek hegszövete van Prágától, amely csúszóssá teszi az elméjét. Miriam tizenegy napja pakolt.\n\nHangosan mondja az egyetlen dolgot, amelyet a Pókháló nem hordoz jól: 'A vonat. A nyugati vonatot akarom.'\n\nMegvan az információ. Tartozol neki a vonattal.",
+          next: 'miriam_deal_made',
         },
         act3_resolution: {
           title: 'Hajnal Előtt',

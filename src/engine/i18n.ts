@@ -79,6 +79,11 @@ const en = {
   'creation.humanity': 'Humanity',
   'creation.noneSelected': 'None selected',
   'creation.chooseChronicle': 'Choose Chronicle →',
+  'creation.steps.loadout': 'Loadout',
+  'creation.loadout.hint': 'Choose 2 weapons to carry into the night. Each tells a story about how you survive.',
+  'creation.loadout.selected': 'Selected: {n} / 2',
+  'creation.loadout.fixedItems': 'You also receive: Blood Bag · Burner Phone',
+  'creation.review.loadout': 'Starting Weapons',
 
   // ── Attribute / Skill categories ─────────────────────────────────────────
   'cat.physical': 'Physical',
@@ -371,6 +376,11 @@ const hu: TranslationDict = {
   'creation.humanity': 'Emberiség',
   'creation.noneSelected': 'Nincs kiválasztva',
   'creation.chooseChronicle': 'Krónika választás →',
+  'creation.steps.loadout': 'Felszerelés',
+  'creation.loadout.hint': 'Válassz 2 fegyvert, amelyet az éjszakába viszel. Mindkettő elárul valamit arról, hogyan maradsz életben.',
+  'creation.loadout.selected': 'Kiválasztva: {n} / 2',
+  'creation.loadout.fixedItems': 'Ezeket is kapod: Véreszák · Burner telefon',
+  'creation.review.loadout': 'Kezdő fegyverek',
 
   // ── Attribute / Skill categories ─────────────────────────────────────────
   'cat.physical': 'Fizikai',

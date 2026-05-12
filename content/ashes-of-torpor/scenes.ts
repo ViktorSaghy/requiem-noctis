@@ -107,7 +107,7 @@ export const AshesOfTorpor: Chronicle = {
         Gangrel: "The earth under the stone remembers older configurations. You feel load-bearing walls, pipe runs, the shape of the tunnels above. You know where the gaps are.",
         Brujah: "Someone put you here. That's a fact. The anger arrives before the question, and the question is better fuel.",
         Tzimisce: "A domain violation. The cellar belongs to whoever rests in it. This intrusion will be addressed.",
-        Malkavian: "The mortar speaks without being asked. The mason's name was Karl. He was worried about his cat — not about what he was sealing inside, not about the money, about his cat, Michi, who kept getting into the neighbor's garden and the neighbor had left a note. Karl was also very frightened. You file the cat under more interesting.",
+        Malkavian: "The mortar speaks without being asked. You have told walls twice now that they can save it. The mason's name was Karl. Karl's primary concern while sealing in a vampire was a cat named Michi and a neighbor whose name he never finishes, only 'the one with the note.' He thought about Michi eleven times during the job. He thought about you zero times, which you find more personally offensive than the sealing. Karl was extremely frightened, but that was also mostly about Michi. You add 'find Michi' to your list. You have a list. It is not written anywhere. You decide this is fine.",
       },
       choices: [
         { text: "Drive your shoulder into the soft joint — break through", next: 'wall_forced' },
@@ -170,7 +170,7 @@ export const AshesOfTorpor: Chronicle = {
         Toreador: "He has a musician's hands — callused in the right places, a partial tattoo on the wrist. Even now, starving, you notice the aesthetics of him before the hunger.",
         Ventrue: "The badge says 'F. Holzer — Technical.' Contracted staff, not permanent. Lower-tier access pass. Useful. Manageable.",
         Brujah: "A worker on a break, bleeding from a job hazard with nobody checking on him. The anger you feel at this is separate from the hunger and arrives a half-second later.",
-        Malkavian: "He smells of three weeks ago. Of Tuesday specifically. If you drink from him you will see Tuesday — not the important parts, just Tuesday: a kitchen window, cold coffee, a bus he missed. His blood also knows who sealed your chamber. You would have to drink very deeply, and the Tuesday problem would get significantly worse before it got better.",
+        Malkavian: "He smells of three weeks ago. Of Tuesday specifically — 2:47 PM, the kitchen-window moment, the exact texture of a cold coffee that was not worth rescuing. If you drink from him you will experience Tuesday in its entirety: the bus he missed, the text he drafted and deleted, and seven full minutes in the cereal aisle, paralyzed by indecision in a way that felt very large at the time. His blood also knows who sealed your chamber. That part is buried deep inside Tuesday, past the section where he stands in the bathroom wondering whether the thing on his elbow is a thing. You would need to get through all of Tuesday first. The calculus is straightforward. The calculus is also a Tuesday. You are already moving.",
         Lasombra: "There is a mirror on the far wall. You are not in it. If he turns around and looks at the glass, that ends the easy version of this.",
       },
       choices: [
@@ -229,7 +229,7 @@ export const AshesOfTorpor: Chronicle = {
       narrative: "The steel door opens into a wider service corridor — and into a man who was clearly not expecting you.\n\nFifties. Work coat. A ring of keys the size of a fist. He freezes the way people freeze when they are frightened and also, underneath the fright, guilty. Not surprised. Guilty.\n\nHe knows what you are. He has seen your kind before.",
       clan_notes: {
         Nosferatu: "He reacts to your face with trained suppression, not ordinary fear. He has worked with Nosferatu before. Someone acclimatised him.",
-        Malkavian: "He was expecting you. Not tonight — tonight is the wrong shape — but you, eventually, inevitably. He has rehearsed this conversation at least forty times; you can feel the grooves worn into it. He had a speech prepared. It was quite good. You decide immediately not to let him give it.",
+        Malkavian: "He was expecting you. Not tonight — tonight is the wrong shape, tonight has a different weight distribution entirely, something closer to a Wednesday that doesn't know what it's doing — but you, eventually, inevitably. He has rehearsed this conversation forty-three times. You know it is forty-three because the number has a particular worn texture to it. The speech opens with 'I was only following orders,' pivots through a surprisingly nuanced take on Kindred pragmatism, and ends on something he clearly worked on. Acts two through four involve paperwork. In the spirit of mercy you decide to say the first line of his speech for him, before he can. His face does something extraordinary.",
       },
       next: 'caretaker_talk',
     },
@@ -296,7 +296,7 @@ export const AshesOfTorpor: Chronicle = {
         Nosferatu: "You've been tracked since the loading dock door. Whoever it is knows surveillance tradecraft — they're using reflections in the tram windows, not direct sightlines.",
         Gangrel: "The city is loud and lit but the body reads threat the way it reads weather: before the conscious mind has processed it. The scent trail behind you carries someone's focused attention.",
         Tremere: "There's an observation ward on the street corner. New — days old. Someone prepared this approach.",
-        Malkavian: "You see them before you see them. This is, technically, how it works for everything — you are working on finding it less exhausting. They are performing Ordinary Person so hard it reads as a theatrical production: gun oil, old paper, the specific institutional misery of a job done out of belief rather than money. They think this matters. You almost wish them luck.",
+        Malkavian: "You see them before you see them. This is how it works with everything now — perception having stopped asking time's permission — and you are still writing the manual for what to do with that. They are performing Ordinary Person at a level that belongs in a theater, or a theory of a theater: gun oil, paperwork smell, the specific institutional misery of someone who still believes in the mission. The shoes are wrong. The shoes are always wrong. You once tried to explain the shoes thing to your sire and were politely asked to stop. You almost give the watcher a professional courtesy warning. Instead you decide to see how long the performance holds once you start doing something they didn't write a procedure for.",
       },
       choices: [
         { text: "Walk into the tourist crowd on the Ringstrasse — disappear in the noise", next: 'watcher_blend' },
@@ -365,7 +365,7 @@ export const AshesOfTorpor: Chronicle = {
       narrative: "Gregor is old enough that his Nosferatu features have settled into something that reads as architectural rather than wrong. He lives surrounded by filing cabinets, paper indices, and a smell that is either archival preservation fluid or something that feeds on archival preservation fluid.\n\nHe already knows your name. He says it before you've told him and watches your face when he does.\n\n'I have three things that belong to you,' he says. 'I'll trade two for free. The third one costs.'",
       clan_notes: {
         Nosferatu: "He offers you the Nosferatu courtesy first — a pause, a slight tip of the head. Clan recognition. He'll talk to you more openly than he would to anyone else here, though not without cost.",
-        Malkavian: "Seven secrets, stacked in order of importance — which is a relief. Most people have no organizational system for their secrets at all. He smells of catalogued things, of knowledge that knows where it lives. Also: he was waiting for you specifically, by name, in a way that suggests the Cobweb reached him before you did. You find this restful. The universe is occasionally organized. It is almost never organized for your benefit.",
+        Malkavian: "Seven secrets, organized by importance, cross-referenced and properly filed. You could weep. Most people just leave their secrets lying about like shoes in a hallway — unsorted, unlabeled, a hazard to everyone. His smell like they have serial numbers. He knew you were coming: name, approximate arrival window, relevant clan. The Cobweb told him before you knew you were awake, which means some part of you was broadcasting from inside Torpor, presumably being extremely strange. He says your name with the careful precision of someone who has been briefed. You consider telling him the briefing was missing a few things. You decide to wait and see what he thinks he knows first. This is what passes for strategy, and you are committed to it.",
         Ventrue: "He deals with you like a supplier deals with a client who has temporarily misplaced their leverage. Polite. Careful. Aware that the balance will shift.",
       },
       choices: [
@@ -534,7 +534,7 @@ export const AshesOfTorpor: Chronicle = {
           title: 'Új Habarcs',
           narrative: "Tapintás útján találod meg. A pince egyik fala más — a fugák habarcs puha, az illata friss. Hetes, nem évszázados. Valaki szándékosan és nemrégiben elzárta ezt a teret.\n\nA bal oldali falon van egy rés, ahol vascsővezeték fut: egy karbantartási varrat, alig váll-szélességű.\n\nBal tenyered ég. A sötétben ránézel, és nem látsz semmit — de érzed a bőrbe vésett valami formáját. Egy jel. Nem emlékszel rá, hogy ott volt.",
           clan_notes: {
-            Malkavian: "A habarcs szól, kéretlenül. A kőműves neve Karl volt. A macskája miatt aggódott — nem amiatt, amit befalaz, nem a pénz miatt, a macskája miatt, Michi, aki folyton bejárt a szomszéd kertjébe, és a szomszéd hagyott egy cédulát. Karl nagyon félt is. A macskát a fontosabb kategóriába sorolod.",
+            Malkavian: "A habarcs szól, kéretlenül. Már kétszer szóltál a falaknak, hogy hagyják a fenébe. A kőműves neve Karl volt. Karl fő aggodalma, miközben befalazott egy vámpírt, egy Michi nevű macska volt, és egy szomszéd, akinek a neve soha nem teljes a gondolataiban — csak 'az a cédulás.' Tizenegyszer gondolt Michire munka közben. Rád nullaszor, amit személyesen sértőbbnek találsz a befalazásnál. Karl rettentően félt, de az is főleg a macska miatt volt. Felveszed a listádra: 'megtalálni Michit.' Van egy listád. Sehova sincs leírva. Úgy döntöd, ez rendben van.",
           },
           choices: [
             'Verd be vállal a puha fugát — törj át',
@@ -567,7 +567,7 @@ export const AshesOfTorpor: Chronicle = {
           title: 'Az Első Éhség',
           narrative: "Hat méterre előtted ül a falnál, telefonnal az egyik kezében, egy ronggyal a másikkal az alkarja ellen nyomva. Egy stábember — fekete stábos ruha, laminált kitűző, valaki különleges fáradtsága, aki egy duplaszakasz harmadik óráján jár.\n\nA seb apró. Még nem vett észre. Az ajtó alatti fényszalag az egyetlen fény, és te még a sötétben vagy.\n\nAz éhséged hangosabb, mint bármely gondolat, amelyet most formálni tudsz. Négyen vagy — egy szám, amelyről valahogy tudod, hogy az elvesztés határát jelenti.",
           clan_notes: {
-            Malkavian: "Három héttel ezelőttről illatozik. Pontosabban, kedden. Ha iszol tőle, látni fogod a keddet — nem a fontos részeket, csak a keddet: egy konyhablakot, hideg kávét, egy buszt, amelyet lekésett. A vére tudja azt is, ki zárta el a kamrádat. Nagyon mélyen kellene innod, és a kedd-probléma jelentősen rosszabb lenne, mielőtt jobbá válna.",
+            Malkavian: "Három héttel ezelőttről illatozik. Pontosabban kedden — du. 2:47, a konyhablak-pillanat, egy hideg kávé pontos textúrája, amelyet nem volt érdemes megmenteni. Ha iszol tőle, a keddet a maga teljességében fogod megélni: a lekésett buszt, a megfogalmazott és törölt SMS-t, és hét teljes percet a gabonapehely-sorban, bénultan. A vére tudja azt is, ki zárta el a kamrádat. Ez el van temetve a kedd mélyén, azon a részen túl, ahol a fürdőszobában áll és azon töpreng, hogy érdemes-e orvoshoz menni valami miatt. Mindazon először keresztül kellene jutnod. A számítás egyértelmű. A számítás szintén egy kedd. Már mozgol.",
           },
           choices: [
             'Etesd óvatosan — közelíts lassan, győződj meg, hogy nem kiált',
@@ -596,7 +596,7 @@ export const AshesOfTorpor: Chronicle = {
           title: 'A Gondozó',
           narrative: "Az acélajtó egy szélesebb szervizfolyosóra nyílik — és egy emberre, aki nyilván nem várt rád.\n\nÖtvenesek. Munkaköpeny. Egy akkora kulcskarika, mint egy ököl. Megmerevedik, ahogy az emberek megmerevednek, amikor megijednek, és a félelem alatt, mélyebben, bűnösek. Nem meglepett. Bűnös.\n\nTudja, mi vagy. Látta a fajtádat korábban.",
           clan_notes: {
-            Malkavian: "Várt rád. Nem ma éjjel — ma éjjel rossz az alakja — de rád, előbb-utóbb, elkerülhetetlenül. Ezt a beszélgetést legalább negyvenszer végiggondolta; érzed a belévésett barázdákat. Volt egy előre megírt szövege. Elég jó volt. Azonnal elhatározod, hogy nem engeded elmondani.",
+            Malkavian: "Várt rád. Nem ma éjjel — ma éjjel rossz az alakja, ma éjjel más a súlyeloszlása, valahogy inkább szerdás, pedig más nap van — de rád, előbb-utóbb, elkerülhetetlenül. Negyvenháromszor gondolta végig ezt a beszélgetést. Tudod, hogy negyvenhárom, mert a szám kopott textúrája van. A szöveg azzal kezdődik: 'Csak az utasításokat követtem', egy meglepően árnyalt Kindred-pragmatizmus elemzésen vezet át, és valamin végződik, amin nyilván dolgozott. A kettőtől a negyedik felvonásig iratok szerepelnek. Az irgalom jegyében úgy döntöl, hogy a szöveg első sorát te mondod el helyette, mielőtt ő tehetné. Az arca valami rendkívülit művel.",
           },
         },
         caretaker_talk: {
@@ -627,7 +627,7 @@ export const AshesOfTorpor: Chronicle = {
           title: 'A Megfigyelő',
           narrative: "Odakint: Bécs a kisórákon. Villamos sínek narancs fényt fognak. Az Állami Opera teherbejárata egy mellékutcára vezet, csendes, kövezett, amilyen utca a város többi részének díszletéül szolgál.\n\nHárom épülettel odébb érzed, hogy követnek.\n\nNem érzés — egy konkrét, hideg bizonyosság. Valaki kilencven másodperce tartja a távolságot. Azonos tempó. Azonos szünetek. A városon mindenütt kamerák vannak, és valaki, valahol, ma éjjel különös figyelmet fordít erre a tömbre.",
           clan_notes: {
-            Malkavian: "Látod őket, mielőtt látnád. Ez, technikailag, így működik mindenre — azon dolgozol, hogy kevésbé kimerítőnek találd. Olyan erősen játsszák a Hétköznapi Személyt, hogy teatrális produkciónak hat: fegyverolaj, régi papír, a hitből és nem pénzért végzett munka sajátos intézményi nyomorúsága. Azt hiszik, ez számít. Szinte kívánsz nekik szerencsét.",
+            Malkavian: "Látod őket, mielőtt látnád. Így működik ez mindennél — az észlelés már nem kéri az idő engedélyét — és még mindig írod a kézikönyvet arról, mit kezdj ezzel. A Hétköznapi Személyt olyan szinten adják elő, amely egy színházba, vagy egy színházelméletbe illik: fegyverolaj, iratok illata, valaki sajátos intézményi nyomorúsága, aki még mindig hisz a küldetésben. A cipők rosszak. A cipők mindig rosszak. Egyszer megpróbáltad elmagyarázni a cipőproblémát a sírednek, és udvariasan megkértek, hogy hagyd abba. Majdnem adsz nekik egy szakmai figyelmeztető jelzést. Ehelyett úgy döntöl, megnézed, meddig tartja az előadást, ha elkezdel olyasmit csinálni, amire nem írtak eljárást.",
           },
           choices: [
             'Menj be a Ringstrasse turistatömegébe — tűnj el a zajban',
@@ -665,7 +665,7 @@ export const AshesOfTorpor: Chronicle = {
         archivist_meeting: {
           narrative: "Gregor elég régi ahhoz, hogy a Nosferatu vonásai valami olyasmibe ülepedtek, amely inkább architektúraszerűnek, mintsem rossznak hat. Iktatószekrények, papír-indexek és akár archivált megőrző folyadék, akár olyasvalami szaga között él, ami archivált megőrző folyadékon táplálkozik.\n\nMár tudja a nevedet. Kimondja, mielőtt megmondtad volna neki, és nézi az arcodat, amikor megteszi.\n\n'Három dolog van, ami a tiéd,' mondja. 'Kettőt ingyen adok. A harmadikat fizeted.'",
           clan_notes: {
-            Malkavian: "Hét titok, fontossági sorrendben egymásra rakva — ami megkönnyebbülés. A legtöbb embernek egyáltalán nincs szervezési rendszere a titkaira. Katalogizált dolgok illatát árasztja, olyan tudásét, amely tudja, hol él. Ráadásul: kifejezetten téged várt, névvel, ahogyan ez azt sugallja, hogy a Pókháló hamarabb ért el hozzá, mint te. Megnyugtatónak találod. Az univerzum alkalmanként rendezett. Szinte sosem rendezett a te javadra.",
+            Malkavian: "Hét titok, fontossági sorrendben szervezve, kereszthivatkozott és megfelelően iktatott. Sírhatnál. A legtöbb ember csak úgy hagyja a titkait heverni, mint cipőket az előszobában — rendezetlen, cédula nélkül, mindenki számára veszélyes. Az övéi olyan illatot árasztanak, mintha sorozatszámuk lenne. Tudta, hogy jössz: névvel, hozzávetőleges érkezési ablakkal, releváns klánnal. A Pókháló szólt neki, mielőtt te tudtad volna, hogy felébredsz, ami azt jelenti, hogy a Torpor alatt valami részed adást sugárzott, feltehetőleg rendkívül különösen. A nevedet azzal a gondos pontossággal ejti ki, mint valaki, akit tájékoztattak. Fontolgatod, hogy elmondd: a tájékoztatásból pár dolog kimaradt. Inkább megvárod, mit gondol tudni. Ez az, ami itt stratégiának számít, és kiállsz mellette.",
           },
           choices: [
             'Fogadd el a feltételeit — kérdezz a költségről, mielőtt elfogadsz',

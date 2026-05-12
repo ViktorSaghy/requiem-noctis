@@ -11,14 +11,15 @@ import type { Character, ClanName } from '../engine/character';
 import type { Attributes } from '../engine/character';
 import { useT } from '../engine/i18n';
 import type { TranslationKey } from '../engine/i18n';
+import { ITEM_CATALOG, STARTER_WEAPON_IDS, FIXED_STARTER_ITEM_IDS } from '../content/items';
 
 interface Props {
-  onComplete: (c: Character) => void;
+  onComplete: (c: Character, starterItems: string[]) => void;
   onBack: () => void;
 }
 
-type Step = 'identity' | 'attributes' | 'skills' | 'disciplines' | 'review';
-const STEPS: Step[] = ['identity', 'attributes', 'skills', 'disciplines', 'review'];
+type Step = 'identity' | 'attributes' | 'skills' | 'disciplines' | 'loadout' | 'review';
+const STEPS: Step[] = ['identity', 'attributes', 'skills', 'disciplines', 'loadout', 'review'];
 
 type AttrCategory = 'Physical' | 'Social' | 'Mental';
 const ATTR_CATS: Record<AttrCategory, (keyof Attributes)[]> = {
@@ -225,6 +226,7 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
   const [skillPriorities, setSkillPriorities] = useState<Partial<Record<SkillCat, number>>>({});
 
   const [discPowers, setDiscPowers] = useState<string[]>([]);
+  const [selectedWeapons, setSelectedWeapons] = useState<string[]>([]);
 
   const stepIndex = STEPS.indexOf(step);
 
@@ -242,6 +244,7 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
     attributes: t('creation.steps.attributes'),
     skills: t('creation.steps.skills'),
     disciplines: t('creation.steps.disciplines'),
+    loadout: t('creation.steps.loadout'),
     review: t('creation.steps.review'),
   };
 
@@ -308,6 +311,14 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
     });
   }
 
+  function toggleWeapon(id: string) {
+    setSelectedWeapons(prev => {
+      if (prev.includes(id)) return prev.filter(w => w !== id);
+      if (prev.length >= 2) return prev;
+      return [...prev, id];
+    });
+  }
+
   function setPriority(cat: AttrCategory, rank: number) {
     const existing = Object.entries(priorities).find(([, v]) => v === rank)?.[0] as AttrCategory | undefined;
     setPriorities(prev => {
@@ -327,7 +338,7 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
     setSkillPriorities(tmpl.skillPriorities);
     setSkills(tmpl.skills);
     setDiscPowers(tmpl.discPowers);
-    setStep('review');
+    setStep('loadout');
   }
 
   function canAdvance(): boolean {
@@ -335,6 +346,7 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
     if (step === 'attributes') return Object.keys(priorities).length === 3;
     if (step === 'skills') return Object.keys(skillPriorities).length === 3;
     if (step === 'disciplines') return true;
+    if (step === 'loadout') return selectedWeapons.length === 2;
     return true;
   }
 
@@ -360,7 +372,7 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
       health: deriveHealth(base),
       willpower: deriveWillpower(base),
     };
-    onComplete(char);
+    onComplete(char, [...selectedWeapons, ...FIXED_STARTER_ITEM_IDS]);
   }
 
   function tCat(cat: string): string {
@@ -661,6 +673,61 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
           </div>
         )}
 
+        {step === 'loadout' && (
+          <div className="disc-section">
+            <p style={{ fontSize: '0.8rem', color: 'var(--text-dim)', marginBottom: '1rem' }}>
+              {t('creation.loadout.hint')}
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem', marginBottom: '1rem' }}>
+              {STARTER_WEAPON_IDS.map(id => {
+                const item = ITEM_CATALOG[id];
+                if (!item) return null;
+                const sel = selectedWeapons.includes(id);
+                const disabled = !sel && selectedWeapons.length >= 2;
+                const atk = item.effects?.find(e => e.type === 'attack_bonus')?.value ?? 0;
+                const dmg = item.effects?.find(e => e.type === 'damage_bonus')?.value ?? 0;
+                return (
+                  <div
+                    key={id}
+                    className={`disc-power${sel ? ' selected' : ''}`}
+                    style={{
+                      flexDirection: 'column',
+                      alignItems: 'flex-start',
+                      gap: '0.3rem',
+                      opacity: disabled ? 0.4 : 1,
+                      cursor: disabled ? 'not-allowed' : 'pointer',
+                    }}
+                    onClick={() => !disabled && toggleWeapon(id)}
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', width: '100%' }}>
+                      <span style={{ fontSize: '1.5rem', lineHeight: 1 }}>{item.icon}</span>
+                      <span style={{ fontWeight: 600, fontSize: '0.85rem', flex: 1 }}>{item.name}</span>
+                      {sel && <div className="disc-dot" />}
+                    </div>
+                    <div style={{ display: 'flex', gap: '0.4rem', fontSize: '0.7rem' }}>
+                      <span style={{ color: 'var(--gold)', background: 'rgba(201,168,76,0.1)', padding: '1px 5px', borderRadius: '2px' }}>
+                        ATK +{atk}
+                      </span>
+                      <span style={{ color: 'var(--crimson)', background: 'rgba(139,26,26,0.1)', padding: '1px 5px', borderRadius: '2px' }}>
+                        DMG +{dmg}
+                      </span>
+                    </div>
+                    <div style={{ fontSize: '0.7rem', color: 'var(--text-dim)', lineHeight: 1.3 }}>
+                      {item.description}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+            <div style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>
+              {t('creation.loadout.selected', { n: selectedWeapons.length })}
+            </div>
+            <div style={{ marginTop: '0.5rem', fontSize: '0.75rem', color: 'var(--text-dim)', fontStyle: 'italic' }}>
+              {t('creation.loadout.fixedItems')}
+            </div>
+          </div>
+        )}
+
         {step === 'review' && (() => {
           const base = createCharacter({ name: name.trim(), clan, gender, attributes: attrs, skills, disciplines: {} });
           return (
@@ -717,6 +784,20 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
                     ? discPowers.join(', ')
                     : <span style={{ color: 'var(--text-dim)' }}>{t('creation.noneSelected')}</span>
                   }
+                </div>
+              </div>
+              <div className="review-block">
+                <div className="review-label">{t('creation.review.loadout')}</div>
+                <div className="card" style={{ fontSize: '0.9rem', display: 'flex', gap: '1rem', flexWrap: 'wrap' }}>
+                  {selectedWeapons.map(id => {
+                    const item = ITEM_CATALOG[id];
+                    return item ? (
+                      <span key={id}>{item.icon} {item.name}</span>
+                    ) : null;
+                  })}
+                  {selectedWeapons.length === 0 && (
+                    <span style={{ color: 'var(--text-dim)' }}>{t('creation.noneSelected')}</span>
+                  )}
                 </div>
               </div>
             </>

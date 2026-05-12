@@ -40,6 +40,7 @@ export default function App() {
   const [toast] = useState<ToastMessage | null>(null);
   const [pendingXpRecord, setPendingXpRecord] = useState<XpAwardRecord | null>(null);
   const [pendingCharacter, setPendingCharacter] = useState<Character | null>(null);
+  const [pendingStarterItems, setPendingStarterItems] = useState<string[]>([]);
 
   const [audioUnlocked, setAudioUnlocked] = useState(false);
   const game = useGame();
@@ -95,16 +96,18 @@ export default function App() {
 
   const handleStorySelect = useCallback((c: Chronicle) => {
     if (pendingCharacter) {
-      game.start(pendingCharacter, c);
+      game.start(pendingCharacter, c, pendingStarterItems);
       setPendingCharacter(null);
+      setPendingStarterItems([]);
       setScreen('game');
     } else {
       setScreen('create');
     }
-  }, [pendingCharacter, game]);
+  }, [pendingCharacter, pendingStarterItems, game]);
 
-  const handleCharacterComplete = useCallback((char: Character) => {
+  const handleCharacterComplete = useCallback((char: Character, starterItems: string[]) => {
     setPendingCharacter(char);
+    setPendingStarterItems(starterItems);
     setScreen('story');
   }, []);
 

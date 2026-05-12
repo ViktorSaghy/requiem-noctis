@@ -220,7 +220,7 @@ export function useGame() {
     }, 'auto');
   }, []);
 
-  const start = useCallback((character: Character, chronicle: Chronicle) => {
+  const start = useCallback((character: Character, chronicle: Chronicle, starterItems?: string[]) => {
     Audio.stopAll();                  // dispose any sources from a previous session
     Audio.setMood('exploration');
     const startChar = chronicle.starting_hunger != null
@@ -237,7 +237,9 @@ export function useGame() {
       activeCompulsion: null,
       rouseLog: null,
       chronicleStartCharacter: startChar,
-      inventory: emptyInventory(),
+      inventory: starterItems?.length
+        ? applyItemChanges(emptyInventory(), ITEM_CATALOG, starterItems)
+        : emptyInventory(),
     };
     autoSave(gs);
     setState(gs);

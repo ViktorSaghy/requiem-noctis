@@ -610,7 +610,6 @@ export function processCombatRound(
         }
       }
     }
-  }
 
   } else if (action.type === 'use_item') {
     let p = { ...s.player };

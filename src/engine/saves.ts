@@ -2,6 +2,8 @@
 // Save and load game state
 
 import type { Character } from './character';
+import type { Inventory } from './inventory';
+import { emptyInventory } from './inventory';
 
 export interface SaveSlot {
   slot: string;
@@ -10,6 +12,7 @@ export interface SaveSlot {
   sceneId: string;
   flags: Record<string, boolean>;
   journal: JournalEntry[];
+  inventory?: Inventory;
   savedAt: number;
 }
 
@@ -26,6 +29,7 @@ export interface GameState {
   journal: JournalEntry[];
   gmMode: 'classic' | 'ai';
   downtimeAvailable?: boolean;
+  inventory?: Inventory;
 }
 
 const STORAGE_PREFIX = 'requiem_noctis_';
@@ -43,6 +47,7 @@ export async function saveGame(
       sceneId: state.sceneId,
       flags: state.flags,
       journal: state.journal,
+      inventory: state.inventory,
       savedAt: Date.now(),
     };
     localStorage.setItem(
@@ -69,7 +74,11 @@ export async function loadGame(slot: string = 'auto'): Promise<SaveSlot | null> 
     const raw = localStorage.getItem(`${STORAGE_PREFIX}save_${slot}`);
     if (!raw) return null;
     const save: SaveSlot = JSON.parse(raw);
-    return { ...save, character: migrateCharacter(save.character) };
+    return {
+      ...save,
+      character: migrateCharacter(save.character),
+      inventory: save.inventory ?? emptyInventory(),
+    };
   } catch (e) {
     return null;
   }

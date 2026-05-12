@@ -31,6 +31,10 @@ export interface PlayerCombatState {
   compulsion: string | null;
   compulsionDicePenalty: number;
   compulsionForceAttack: boolean;
+  // Equipped gear bonuses — set once at combat init, persist for the fight
+  weaponAttackBonus: number;
+  weaponDamageBonus: number;
+  armorReduction: number;
 }
 
 export type CombatOutcome = 'ongoing' | 'victory' | 'defeat' | 'fled';
@@ -206,7 +210,11 @@ function applyCompulsion(result: DiceResult, char: Character, s: CombatState): C
 
 // ─────────────── INIT ───────────────
 
-export function initCombat(character: Character, enemies: EnemySpec[]): CombatState {
+export function initCombat(
+  character: Character,
+  enemies: EnemySpec[],
+  bonuses?: { weaponAttack?: number; weaponDamage?: number; armorReduction?: number },
+): CombatState {
   return {
     round: 1,
     enemies: enemies.map(spec => ({
@@ -233,6 +241,9 @@ export function initCombat(character: Character, enemies: EnemySpec[]): CombatSt
       compulsion: null,
       compulsionDicePenalty: 0,
       compulsionForceAttack: false,
+      weaponAttackBonus: bonuses?.weaponAttack ?? 0,
+      weaponDamageBonus: bonuses?.weaponDamage ?? 0,
+      armorReduction:    bonuses?.armorReduction ?? 0,
     },
     log: [],
     outcome: 'ongoing',
@@ -246,7 +257,8 @@ export type CombatAction =
   | { type: 'attack'; targetIdx: number; wpBoost?: boolean }
   | { type: 'full_defense' }
   | { type: 'discipline'; actionId: string; targetIdx?: number }
-  | { type: 'flee' };
+  | { type: 'flee' }
+  | { type: 'use_item'; itemId: string; itemName: string; hungerReduce?: number; hpRestore?: number };
 
 // ─────────────── ROUND PROCESSOR ───────────────
 
@@ -317,17 +329,22 @@ export function processCombatRound(
     if (!isDefeated(target)) {
       const basePool = character.attributes.Strength + (character.skills.Brawl ?? 0);
       const wpBonus = action.wpBoost ? 3 : 0;
-      const atkPool = Math.max(1, basePool + wpBonus - compulsionPenalty);
+      const weapAtk = s.player.weaponAttackBonus;
+      const weapDmg = s.player.weaponDamageBonus;
+      const atkPool = Math.max(1, basePool + wpBonus + weapAtk - compulsionPenalty);
       const atk = roll(atkPool, s.player.hunger);
       const def = roll(Math.max(1, target.spec.defensePool), target.hunger);
       const net = Math.max(0, atk.successes - def.successes);
       const boostNote = wpBonus ? ' (WP)' : '';
+      const weapNote = weapAtk ? ` (+${weapAtk} weapon)` : '';
       const penNote = compulsionPenalty ? ` (−${compulsionPenalty} Compulsion)` : '';
       if (net > 0) {
+        const totalDmg = net + weapDmg;
         const newEnemies = [...s.enemies];
-        newEnemies[tidx] = applyDmgToEnemy(target, net, 'superficial');
+        newEnemies[tidx] = applyDmgToEnemy(target, totalDmg, 'superficial');
         s = { ...s, enemies: newEnemies };
-        addLog(character.name, `Attack${boostNote}${penNote}`, `${net} superficial → ${target.spec.name} (${atk.successes} vs ${def.successes})`, true, { dice: diceStr(atk) });
+        const dmgNote = weapDmg ? ` +${weapDmg} weapon` : '';
+        addLog(character.name, `Attack${boostNote}${weapNote}${penNote}`, `${totalDmg} superficial → ${target.spec.name}${dmgNote} (${atk.successes} vs ${def.successes})`, true, { dice: diceStr(atk) });
         if (isDefeated(newEnemies[tidx]) && !isDefeated(target)) {
           addLog('GM', 'Defeated', '', false, { narration: `${target.spec.name} crumples to the ground, defeated. Blood pools beneath them as the fight continues.` });
         } else {
@@ -595,6 +612,28 @@ export function processCombatRound(
     }
   }
 
+  } else if (action.type === 'use_item') {
+    let p = { ...s.player };
+    const effects: string[] = [];
+
+    if (action.hungerReduce) {
+      p.hunger = Math.max(0, p.hunger - action.hungerReduce);
+      effects.push(`Hunger −${action.hungerReduce} → ${p.hunger}`);
+    }
+    if (action.hpRestore) {
+      const restored = Math.min(action.hpRestore, character.health - p.hp);
+      if (restored > 0) {
+        p.superficialDmg = Math.max(0, p.superficialDmg - restored);
+        p.hp = Math.max(0, character.health - p.superficialDmg - p.aggravatedDmg);
+        effects.push(`Restored ${restored} HP`);
+      }
+    }
+
+    s = { ...s, player: p };
+    addLog(character.name, `Use ${action.itemName}`, effects.join('; ') || 'Used', true);
+    addLog('GM', 'Item', '', false, { narration: `You quickly consume the ${action.itemName}, feeling its effects take hold as the fight continues around you.` });
+  }
+
   // Victory check after player action
   if (s.enemies.every(isDefeated)) {
     addLog('GM', 'Victory', '', false, { narration: `The last enemy falls. The fight is over, but the night is still young.` });
@@ -634,7 +673,7 @@ export function processCombatRound(
     const net = Math.max(0, ea.successes - pd.successes);
 
     if (net > 0) {
-      const shield = s.player.fortitudeShield;
+      const shield = s.player.fortitudeShield + s.player.armorReduction;
       const effective = Math.max(0, net - shield);
       const dmgType = enemy.spec.damageType;
       if (effective > 0) {
@@ -647,8 +686,11 @@ export function processCombatRound(
           : `The attack hits home. You feel the impact, but your undead resilience absorbs some of the damage.`;
         addLog('GM', 'Damage', '', false, { narration: damageNarration });
       } else {
-        addLog(enemy.spec.name, 'Attack', `Fortitude absorbs all damage (${ea.successes} vs ${pd.successes})`, false);
-        addLog('GM', 'Defense', '', false, { narration: `Your Fortitude discipline flares, turning aside ${enemy.spec.name}'s attack completely.` });
+        const absorbedBy = s.player.fortitudeShield > 0 && s.player.armorReduction > 0
+          ? 'Fortitude and armor absorb all damage'
+          : s.player.fortitudeShield > 0 ? 'Fortitude absorbs all damage' : 'Armor absorbs all damage';
+        addLog(enemy.spec.name, 'Attack', `${absorbedBy} (${ea.successes} vs ${pd.successes})`, false);
+        addLog('GM', 'Defense', '', false, { narration: `Protection absorbs ${enemy.spec.name}'s strike completely.` });
       }
     } else {
       addLog(enemy.spec.name, 'Attack', `Blocked by ${character.name} (${ea.successes} vs ${pd.successes})`, false, { dice: diceStr(ea) });

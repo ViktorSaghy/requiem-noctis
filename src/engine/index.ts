@@ -8,6 +8,9 @@ import { saveGame, loadGame } from './saves';
 import type { JournalEntry } from './saves';
 import { Audio } from '../audio';
 import type { PlayerCombatState } from './combat';
+import type { Inventory, EquipSlot } from './inventory';
+import { emptyInventory, applyItemChanges, equipItem as equipItemFn, unequipSlot, removeItem } from './inventory';
+import { ITEM_CATALOG } from '../content/items';
 
 export type { Character } from './character';
 export type { Chronicle, Scene, Ending } from './story';
@@ -18,6 +21,7 @@ export { saveGame, loadGame, listSaves, saveCharacter, loadSavedCharacters } fro
 export { localizeChronicle } from './localize';
 export { awardXp, getSuggestedUpgrades, canPurchase, purchase, getCategoryProgress, buildTransactionLog } from './progression';
 export type { XpAwardRecord, XpSpendRecord, XpTransaction } from './progression';
+export type { Inventory, Item, ItemType, ItemEffect, EquipSlot } from './inventory';
 
 function applySceneDeltas(character: Character, scene: { hunger_change?: number; humanity_change?: number }): Character {
   let c = character;
@@ -171,6 +175,7 @@ export interface GameState {
   activeCompulsion: string | null;
   rouseLog: RouseResult | null;
   chronicleStartCharacter: Character;
+  inventory: Inventory;
 }
 
 const MOOD_BY_ACT: Record<number, 'exploration' | 'tension' | 'combat'> = {
@@ -211,6 +216,7 @@ export function useGame() {
       flags: gs.flags,
       journal: gs.journal,
       gmMode: 'classic',
+      inventory: gs.inventory,
     }, 'auto');
   }, []);
 
@@ -231,12 +237,13 @@ export function useGame() {
       activeCompulsion: null,
       rouseLog: null,
       chronicleStartCharacter: startChar,
+      inventory: emptyInventory(),
     };
     autoSave(gs);
     setState(gs);
   }, [autoSave]);
 
-  const goTo = useCallback((sceneId: string, opts?: { disciplineRouse?: boolean }) => {
+  const goTo = useCallback((sceneId: string, opts?: { disciplineRouse?: boolean; grantsItems?: string[]; consumesItems?: string[] }) => {
     setState(prev => {
       if (!prev) return prev;
       if (prev.chronicle.endings[sceneId]) {
@@ -264,6 +271,9 @@ export function useGame() {
       }
 
       const character = applySceneDeltas(rouseChar, scene);
+      // Apply choice-level item changes first, then scene-level changes
+      const inventoryAfterChoice = applyItemChanges(prev.inventory, ITEM_CATALOG, opts?.grantsItems, opts?.consumesItems);
+      const inventory = applyItemChanges(inventoryAfterChoice, ITEM_CATALOG, scene.grants_items, scene.consumes_items);
       const next: GameState = {
         ...prev,
         character,
@@ -274,6 +284,7 @@ export function useGame() {
         endingId: null,
         activeCompulsion: null,
         rouseLog,
+        inventory,
       };
       if (scene.resolution) {
         const endingId = resolveEnding(prev.chronicle, flags);
@@ -346,6 +357,7 @@ export function useGame() {
         ? [{ entry: `Act ${scene.act} — ${scene.title}`, summary: extractFirstSentence(scene?.narrative), time: Date.now() }, ...prev.journal]
         : prev.journal;
       const character = scene ? applySceneDeltas(baseChar, scene) : baseChar;
+      const inventory = scene ? applyItemChanges(prev.inventory, ITEM_CATALOG, scene.grants_items, scene.consumes_items) : prev.inventory;
       let endingId: string | null = null;
       if (scene?.resolution) endingId = resolveEnding(prev.chronicle, flags);
       else if (scene?.ending) { Audio.setMood('ending'); endingId = scene.ending; }
@@ -359,6 +371,7 @@ export function useGame() {
         endingId,
         activeCompulsion,
         rouseLog: null,
+        inventory,
       };
       if (!endingId) autoSave(next);
       return next;
@@ -385,6 +398,18 @@ export function useGame() {
     return !!state?.flags[flag];
   }, [state]);
 
+  const equipItemCb = useCallback((itemId: string) => {
+    setState(prev => prev ? { ...prev, inventory: equipItemFn(prev.inventory, itemId) } : prev);
+  }, []);
+
+  const unequipItemCb = useCallback((slot: EquipSlot) => {
+    setState(prev => prev ? { ...prev, inventory: unequipSlot(prev.inventory, slot) } : prev);
+  }, []);
+
+  const useItemCb = useCallback((itemId: string) => {
+    setState(prev => prev ? { ...prev, inventory: removeItem(prev.inventory, itemId, 1) } : prev);
+  }, []);
+
   const resume = useCallback(async (chronicle: Chronicle): Promise<boolean> => {
     const save = await loadGame('auto');
     if (!save) return false;
@@ -402,6 +427,7 @@ export function useGame() {
       activeCompulsion: null,
       rouseLog: null,
       chronicleStartCharacter: save.character,
+      inventory: save.inventory ?? emptyInventory(),
     });
     return true;
   }, []);
@@ -419,6 +445,7 @@ export function useGame() {
       flags: state.flags,
       journal: state.journal,
       gmMode: 'classic',
+      inventory: state.inventory,
     }, slot, state.character.name);
   }, [state]);
 
@@ -440,9 +467,10 @@ export function useGame() {
       activeCompulsion: null,
       rouseLog: null,
       chronicleStartCharacter: state.chronicleStartCharacter,
+      inventory: save.inventory ?? emptyInventory(),
     });
     return true;
   }, [state]);
 
-  return { state, start, goTo, beginRoll, revealRoll, confirmRoll, hasFlag, resume, retryChronicle, saveToSlot, loadFromSlot, applyPostCombatDamage, currentScene: state ? currentScene(state) : null };
+  return { state, start, goTo, beginRoll, revealRoll, confirmRoll, hasFlag, resume, retryChronicle, saveToSlot, loadFromSlot, applyPostCombatDamage, equipItem: equipItemCb, unequipItem: unequipItemCb, useItem: useItemCb, currentScene: state ? currentScene(state) : null };
 }

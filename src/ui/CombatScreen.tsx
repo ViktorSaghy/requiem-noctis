@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import type { Character } from '../engine';
 import type { CombatScenario } from '../engine/story';
 import type { EnemyState, PlayerCombatState } from '../engine/combat';
@@ -6,6 +6,8 @@ import { Audio } from '../audio';
 import { useCombat } from './useCombat';
 import type { CombatHook, CombatMode } from './useCombat';
 import { useT } from '../engine/i18n';
+import type { Inventory } from '../engine/inventory';
+import { listConsumables } from '../engine/inventory';
 
 // ─────────────── SHARED ATOMS ───────────────
 
@@ -161,16 +163,22 @@ export function CombatStatusPanel({ combat, character, scenario }: {
 
 // ─────────────── COMBAT ACTIONS PANEL (left column bottom) ───────────────
 
-export function CombatActionsPanel({ combat, scenario }: {
-  combat: CombatHook; scenario: CombatScenario;
+export function CombatActionsPanel({ combat, scenario, inventory, onUseItem }: {
+  combat: CombatHook;
+  scenario: CombatScenario;
+  inventory?: Inventory | null;
+  onUseItem?: (itemId: string) => void;
 }) {
   const t = useT();
+  const [showItems, setShowItems] = useState(false);
   const {
     cs, mode, wpBoost, canSpendWP, availableDiscs, aliveEnemies,
     inFrenzy, endDelay, outcomeLabel, outcomeClass,
-    dispatch, handleAttackClick, handleDiscClick, handleEnd,
+    dispatch, handleAttackClick, handleDiscClick, handleItemUse, handleEnd,
     setMode, setWpBoost,
   } = combat;
+
+  const consumables = inventory ? listConsumables(inventory) : [];
 
   if (mode === 'ended') {
     return (
@@ -229,6 +237,37 @@ export function CombatActionsPanel({ combat, scenario }: {
     );
   }
 
+  if (showItems) {
+    return (
+      <div className="disc-menu">
+        <div className="disc-menu-header">
+          {t('combat.useItemMenu')}
+          <button className="combat-cancel-btn" onClick={() => setShowItems(false)}>✕</button>
+        </div>
+        <div className="disc-menu-list">
+          {consumables.map(item => (
+            <button
+              key={item.id}
+              className="disc-menu-item"
+              onClick={() => { handleItemUse(item.id); onUseItem?.(item.id); setShowItems(false); }}
+            >
+              <div className="disc-item-header">
+                <span className="disc-item-name">{item.icon} {item.name}</span>
+                {item.stackable && item.quantity > 1 && (
+                  <span className="disc-item-clan">×{item.quantity}</span>
+                )}
+              </div>
+              <div className="disc-item-desc">{item.description}</div>
+            </button>
+          ))}
+          {consumables.length === 0 && (
+            <div className="disc-menu-empty">{t('combat.noConsumables')}</div>
+          )}
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
       {canSpendWP && (
@@ -257,6 +296,11 @@ export function CombatActionsPanel({ combat, scenario }: {
         <button className="combat-btn defense" disabled={cs.outcome !== 'ongoing'} onClick={() => dispatch({ type: 'full_defense' })}>
           {t('combat.fullDefense')}
         </button>
+        {consumables.length > 0 && (
+          <button className="combat-btn item-use" disabled={cs.outcome !== 'ongoing'} onClick={() => setShowItems(true)}>
+            {t('combat.useItem')}
+          </button>
+        )}
         {scenario.flee_next && (
           <button className="combat-btn flee" disabled={cs.outcome !== 'ongoing'} onClick={() => dispatch({ type: 'flee' })}>
             {t('combat.flee')}

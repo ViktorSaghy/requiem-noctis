@@ -33,6 +33,12 @@ export interface Choice {
   requires_hunger_lte?: number;    // shown disabled when hunger > threshold
   // Set false to suppress the automatic rouse check for discipline choices
   rouse?: boolean;
+  // Inventory gating
+  requires_item?: string;          // item id or tag; shown disabled (or hidden) if not in inventory
+  hidden_without_item?: boolean;   // true = hide entirely when item missing (default: show disabled)
+  // Inventory mutations applied when this choice is taken
+  grants_items?: string[];         // item ids to add to inventory
+  consumes_items?: string[];       // item ids to remove from inventory
 }
 
 export interface EnemySpec {
@@ -83,6 +89,9 @@ export interface Scene {
   stain_note?: string;
   resolution?: boolean;
   ending?: string;
+  // Inventory mutations applied when entering this scene
+  grants_items?: string[];
+  consumes_items?: string[];
 }
 
 export interface Ending {

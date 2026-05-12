@@ -136,6 +136,7 @@ class AudioEngineClass {
     const buffer = this.musicBuffers.get(url);
     if (!buffer) return;
     if (this.currentMusicUrl === url) return;     // already playing
+    if (this.nextMusicUrl === url) return;        // crossfade already in progress
     if (gen !== this.moodGen) {
       audioLog(`crossfade aborted — gen stale (${gen} vs ${this.moodGen})`);
       return;

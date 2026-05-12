@@ -251,6 +251,9 @@ export default function App() {
           onBackToTitle={handleBackToTitle}
           onApplyPostCombatDamage={game.applyPostCombatDamage}
           onDefeat={handleDefeat}
+          onEquipItem={game.equipItem}
+          onUnequipItem={game.unequipItem}
+          onUseItem={game.useItem}
           devMode={settings.devMode}
         />
       )}

@@ -11,3 +11,4 @@ export { XpHUD } from './XpHUD';
 export { XpRecapScreen } from './XpRecapScreen';
 export { Toast, type ToastMessage } from './Toast';
 export { DeathScreen } from './DeathScreen';
+export { InventoryPanel } from './InventoryPanel';

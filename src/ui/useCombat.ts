@@ -6,6 +6,8 @@ import {
 } from '../engine/combat';
 import type { CombatState, EnemyState, PlayerCombatState, DiscAction } from '../engine/combat';
 import { Audio } from '../audio';
+import type { Inventory } from '../engine/inventory';
+import { getEquipBonus } from '../engine/inventory';
 
 export type CombatMode =
   | 'actions'
@@ -34,6 +36,7 @@ export interface CombatHook {
   handleAttackClick: () => void;
   handleDiscClick: (da: DiscAction) => void;
   handleEnemyCardClick: (idx: number) => void;
+  handleItemUse: (itemId: string) => void;
   handleEnd: () => void;
   setMode: React.Dispatch<React.SetStateAction<CombatMode>>;
   setPendingDiscId: React.Dispatch<React.SetStateAction<string | null>>;
@@ -45,8 +48,14 @@ export function useCombat(
   scenario: CombatScenario,
   onEnd: (nextSceneId: string, finalPlayer: PlayerCombatState) => void,
   onDefeat?: () => void,
+  inventory?: Inventory | null,
+  onItemUsed?: (itemId: string) => void,
 ): CombatHook {
-  const [cs, setCs] = useState<CombatState>(() => initCombat(character, scenario.enemies));
+  const [cs, setCs] = useState<CombatState>(() => initCombat(character, scenario.enemies, {
+    weaponAttack:   inventory ? getEquipBonus(inventory, 'weapon', 'attack_bonus')    : 0,
+    weaponDamage:   inventory ? getEquipBonus(inventory, 'weapon', 'damage_bonus')    : 0,
+    armorReduction: inventory ? getEquipBonus(inventory, 'armor',  'damage_reduction') : 0,
+  }));
   const [mode, setMode] = useState<CombatMode>('actions');
   const [pendingDiscId, setPendingDiscId] = useState<string | null>(null);
   const [endDelay, setEndDelay] = useState(false);
@@ -118,6 +127,16 @@ export function useCombat(
     else if (mode === 'select_target_disc' && pendingDiscId) dispatch({ type: 'discipline', actionId: pendingDiscId, targetIdx: idx });
   }
 
+  function handleItemUse(itemId: string) {
+    if (!inventory) return;
+    const item = inventory.items[itemId];
+    if (!item) return;
+    const hungerReduce = item.effects?.find(e => e.type === 'hunger_reduce')?.value;
+    const hpRestore    = item.effects?.find(e => e.type === 'hp_restore')?.value;
+    dispatch({ type: 'use_item', itemId, itemName: item.name, hungerReduce, hpRestore });
+    onItemUsed?.(itemId);
+  }
+
   function handleEnd() {
     if (cs.outcome === 'victory') onEnd(scenario.victory_next, cs.player);
     else if (cs.outcome === 'fled' && scenario.flee_next) onEnd(scenario.flee_next, cs.player);
@@ -132,7 +151,7 @@ export function useCombat(
     cs, mode, pendingDiscId, pendingDiscAction, endDelay, wpBoost,
     logRef, availableDiscs, aliveEnemies, singleEnemy, canSpendWP,
     inFrenzy, targetableMode, outcomeLabel, outcomeClass,
-    dispatch, handleAttackClick, handleDiscClick, handleEnemyCardClick, handleEnd,
+    dispatch, handleAttackClick, handleDiscClick, handleEnemyCardClick, handleItemUse, handleEnd,
     setMode, setPendingDiscId, setWpBoost,
   };
 }

@@ -2,6 +2,8 @@ import { useEffect, useState, useMemo, Fragment } from 'react';
 import type { GameState, RouseResult } from '../engine';
 import { listSaves, CLANS, portraitPath, getSceneImage, preloadImages } from '../engine';
 import type { SaveSlot, JournalEntry } from '../engine';
+import type { EquipSlot } from '../engine/inventory';
+import { hasItem, getItemByIdOrTag } from '../engine/inventory';
 import { XpHUD } from './XpHUD';
 import { Audio } from '../audio';
 import { DiceOverlay } from './DiceOverlay';
@@ -14,11 +16,12 @@ import {
   HungerPips,
   WpDots,
 } from './CombatScreen';
+import { InventoryPanel } from './InventoryPanel';
 import type { PlayerCombatState } from '../engine/combat';
 import { useT } from '../engine/i18n';
 import type { TranslationKey } from '../engine/i18n';
 
-type GameTab = 'story' | 'character' | 'journal' | 'menu';
+type GameTab = 'story' | 'character' | 'journal' | 'inventory' | 'menu';
 
 function RouseLogBanner({ rouseLog }: { rouseLog: RouseResult }) {
   const t = useT();
@@ -37,7 +40,7 @@ function RouseLogBanner({ rouseLog }: { rouseLog: RouseResult }) {
 
 interface Props {
   game: GameState;
-  onGoTo: (id: string, opts?: { disciplineRouse?: boolean }) => void;
+  onGoTo: (id: string, opts?: { disciplineRouse?: boolean; grantsItems?: string[]; consumesItems?: string[] }) => void;
   onBeginRoll: () => void;
   onRevealRoll: () => void;
   onConfirmRoll: () => void;
@@ -48,6 +51,9 @@ interface Props {
   onBackToTitle: () => void;
   onApplyPostCombatDamage: (player: PlayerCombatState) => void;
   onDefeat: () => void;
+  onEquipItem: (itemId: string) => void;
+  onUnequipItem: (slot: EquipSlot) => void;
+  onUseItem: (itemId: string) => void;
   devMode?: boolean;
 }
 
@@ -288,12 +294,13 @@ function MenuPane({
 
 // ─────────────── STORY ACTIONS ───────────────
 
-function StoryActionsPanel({ scene, character, flags, diceState, onGoTo, onBeginRoll }: {
+function StoryActionsPanel({ scene, character, flags, inventory, diceState, onGoTo, onBeginRoll }: {
   scene: NonNullable<GameState['chronicle']['scenes'][string]>;
   character: GameState['character'];
   flags: GameState['flags'];
+  inventory: GameState['inventory'];
   diceState: GameState['diceState'];
-  onGoTo: (id: string, opts?: { disciplineRouse?: boolean }) => void;
+  onGoTo: (id: string, opts?: { disciplineRouse?: boolean; grantsItems?: string[]; consumesItems?: string[] }) => void;
   onBeginRoll: () => void;
 }) {
   const t = useT();
@@ -301,7 +308,11 @@ function StoryActionsPanel({ scene, character, flags, diceState, onGoTo, onBegin
   function handleChoice(choice: NonNullable<typeof scene.choices>[number]) {
     void Audio.buttonTap();
     const shouldRouse = !!choice.requires_discipline && choice.rouse !== false;
-    onGoTo(choice.next, { disciplineRouse: shouldRouse });
+    onGoTo(choice.next, {
+      disciplineRouse: shouldRouse,
+      grantsItems: choice.grants_items,
+      consumesItems: choice.consumes_items,
+    });
   }
   function handleNext() {
     void Audio.buttonTap();
@@ -318,7 +329,18 @@ function StoryActionsPanel({ scene, character, flags, diceState, onGoTo, onBegin
     if (choice.requires_discipline && !disciplines[choice.requires_discipline]) return false;
     if (choice.requires_hunger_gte != null && character.hunger < choice.requires_hunger_gte) return false;
     if (choice.requires_hunger_lte != null && character.hunger > choice.requires_hunger_lte) return false;
+    if (choice.requires_item && !hasItem(inventory, choice.requires_item)) {
+      return choice.hidden_without_item ? null : false;
+    }
     return true;
+  }
+
+  function itemLockHint(choice: NonNullable<typeof scene.choices>[number]): string | undefined {
+    if (choice.requires_item && !hasItem(inventory, choice.requires_item)) {
+      const item = getItemByIdOrTag(inventory, choice.requires_item);
+      return t('inventory.requires', { item: item?.name ?? choice.requires_item });
+    }
+    return undefined;
   }
 
   return (
@@ -333,7 +355,7 @@ function StoryActionsPanel({ scene, character, flags, diceState, onGoTo, onBegin
               ? (choice.requires_discipline ? `Requires ${choice.requires_discipline}`
                 : choice.requires_hunger_gte != null ? `Hunger ${choice.requires_hunger_gte}+ required`
                 : choice.requires_hunger_lte != null ? `Hunger ${choice.requires_hunger_lte} or lower required`
-                : 'Locked')
+                : itemLockHint(choice) ?? 'Locked')
               : undefined;
             return (
               <button
@@ -431,7 +453,7 @@ function SceneCard({ scene, character }: {
 
 // ─────────────── COMBAT WRAPPER ───────────────
 
-function CombatLayout({ game, sceneId, onApplyPostCombatDamage, onGoTo, onDefeat, activeTab, onTabChange, onSaveSlot, onLoadSlot, onSettings, onBackToTitle, bg }: {
+function CombatLayout({ game, sceneId, onApplyPostCombatDamage, onGoTo, onDefeat, activeTab, onTabChange, onSaveSlot, onLoadSlot, onSettings, onBackToTitle, onUseItem, onEquipItem, onUnequipItem, bg }: {
   game: GameState;
   sceneId: string;
   onApplyPostCombatDamage: (player: PlayerCombatState) => void;
@@ -443,6 +465,9 @@ function CombatLayout({ game, sceneId, onApplyPostCombatDamage, onGoTo, onDefeat
   onLoadSlot: (slot: string) => Promise<boolean>;
   onSettings: () => void;
   onBackToTitle: () => void;
+  onUseItem: (itemId: string) => void;
+  onEquipItem: (itemId: string) => void;
+  onUnequipItem: (slot: EquipSlot) => void;
   bg: string;
 }) {
   const t = useT();
@@ -458,6 +483,8 @@ function CombatLayout({ game, sceneId, onApplyPostCombatDamage, onGoTo, onDefeat
       onGoTo(nextSceneId);
     },
     onDefeat,
+    game.inventory,
+    onUseItem,
   );
 
   useEffect(() => {
@@ -469,6 +496,7 @@ function CombatLayout({ game, sceneId, onApplyPostCombatDamage, onGoTo, onDefeat
     { id: 'story',     label: t('game.tab.combatLog') },
     { id: 'character', label: t('game.tab.sheet') },
     { id: 'journal',   label: t('game.tab.journal') },
+    { id: 'inventory', label: t('game.tab.inventory') },
     { id: 'menu',      label: t('game.tab.menu') },
   ];
 
@@ -479,7 +507,7 @@ function CombatLayout({ game, sceneId, onApplyPostCombatDamage, onGoTo, onDefeat
           <CombatStatusPanel combat={combat} character={character} scenario={scenario} />
         </div>
         <div className="gs-actions">
-          <CombatActionsPanel combat={combat} scenario={scenario} />
+          <CombatActionsPanel combat={combat} scenario={scenario} inventory={game.inventory} onUseItem={onUseItem} />
         </div>
       </div>
 
@@ -500,6 +528,9 @@ function CombatLayout({ game, sceneId, onApplyPostCombatDamage, onGoTo, onDefeat
           {activeTab === 'story' && <CombatLogPanel combat={combat} />}
           {activeTab === 'character' && <CharacterPane game={game} />}
           {activeTab === 'journal' && <JournalPane journal={game.journal} />}
+          {activeTab === 'inventory' && (
+            <InventoryPanel inventory={game.inventory} onEquip={onEquipItem} onUnequip={onUnequipItem} />
+          )}
           {activeTab === 'menu' && <MenuPane onSaveSlot={onSaveSlot} onLoadSlot={onLoadSlot} onSettings={onSettings} onBackToTitle={onBackToTitle} />}
         </div>
       </div>
@@ -511,7 +542,8 @@ function CombatLayout({ game, sceneId, onApplyPostCombatDamage, onGoTo, onDefeat
 
 export function GameScreen({
   game, onGoTo, onBeginRoll, onRevealRoll, onConfirmRoll, onEndingReady,
-  onSaveSlot, onLoadSlot, onSettings, onBackToTitle, onApplyPostCombatDamage, onDefeat, devMode,
+  onSaveSlot, onLoadSlot, onSettings, onBackToTitle, onApplyPostCombatDamage, onDefeat,
+  onEquipItem, onUnequipItem, onUseItem, devMode,
 }: Props) {
   const t = useT();
   const { character, chronicle, sceneId, diceState, endingId } = game;
@@ -549,6 +581,7 @@ export function GameScreen({
     { id: 'story',     label: t('game.tab.story') },
     { id: 'character', label: t('game.tab.sheet') },
     { id: 'journal',   label: t('game.tab.journal') },
+    { id: 'inventory', label: t('game.tab.inventory') },
     { id: 'menu',      label: t('game.tab.menu') },
   ];
 
@@ -556,6 +589,7 @@ export function GameScreen({
     { id: 'story',     icon: '◈', label: t('game.tab.story') },
     { id: 'character', icon: '♦', label: t('game.tab.sheet') },
     { id: 'journal',   icon: '✦', label: t('game.tab.journal') },
+    { id: 'inventory', icon: '🎒', label: t('game.tab.inventory') },
     { id: 'menu',      icon: '≡', label: t('game.tab.menu') },
   ];
 
@@ -586,6 +620,9 @@ export function GameScreen({
           onLoadSlot={onLoadSlot}
           onSettings={onSettings}
           onBackToTitle={onBackToTitle}
+          onUseItem={onUseItem}
+          onEquipItem={onEquipItem}
+          onUnequipItem={onUnequipItem}
           bg={bg}
         />
       ) : (
@@ -599,6 +636,7 @@ export function GameScreen({
                 scene={scene}
                 character={character}
                 flags={game.flags}
+                inventory={game.inventory}
                 diceState={diceState}
                 onGoTo={onGoTo}
                 onBeginRoll={onBeginRoll}
@@ -676,6 +714,13 @@ export function GameScreen({
               )}
               {activeTab === 'character' && <CharacterPane game={game} />}
               {activeTab === 'journal' && <JournalPane journal={game.journal} />}
+              {activeTab === 'inventory' && (
+                <InventoryPanel
+                  inventory={game.inventory}
+                  onEquip={onEquipItem}
+                  onUnequip={onUnequipItem}
+                />
+              )}
               {activeTab === 'menu' && (
                 <MenuPane onSaveSlot={onSaveSlot} onLoadSlot={onLoadSlot} onSettings={onSettings} onBackToTitle={onBackToTitle} />
               )}

@@ -533,6 +533,9 @@ export const AshesOfTorpor: Chronicle = {
         the_wall: {
           title: 'Új Habarcs',
           narrative: "Tapintás útján találod meg. A pince egyik fala más — a fugák habarcs puha, az illata friss. Hetes, nem évszázados. Valaki szándékosan és nemrégiben elzárta ezt a teret.\n\nA bal oldali falon van egy rés, ahol vascsővezeték fut: egy karbantartási varrat, alig váll-szélességű.\n\nBal tenyered ég. A sötétben ránézel, és nem látsz semmit — de érzed a bőrbe vésett valami formáját. Egy jel. Nem emlékszel rá, hogy ott volt.",
+          clan_notes: {
+            Malkavian: "A habarcs szól, kéretlenül. A kőműves neve Karl volt. A macskája miatt aggódott — nem amiatt, amit befalaz, nem a pénz miatt, a macskája miatt, Michi, aki folyton bejárt a szomszéd kertjébe, és a szomszéd hagyott egy cédulát. Karl nagyon félt is. A macskát a fontosabb kategóriába sorolod.",
+          },
           choices: [
             'Verd be vállal a puha fugát — törj át',
             'Csússz át a karbantartási résen — lassan, csendesen',
@@ -563,6 +566,9 @@ export const AshesOfTorpor: Chronicle = {
         stagehand_encounter: {
           title: 'Az Első Éhség',
           narrative: "Hat méterre előtted ül a falnál, telefonnal az egyik kezében, egy ronggyal a másikkal az alkarja ellen nyomva. Egy stábember — fekete stábos ruha, laminált kitűző, valaki különleges fáradtsága, aki egy duplaszakasz harmadik óráján jár.\n\nA seb apró. Még nem vett észre. Az ajtó alatti fényszalag az egyetlen fény, és te még a sötétben vagy.\n\nAz éhséged hangosabb, mint bármely gondolat, amelyet most formálni tudsz. Négyen vagy — egy szám, amelyről valahogy tudod, hogy az elvesztés határát jelenti.",
+          clan_notes: {
+            Malkavian: "Három héttel ezelőttről illatozik. Pontosabban, kedden. Ha iszol tőle, látni fogod a keddet — nem a fontos részeket, csak a keddet: egy konyhablakot, hideg kávét, egy buszt, amelyet lekésett. A vére tudja azt is, ki zárta el a kamrádat. Nagyon mélyen kellene innod, és a kedd-probléma jelentősen rosszabb lenne, mielőtt jobbá válna.",
+          },
           choices: [
             'Etesd óvatosan — közelíts lassan, győződj meg, hogy nem kiált',
             'Etesd gyorsan — foglalkozz azzal, hogy emlékezik-e rá majd',
@@ -589,6 +595,9 @@ export const AshesOfTorpor: Chronicle = {
         caretaker_approach: {
           title: 'A Gondozó',
           narrative: "Az acélajtó egy szélesebb szervizfolyosóra nyílik — és egy emberre, aki nyilván nem várt rád.\n\nÖtvenesek. Munkaköpeny. Egy akkora kulcskarika, mint egy ököl. Megmerevedik, ahogy az emberek megmerevednek, amikor megijednek, és a félelem alatt, mélyebben, bűnösek. Nem meglepett. Bűnös.\n\nTudja, mi vagy. Látta a fajtádat korábban.",
+          clan_notes: {
+            Malkavian: "Várt rád. Nem ma éjjel — ma éjjel rossz az alakja — de rád, előbb-utóbb, elkerülhetetlenül. Ezt a beszélgetést legalább negyvenszer végiggondolta; érzed a belévésett barázdákat. Volt egy előre megírt szövege. Elég jó volt. Azonnal elhatározod, hogy nem engeded elmondani.",
+          },
         },
         caretaker_talk: {
           narrative: "Ő szól előbb. 'Még nem kellene kinn lenned.'\n\nMegkérdezed tőle, ki zárt oda be.\n\nMélyet lélegzik. 'Utasításokat kaptam. Három hete, kedden lezártam a kamrát. Azt mondták, négy naponta ellenőrizzek és várjak.' Bal kezedre néz. A kifejezése megváltozik — félelem valami alatt, egy felismerés, amellyel nem akar élni.\n\n'Az a jel.' Hátralép egyet. 'Honnan van ez a jel?'",
@@ -617,6 +626,9 @@ export const AshesOfTorpor: Chronicle = {
         watcher_encounter: {
           title: 'A Megfigyelő',
           narrative: "Odakint: Bécs a kisórákon. Villamos sínek narancs fényt fognak. Az Állami Opera teherbejárata egy mellékutcára vezet, csendes, kövezett, amilyen utca a város többi részének díszletéül szolgál.\n\nHárom épülettel odébb érzed, hogy követnek.\n\nNem érzés — egy konkrét, hideg bizonyosság. Valaki kilencven másodperce tartja a távolságot. Azonos tempó. Azonos szünetek. A városon mindenütt kamerák vannak, és valaki, valahol, ma éjjel különös figyelmet fordít erre a tömbre.",
+          clan_notes: {
+            Malkavian: "Látod őket, mielőtt látnád. Ez, technikailag, így működik mindenre — azon dolgozol, hogy kevésbé kimerítőnek találd. Olyan erősen játsszák a Hétköznapi Személyt, hogy teatrális produkciónak hat: fegyverolaj, régi papír, a hitből és nem pénzért végzett munka sajátos intézményi nyomorúsága. Azt hiszik, ez számít. Szinte kívánsz nekik szerencsét.",
+          },
           choices: [
             'Menj be a Ringstrasse turistatömegébe — tűnj el a zajban',
             'Vágj be a lakótömbökbe — tetők, veszítsd el őket a magasban',
@@ -652,6 +664,9 @@ export const AshesOfTorpor: Chronicle = {
         },
         archivist_meeting: {
           narrative: "Gregor elég régi ahhoz, hogy a Nosferatu vonásai valami olyasmibe ülepedtek, amely inkább architektúraszerűnek, mintsem rossznak hat. Iktatószekrények, papír-indexek és akár archivált megőrző folyadék, akár olyasvalami szaga között él, ami archivált megőrző folyadékon táplálkozik.\n\nMár tudja a nevedet. Kimondja, mielőtt megmondtad volna neki, és nézi az arcodat, amikor megteszi.\n\n'Három dolog van, ami a tiéd,' mondja. 'Kettőt ingyen adok. A harmadikat fizeted.'",
+          clan_notes: {
+            Malkavian: "Hét titok, fontossági sorrendben egymásra rakva — ami megkönnyebbülés. A legtöbb embernek egyáltalán nincs szervezési rendszere a titkaira. Katalogizált dolgok illatát árasztja, olyan tudásét, amely tudja, hol él. Ráadásul: kifejezetten téged várt, névvel, ahogyan ez azt sugallja, hogy a Pókháló hamarabb ért el hozzá, mint te. Megnyugtatónak találod. Az univerzum alkalmanként rendezett. Szinte sosem rendezett a te javadra.",
+          },
           choices: [
             'Fogadd el a feltételeit — kérdezz a költségről, mielőtt elfogadsz',
             'Ellenajánlat: információ az információért, nincs nyitott adósság',

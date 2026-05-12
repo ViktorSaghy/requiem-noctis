@@ -26,6 +26,9 @@ function mergeScene(scene: Scene, loc: SceneLocale): Scene {
       ...(loc.combat.description && { description: loc.combat.description }),
     };
   }
+  if (loc.clan_notes) {
+    result.clan_notes = { ...scene.clan_notes, ...loc.clan_notes };
+  }
   return result;
 }
 

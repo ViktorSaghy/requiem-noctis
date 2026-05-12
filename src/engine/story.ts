@@ -122,6 +122,7 @@ export interface SceneLocale {
   choices?: Array<string | null>;
   check?: { label?: string; pool_label?: string; success_text?: string; fail_text?: string };
   combat?: { label?: string; description?: string };
+  clan_notes?: Partial<Record<ClanName, string>>;
 }
 
 export interface ChronicleLocale {

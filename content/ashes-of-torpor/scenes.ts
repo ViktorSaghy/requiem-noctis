@@ -107,7 +107,7 @@ export const AshesOfTorpor: Chronicle = {
         Gangrel: "The earth under the stone remembers older configurations. You feel load-bearing walls, pipe runs, the shape of the tunnels above. You know where the gaps are.",
         Brujah: "Someone put you here. That's a fact. The anger arrives before the question, and the question is better fuel.",
         Tzimisce: "A domain violation. The cellar belongs to whoever rests in it. This intrusion will be addressed.",
-        Malkavian: "The mortar speaks if you let it. Anxiety. Haste. The ghost of a telephone conversation the mason was having while he worked.",
+        Malkavian: "The mortar speaks without being asked. The mason's name was Karl. He was worried about his cat — not about what he was sealing inside, not about the money, about his cat, Michi, who kept getting into the neighbor's garden and the neighbor had left a note. Karl was also very frightened. You file the cat under more interesting.",
       },
       choices: [
         { text: "Drive your shoulder into the soft joint — break through", next: 'wall_forced' },
@@ -170,7 +170,7 @@ export const AshesOfTorpor: Chronicle = {
         Toreador: "He has a musician's hands — callused in the right places, a partial tattoo on the wrist. Even now, starving, you notice the aesthetics of him before the hunger.",
         Ventrue: "The badge says 'F. Holzer — Technical.' Contracted staff, not permanent. Lower-tier access pass. Useful. Manageable.",
         Brujah: "A worker on a break, bleeding from a job hazard with nobody checking on him. The anger you feel at this is separate from the hunger and arrives a half-second later.",
-        Malkavian: "He smells of three weeks ago. Of Tuesday specifically. His blood will show you something — you're not sure you want to see it.",
+        Malkavian: "He smells of three weeks ago. Of Tuesday specifically. If you drink from him you will see Tuesday — not the important parts, just Tuesday: a kitchen window, cold coffee, a bus he missed. His blood also knows who sealed your chamber. You would have to drink very deeply, and the Tuesday problem would get significantly worse before it got better.",
         Lasombra: "The shadow you cast on the wall behind you is absent. If he turns around and sees a person with no shadow, that ends the easy version of this.",
       },
       choices: [
@@ -229,7 +229,7 @@ export const AshesOfTorpor: Chronicle = {
       narrative: "The steel door opens into a wider service corridor — and into a man who was clearly not expecting you.\n\nFifties. Work coat. A ring of keys the size of a fist. He freezes the way people freeze when they are frightened and also, underneath the fright, guilty. Not surprised. Guilty.\n\nHe knows what you are. He has seen your kind before.",
       clan_notes: {
         Nosferatu: "He reacts to your face with trained suppression, not ordinary fear. He has worked with Nosferatu before. Someone acclimatised him.",
-        Malkavian: "His cortisol spikes at the specific frequency of someone anticipating a conversation they've been dreading. He expected you. Not tonight — but soon.",
+        Malkavian: "He was expecting you. Not tonight — tonight is the wrong shape — but you, eventually, inevitably. He has rehearsed this conversation at least forty times; you can feel the grooves worn into it. He had a speech prepared. It was quite good. You decide immediately not to let him give it.",
       },
       next: 'caretaker_talk',
     },
@@ -296,7 +296,7 @@ export const AshesOfTorpor: Chronicle = {
         Nosferatu: "You've been tracked since the loading dock door. Whoever it is knows surveillance tradecraft — they're using reflections in the tram windows, not direct sightlines.",
         Gangrel: "The city is loud and lit but the body reads threat the way it reads weather: before the conscious mind has processed it. The scent trail behind you carries someone's focused attention.",
         Tremere: "There's an observation ward on the street corner. New — days old. Someone prepared this approach.",
-        Malkavian: "You see them before you see them. A figure at the edge of peripheral vision that resolves, when you look directly, into an ordinary person doing ordinary things. Too ordinary.",
+        Malkavian: "You see them before you see them. This is, technically, how it works for everything — you are working on finding it less exhausting. They are performing Ordinary Person so hard it reads as a theatrical production: gun oil, old paper, the specific institutional misery of a job done out of belief rather than money. They think this matters. You almost wish them luck.",
       },
       choices: [
         { text: "Walk into the tourist crowd on the Ringstrasse — disappear in the noise", next: 'watcher_blend' },
@@ -365,7 +365,7 @@ export const AshesOfTorpor: Chronicle = {
       narrative: "Gregor is old enough that his Nosferatu features have settled into something that reads as architectural rather than wrong. He lives surrounded by filing cabinets, paper indices, and a smell that is either archival preservation fluid or something that feeds on archival preservation fluid.\n\nHe already knows your name. He says it before you've told him and watches your face when he does.\n\n'I have three things that belong to you,' he says. 'I'll trade two for free. The third one costs.'",
       clan_notes: {
         Nosferatu: "He offers you the Nosferatu courtesy first — a pause, a slight tip of the head. Clan recognition. He'll talk to you more openly than he would to anyone else here, though not without cost.",
-        Malkavian: "He smells of seven concurrent secrets and the particular satisfaction of someone who knows more than they're saying. You find him restful for exactly that reason.",
+        Malkavian: "Seven secrets, stacked in order of importance — which is a relief. Most people have no organizational system for their secrets at all. He smells of catalogued things, of knowledge that knows where it lives. Also: he was waiting for you specifically, by name, in a way that suggests the Cobweb reached him before you did. You find this restful. The universe is occasionally organized. It is almost never organized for your benefit.",
         Ventrue: "He deals with you like a supplier deals with a client who has temporarily misplaced their leverage. Polite. Careful. Aware that the balance will shift.",
       },
       choices: [

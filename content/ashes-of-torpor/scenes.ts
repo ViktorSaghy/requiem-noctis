@@ -102,7 +102,7 @@ export const AshesOfTorpor: Chronicle = {
       narrative: "You find it by touch. One wall of the cellar is different — the mortar soft at the joints, the smell of it fresh. Weeks old, not centuries. Someone sealed this space deliberately and recently.\n\nThe left-hand wall has a gap where iron pipes run: a maintenance seam, barely shoulder-wide.\n\nYour left palm burns. You look at it in the dark and see nothing — but you feel the shape of something scored into the skin. A mark. You don't remember it being there.",
       compulsion_note: "The Beast doesn't want to think about who or why. It wants out. The anger of a sealed room is simple and clean compared to the weight of not knowing.",
       clan_notes: {
-        Nosferatu: "You smell the mason. Male, nervous, non-smoker. He was here seventy-two hours ago. He worked fast — someone was paying him to.",
+        Nosferatu: "The rats know. Three of them were here when the mason worked — you pull the memory from the nearest one without thinking. Male, nervous, worked fast. Paid well enough that he didn't ask what he was sealing in.",
         Tremere: "There is a ward on the new wall. Faint, amateur, already fraying. Someone wanted to keep you under longer than the stone alone would manage.",
         Gangrel: "The earth under the stone remembers older configurations. You feel load-bearing walls, pipe runs, the shape of the tunnels above. You know where the gaps are.",
         Brujah: "Someone put you here. That's a fact. The anger arrives before the question, and the question is better fuel.",
@@ -171,7 +171,7 @@ export const AshesOfTorpor: Chronicle = {
         Ventrue: "The badge says 'F. Holzer — Technical.' Contracted staff, not permanent. Lower-tier access pass. Useful. Manageable.",
         Brujah: "A worker on a break, bleeding from a job hazard with nobody checking on him. The anger you feel at this is separate from the hunger and arrives a half-second later.",
         Malkavian: "He smells of three weeks ago. Of Tuesday specifically. If you drink from him you will see Tuesday — not the important parts, just Tuesday: a kitchen window, cold coffee, a bus he missed. His blood also knows who sealed your chamber. You would have to drink very deeply, and the Tuesday problem would get significantly worse before it got better.",
-        Lasombra: "The shadow you cast on the wall behind you is absent. If he turns around and sees a person with no shadow, that ends the easy version of this.",
+        Lasombra: "There is a mirror on the far wall. You are not in it. If he turns around and looks at the glass, that ends the easy version of this.",
       },
       choices: [
         { text: "Feed carefully — approach slow, make sure he doesn't scream", next: 'feed_clean' },

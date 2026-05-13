@@ -175,6 +175,7 @@ export interface GameState {
   activeCompulsion: string | null;
   rouseLog: RouseResult | null;
   chronicleStartCharacter: Character;
+  chronicleStartInventory: Inventory;
   inventory: Inventory;
 }
 
@@ -217,6 +218,8 @@ export function useGame() {
       journal: gs.journal,
       gmMode: 'classic',
       inventory: gs.inventory,
+      chronicleStartCharacter: gs.chronicleStartCharacter,
+      chronicleStartInventory: gs.chronicleStartInventory,
     }, 'auto');
   }, []);
 
@@ -226,6 +229,9 @@ export function useGame() {
     const startChar = chronicle.starting_hunger != null
       ? { ...character, hunger: Math.max(0, Math.min(5, chronicle.starting_hunger)) }
       : character;
+    const startInventory = starterItems?.length
+      ? applyItemChanges(emptyInventory(), ITEM_CATALOG, starterItems)
+      : emptyInventory();
     const gs: GameState = {
       character: startChar,
       chronicle,
@@ -237,9 +243,8 @@ export function useGame() {
       activeCompulsion: null,
       rouseLog: null,
       chronicleStartCharacter: startChar,
-      inventory: starterItems?.length
-        ? applyItemChanges(emptyInventory(), ITEM_CATALOG, starterItems)
-        : emptyInventory(),
+      chronicleStartInventory: startInventory,
+      inventory: startInventory,
     };
     autoSave(gs);
     setState(gs);
@@ -432,6 +437,7 @@ export function useGame() {
     const scene = chronicle.scenes[save.sceneId];
     if (!scene) return false;
     Audio.setMood(MOOD_BY_ACT[scene.act] ?? 'exploration');
+    const savedInventory = save.inventory ?? emptyInventory();
     setState({
       character: save.character,
       chronicle,
@@ -442,16 +448,34 @@ export function useGame() {
       endingId: null,
       activeCompulsion: null,
       rouseLog: null,
-      chronicleStartCharacter: save.character,
-      inventory: save.inventory ?? emptyInventory(),
+      chronicleStartCharacter: save.chronicleStartCharacter ?? save.character,
+      chronicleStartInventory: save.chronicleStartInventory ?? savedInventory,
+      inventory: savedInventory,
     });
     return true;
   }, []);
 
   const retryChronicle = useCallback(() => {
     if (!state) return;
-    start(state.chronicleStartCharacter, state.chronicle);
-  }, [state, start]);
+    Audio.stopAll();
+    Audio.setMood('exploration');
+    const gs: GameState = {
+      character: state.chronicleStartCharacter,
+      chronicle: state.chronicle,
+      sceneId: 'start',
+      flags: {},
+      journal: [],
+      diceState: { phase: 'idle', check: null, result: null, passed: false },
+      endingId: null,
+      activeCompulsion: null,
+      rouseLog: null,
+      chronicleStartCharacter: state.chronicleStartCharacter,
+      chronicleStartInventory: state.chronicleStartInventory,
+      inventory: state.chronicleStartInventory,
+    };
+    autoSave(gs);
+    setState(gs);
+  }, [state, autoSave]);
 
   const saveToSlot = useCallback(async (slot: string): Promise<void> => {
     if (!state) return;
@@ -462,6 +486,8 @@ export function useGame() {
       journal: state.journal,
       gmMode: 'classic',
       inventory: state.inventory,
+      chronicleStartCharacter: state.chronicleStartCharacter,
+      chronicleStartInventory: state.chronicleStartInventory,
     }, slot, state.character.name);
   }, [state]);
 
@@ -472,6 +498,7 @@ export function useGame() {
     const scene = state.chronicle.scenes[save.sceneId];
     if (!scene) return false;
     Audio.setMood(MOOD_BY_ACT[scene.act] ?? 'exploration');
+    const savedInventory = save.inventory ?? emptyInventory();
     setState({
       character: save.character,
       chronicle: state.chronicle,
@@ -482,8 +509,9 @@ export function useGame() {
       endingId: null,
       activeCompulsion: null,
       rouseLog: null,
-      chronicleStartCharacter: state.chronicleStartCharacter,
-      inventory: save.inventory ?? emptyInventory(),
+      chronicleStartCharacter: save.chronicleStartCharacter ?? state.chronicleStartCharacter,
+      chronicleStartInventory: save.chronicleStartInventory ?? state.chronicleStartInventory,
+      inventory: savedInventory,
     });
     return true;
   }, [state]);

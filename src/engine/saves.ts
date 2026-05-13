@@ -13,6 +13,8 @@ export interface SaveSlot {
   flags: Record<string, boolean>;
   journal: JournalEntry[];
   inventory?: Inventory;
+  chronicleStartCharacter?: Character;
+  chronicleStartInventory?: Inventory;
   savedAt: number;
 }
 
@@ -30,6 +32,8 @@ export interface GameState {
   gmMode: 'classic' | 'ai';
   downtimeAvailable?: boolean;
   inventory?: Inventory;
+  chronicleStartCharacter?: Character;
+  chronicleStartInventory?: Inventory;
 }
 
 const STORAGE_PREFIX = 'requiem_noctis_';
@@ -48,6 +52,8 @@ export async function saveGame(
       flags: state.flags,
       journal: state.journal,
       inventory: state.inventory,
+      chronicleStartCharacter: state.chronicleStartCharacter,
+      chronicleStartInventory: state.chronicleStartInventory,
       savedAt: Date.now(),
     };
     localStorage.setItem(

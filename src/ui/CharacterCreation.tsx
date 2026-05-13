@@ -306,6 +306,7 @@ export function CharacterCreation({ onComplete, onBack }: Props) {
   return (
     <div className="creation-screen">
       <div className="creation-header">
+        <button className="creation-exit-btn" onClick={onBack}>{t('creation.exitToChars')}</button>
         <div className="creation-step-label">{t('creation.step', { n: stepIndex + 1, total: STEPS.length })}</div>
         <div className="creation-step-title">{STEP_TITLES[step]}</div>
         <div className="step-dots">

@@ -84,6 +84,7 @@ const en = {
   'creation.loadout.selected': 'Selected: {n} / 2',
   'creation.loadout.fixedItems': 'You also receive: Blood Bag · Burner Phone',
   'creation.review.loadout': 'Starting Weapons',
+  'creation.exitToChars': '← Characters',
 
   // ── Attribute / Skill categories ─────────────────────────────────────────
   'cat.physical': 'Physical',
@@ -382,6 +383,7 @@ const hu: TranslationDict = {
   'creation.loadout.selected': 'Kiválasztva: {n} / 2',
   'creation.loadout.fixedItems': 'Ezeket is kapod: Véreszák · Burner telefon',
   'creation.review.loadout': 'Kezdő fegyverek',
+  'creation.exitToChars': '← Karakterek',
 
   // ── Attribute / Skill categories ─────────────────────────────────────────
   'cat.physical': 'Fizikai',

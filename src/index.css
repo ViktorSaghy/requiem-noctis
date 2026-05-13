@@ -368,6 +368,17 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--gol
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
+.creation-exit-btn {
+  all: unset;
+  cursor: pointer;
+  font-size: 0.72rem;
+  color: var(--text-dim);
+  letter-spacing: 0.03em;
+  margin-bottom: 0.4rem;
+  display: inline-block;
+  -webkit-tap-highlight-color: transparent;
+}
+.creation-exit-btn:hover { color: var(--text-main); }
 .creation-step-label {
   font-family: var(--display);
   font-size: 0.65rem;

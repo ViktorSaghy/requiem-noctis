@@ -120,61 +120,47 @@ function topN(obj: Record<string, number>, n: number): [string, number][] {
   return Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, n);
 }
 
-// ── Character sheet accordion ─────────────────────────────────────────────────
+// ── Character sheet (inline) ──────────────────────────────────────────────────
 
 function CharSheet({ tmpl }: { tmpl: TemplateChar }) {
-  const [open, setOpen] = useState(false);
   const topAttrs = topN(tmpl.attrs as unknown as Record<string, number>, 3);
   const topSkills = topN(tmpl.skills, 4);
 
   return (
-    <div className="tps-sheet">
-      <button
-        className="tps-sheet-toggle"
-        onClick={() => setOpen(v => !v)}
-        aria-expanded={open}
-      >
-        <span>Character Sheet</span>
-        <span className="tps-sheet-chevron">{open ? '▲' : '▼'}</span>
-      </button>
-
-      {open && (
-        <div className="tps-sheet-body">
-          <div>
-            <div className="tps-sheet-section-label">Disciplines</div>
-            <div className="tps-disc-pills">
-              {tmpl.discPowers.map(p => (
-                <span key={p} className="tps-disc-pill">{p} ●</span>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <div className="tps-sheet-section-label">Top Attributes</div>
-            <div className="tps-stat-grid">
-              {topAttrs.map(([attr, val]) => (
-                <div key={attr} className="tps-stat">
-                  <span className="tps-stat-name">{attr}</span>
-                  <span className="tps-stat-dots">{dots(val)}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div>
-            <div className="tps-sheet-section-label">Key Skills</div>
-            <div className="tps-stat-grid">
-              {topSkills.map(([skill, val]) => (
-                <div key={skill} className="tps-stat">
-                  <span className="tps-stat-name">{skill}</span>
-                  <span className="tps-stat-dots">{dots(val)}</span>
-                </div>
-              ))}
-            </div>
-          </div>
+    <>
+      <div className="tps-sheet-section">
+        <div className="tps-section-label">Disciplines</div>
+        <div className="tps-disc-pills">
+          {tmpl.discPowers.map(p => (
+            <span key={p} className="tps-disc-pill">{p} ●</span>
+          ))}
         </div>
-      )}
-    </div>
+      </div>
+
+      <div className="tps-sheet-section">
+        <div className="tps-section-label">Top Attributes</div>
+        <div className="tps-stat-grid">
+          {topAttrs.map(([attr, val]) => (
+            <div key={attr} className="tps-stat">
+              <span className="tps-stat-name">{attr}</span>
+              <span className="tps-stat-dots">{dots(val)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div className="tps-sheet-section">
+        <div className="tps-section-label">Key Skills</div>
+        <div className="tps-stat-grid">
+          {topSkills.map(([skill, val]) => (
+            <div key={skill} className="tps-stat">
+              <span className="tps-stat-name">{skill}</span>
+              <span className="tps-stat-dots">{dots(val)}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </>
   );
 }
 
@@ -250,59 +236,64 @@ export function TemplatePickScreen({ onSelect, onCustom, onBack }: Props) {
 
         {/* ── Detail panel ── */}
         <div className="tps-detail">
-          {/* Hero */}
-          <div className="tps-hero">
-            <img
-              className="tps-hero-portrait"
-              src={portraitPath('modern', selected.clan, selected.gender)}
-              alt=""
-              onError={e => { e.currentTarget.style.display = 'none'; }}
-            />
-            <div className="tps-hero-identity">
-              <div className="tps-detail-clan">{selected.clan}</div>
-              <div className="tps-detail-name">{selected.name}</div>
-              <div className="tps-detail-concept">{selected.concept}</div>
+          {/* Scrollable content */}
+          <div className="tps-detail-scroll">
+            {/* Hero */}
+            <div className="tps-hero">
+              <img
+                className="tps-hero-portrait"
+                src={portraitPath('modern', selected.clan, selected.gender)}
+                alt=""
+                onError={e => { e.currentTarget.style.display = 'none'; }}
+              />
+              <div className="tps-hero-identity">
+                <div className="tps-detail-clan">{selected.clan}</div>
+                <div className="tps-detail-name">{selected.name}</div>
+                <div className="tps-detail-concept">{selected.concept}</div>
+              </div>
             </div>
-          </div>
 
-          {/* Background */}
-          <p className="tps-background">{selected.background}</p>
+            {/* Background */}
+            <p className="tps-background">{selected.background}</p>
 
-          {/* Play hint */}
-          <div className="tps-hint">
-            <span className="tps-hint-label">How to play</span>
-            {selected.playHint}
-          </div>
-
-          {/* Starting loadout */}
-          <div>
-            <div className="tps-loadout-label">Starting Loadout</div>
-            <div className="tps-chips">
-              {selected.starterWeapons.map(id => {
-                const item = ITEM_CATALOG[id];
-                return item ? (
-                  <span key={id} className="tps-chip">{item.icon} {item.name}</span>
-                ) : null;
-              })}
-              {(selected.extraItems ?? []).map(id => {
-                const item = ITEM_CATALOG[id];
-                return item ? (
-                  <span key={id} className="tps-chip tps-chip--item">{item.icon} {item.name}</span>
-                ) : null;
-              })}
+            {/* Play hint */}
+            <div className="tps-hint">
+              <span className="tps-hint-label">How to play</span>
+              {selected.playHint}
             </div>
+
+            {/* Starting loadout */}
+            <div>
+              <div className="tps-section-label">Starting Loadout</div>
+              <div className="tps-chips">
+                {selected.starterWeapons.map(id => {
+                  const item = ITEM_CATALOG[id];
+                  return item ? (
+                    <span key={id} className="tps-chip">{item.icon} {item.name}</span>
+                  ) : null;
+                })}
+                {(selected.extraItems ?? []).map(id => {
+                  const item = ITEM_CATALOG[id];
+                  return item ? (
+                    <span key={id} className="tps-chip tps-chip--item">{item.icon} {item.name}</span>
+                  ) : null;
+                })}
+              </div>
+            </div>
+
+            {/* Character sheet — always visible, no accordion */}
+            <CharSheet key={selected.name} tmpl={selected} />
           </div>
 
-          {/* Character sheet accordion */}
-          <CharSheet key={selected.name} tmpl={selected} />
-
-          {/* Primary CTA */}
-          <button
-            className="btn btn-primary tps-play-btn"
-            onClick={() => playAs(selected)}
-          >
-            Play as {selected.name} →
-          </button>
+          {/* Pinned play button */}
+          <div className="tps-detail-pinned">
+            <button
+              className="btn btn-primary tps-play-btn"
+              onClick={() => playAs(selected)}
+            >
+              Play as {selected.name} →
+            </button>
+          </div>
         </div>
       </div>
 

@@ -7,7 +7,7 @@ import {
 import type { CombatState, EnemyState, PlayerCombatState, DiscAction } from '../engine/combat';
 import { Audio } from '../audio';
 import type { Inventory } from '../engine/inventory';
-import { getEquipBonus } from '../engine/inventory';
+import { getEquipBonus, getEquipped } from '../engine/inventory';
 
 export type CombatMode =
   | 'actions'
@@ -51,11 +51,15 @@ export function useCombat(
   inventory?: Inventory | null,
   onItemUsed?: (itemId: string) => void,
 ): CombatHook {
-  const [cs, setCs] = useState<CombatState>(() => initCombat(character, scenario.enemies, {
-    weaponAttack:   inventory ? getEquipBonus(inventory, 'weapon', 'attack_bonus')    : 0,
-    weaponDamage:   inventory ? getEquipBonus(inventory, 'weapon', 'damage_bonus')    : 0,
-    armorReduction: inventory ? getEquipBonus(inventory, 'armor',  'damage_reduction') : 0,
-  }));
+  const [cs, setCs] = useState<CombatState>(() => {
+    const weapon = inventory ? getEquipped(inventory, 'weapon') : null;
+    return initCombat(character, scenario.enemies, {
+      weaponAttack:   inventory ? getEquipBonus(inventory, 'weapon', 'attack_bonus')    : 0,
+      weaponDamage:   inventory ? getEquipBonus(inventory, 'weapon', 'damage_bonus')    : 0,
+      armorReduction: inventory ? getEquipBonus(inventory, 'armor',  'damage_reduction') : 0,
+      weaponTags:     weapon?.tags ?? [],
+    });
+  });
   const [mode, setMode] = useState<CombatMode>('actions');
   const [pendingDiscId, setPendingDiscId] = useState<string | null>(null);
   const [endDelay, setEndDelay] = useState(false);

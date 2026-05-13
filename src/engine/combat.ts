@@ -35,6 +35,10 @@ export interface PlayerCombatState {
   weaponAttackBonus: number;
   weaponDamageBonus: number;
   armorReduction: number;
+  // Weapon combat profile — derived from equipped weapon tags at init
+  weaponSkill: 'Brawl' | 'Melee' | 'Firearms';
+  weaponAttribIsDex: boolean;   // true for ranged (Dex+Firearms), false for melee (Str+Brawl/Melee)
+  weaponDamageType: 'superficial' | 'aggravated'; // firearms → aggravated vs vampires
 }
 
 export type CombatOutcome = 'ongoing' | 'victory' | 'defeat' | 'fled';
@@ -210,11 +214,29 @@ function applyCompulsion(result: DiceResult, char: Character, s: CombatState): C
 
 // ─────────────── INIT ───────────────
 
+function deriveWeaponProfile(tags: string[]): {
+  skill: 'Brawl' | 'Melee' | 'Firearms';
+  attribIsDex: boolean;
+  damageType: 'superficial' | 'aggravated';
+} {
+  if (tags.includes('firearm')) return { skill: 'Firearms', attribIsDex: true, damageType: 'aggravated' };
+  if (tags.includes('brawl'))   return { skill: 'Brawl',    attribIsDex: false, damageType: 'superficial' };
+  if (tags.includes('melee') || tags.includes('stake') || tags.includes('blade'))
+                                return { skill: 'Melee',    attribIsDex: false, damageType: 'superficial' };
+  return                               { skill: 'Brawl',    attribIsDex: false, damageType: 'superficial' };
+}
+
 export function initCombat(
   character: Character,
   enemies: EnemySpec[],
-  bonuses?: { weaponAttack?: number; weaponDamage?: number; armorReduction?: number },
+  bonuses?: {
+    weaponAttack?: number;
+    weaponDamage?: number;
+    armorReduction?: number;
+    weaponTags?: string[];
+  },
 ): CombatState {
+  const profile = deriveWeaponProfile(bonuses?.weaponTags ?? []);
   return {
     round: 1,
     enemies: enemies.map(spec => ({
@@ -244,6 +266,9 @@ export function initCombat(
       weaponAttackBonus: bonuses?.weaponAttack ?? 0,
       weaponDamageBonus: bonuses?.weaponDamage ?? 0,
       armorReduction:    bonuses?.armorReduction ?? 0,
+      weaponSkill:       profile.skill,
+      weaponAttribIsDex: profile.attribIsDex,
+      weaponDamageType:  profile.damageType,
     },
     log: [],
     outcome: 'ongoing',
@@ -327,7 +352,14 @@ export function processCombatRound(
     const tidx = action.targetIdx;
     const target = s.enemies[tidx];
     if (!isDefeated(target)) {
-      const basePool = character.attributes.Strength + (character.skills.Brawl ?? 0);
+      const { weaponSkill, weaponAttribIsDex, weaponDamageType } = s.player;
+      const attr = weaponAttribIsDex ? character.attributes.Dexterity : character.attributes.Strength;
+      const skillVal = weaponSkill === 'Firearms'
+        ? (character.skills.Firearms ?? 0)
+        : weaponSkill === 'Melee'
+        ? (character.skills.Melee ?? 0)
+        : (character.skills.Brawl ?? 0);
+      const basePool = attr + skillVal;
       const wpBonus = action.wpBoost ? 3 : 0;
       const weapAtk = s.player.weaponAttackBonus;
       const weapDmg = s.player.weaponDamageBonus;
@@ -336,26 +368,35 @@ export function processCombatRound(
       const def = roll(Math.max(1, target.spec.defensePool), target.hunger);
       const net = Math.max(0, atk.successes - def.successes);
       const boostNote = wpBonus ? ' (WP)' : '';
-      const weapNote = weapAtk ? ` (+${weapAtk} weapon)` : '';
-      const penNote = compulsionPenalty ? ` (−${compulsionPenalty} Compulsion)` : '';
+      const skillNote = weaponSkill !== 'Brawl' ? ` [${weaponSkill}]` : '';
+      const weapNote = weapAtk ? ` +${weapAtk}atk` : '';
+      const penNote = compulsionPenalty ? ` −${compulsionPenalty}` : '';
+      const isAgg = weaponDamageType === 'aggravated';
       if (net > 0) {
         const totalDmg = net + weapDmg;
         const newEnemies = [...s.enemies];
-        newEnemies[tidx] = applyDmgToEnemy(target, totalDmg, 'superficial');
+        newEnemies[tidx] = applyDmgToEnemy(target, totalDmg, weaponDamageType);
         s = { ...s, enemies: newEnemies };
+        const dmgLabel = isAgg ? 'aggravated' : 'superficial';
         const dmgNote = weapDmg ? ` +${weapDmg} weapon` : '';
-        addLog(character.name, `Attack${boostNote}${weapNote}${penNote}`, `${totalDmg} superficial → ${target.spec.name}${dmgNote} (${atk.successes} vs ${def.successes})`, true, { dice: diceStr(atk) });
+        addLog(character.name, `Attack${boostNote}${skillNote}${weapNote}${penNote}`, `${totalDmg} ${dmgLabel} → ${target.spec.name}${dmgNote} (${atk.successes} vs ${def.successes})`, true, { dice: diceStr(atk) });
         if (isDefeated(newEnemies[tidx]) && !isDefeated(target)) {
           addLog('GM', 'Defeated', '', false, { narration: `${target.spec.name} crumples to the ground, defeated. Blood pools beneath them as the fight continues.` });
         } else {
-          const attackNarration = net >= 3
-            ? `A devastating strike! Your attack tears into ${target.spec.name}, blood spraying as flesh yields to your supernatural strength.`
-            : `Your attack connects, drawing blood from ${target.spec.name}. The wound is clean but effective.`;
+          const attackNarration = isAgg
+            ? (net >= 3
+              ? `The shot tears through ${target.spec.name} with devastating force — flesh and ichor, the damage too severe to ignore even for the undead.`
+              : `The round connects. For a Kindred, bullets are a serious problem — that wound won't close without blood.`)
+            : (net >= 3
+              ? `A devastating strike! Your attack tears into ${target.spec.name}, blood spraying as flesh yields to your supernatural strength.`
+              : `Your attack connects, drawing blood from ${target.spec.name}. The wound is clean but effective.`);
           addLog('GM', 'Strike', '', false, { narration: attackNarration });
         }
       } else {
-        addLog(character.name, `Attack${boostNote}${penNote}`, `Blocked by ${target.spec.name} (${atk.successes} vs ${def.successes})`, true, { dice: diceStr(atk) });
-        addLog('GM', 'Miss', '', false, { narration: `${target.spec.name} twists away at the last moment, your attack glancing harmlessly off their guard.` });
+        addLog(character.name, `Attack${boostNote}${skillNote}${penNote}`, `Blocked by ${target.spec.name} (${atk.successes} vs ${def.successes})`, true, { dice: diceStr(atk) });
+        addLog('GM', 'Miss', '', false, { narration: isAgg
+          ? `The shot goes wide — ${target.spec.name} moved a fraction of a second faster than the bullet expected.`
+          : `${target.spec.name} twists away at the last moment, your attack glancing harmlessly off their guard.` });
       }
       if (action.wpBoost) {
         s = { ...s, player: { ...s.player, willpower: Math.max(0, s.player.willpower - 1) } };

@@ -7,6 +7,7 @@ import type { Character } from './engine';
 import type { Chronicle } from './engine';
 import {
   TitleScreen,
+  TemplatePickScreen,
   StorySelect,
   CharacterCreation,
   GameScreen,
@@ -28,7 +29,7 @@ import { loadSettings } from './engine/settings';
 import { LangContext } from './engine/i18n';
 import { saveCharacter } from './engine/saves';
 
-type Screen = 'title' | 'story' | 'create' | 'game' | 'ending' | 'xp-recap' | 'downtime' | 'settings' | 'credits' | 'death';
+type Screen = 'title' | 'template-pick' | 'story' | 'create' | 'game' | 'ending' | 'xp-recap' | 'downtime' | 'settings' | 'credits' | 'death';
 
 const BASE_CHRONICLES: Chronicle[] = [AshesOfTorpor, AshAndIvory, BloodGamesChronicle];
 
@@ -86,7 +87,7 @@ export default function App() {
   }, [screen, audioUnlocked]);
 
   const handleNewGame = useCallback(() => {
-    setScreen('create');
+    setScreen('template-pick');
   }, []);
 
   const handleContinue = useCallback(async () => {
@@ -101,7 +102,7 @@ export default function App() {
       setPendingStarterItems([]);
       setScreen('game');
     } else {
-      setScreen('create');
+      setScreen('template-pick');
     }
   }, [pendingCharacter, pendingStarterItems, game]);
 
@@ -168,7 +169,7 @@ export default function App() {
   const handleNewCharacter = useCallback(() => {
     setEndingId(null);
     setPendingCharacter(null);
-    setScreen('create');
+    setScreen('template-pick');
   }, []);
 
   const handleSelectCharacter = useCallback((char: Character) => {
@@ -225,18 +226,26 @@ export default function App() {
         />
       )}
 
+      {screen === 'template-pick' && (
+        <TemplatePickScreen
+          onSelect={handleCharacterComplete}
+          onCustom={() => setScreen('create')}
+          onBack={() => setScreen('title')}
+        />
+      )}
+
       {screen === 'story' && (
         <StorySelect
           chronicles={CHRONICLES}
           onSelect={handleStorySelect}
-          onBack={() => setScreen('create')}
+          onBack={() => setScreen('template-pick')}
         />
       )}
 
       {screen === 'create' && (
         <CharacterCreation
           onComplete={handleCharacterComplete}
-          onBack={() => setScreen('title')}
+          onBack={() => setScreen('template-pick')}
         />
       )}
 

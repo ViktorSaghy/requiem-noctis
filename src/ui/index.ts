@@ -1,4 +1,5 @@
 export { TitleScreen } from './TitleScreen';
+export { TemplatePickScreen } from './TemplatePickScreen';
 export { StorySelect } from './StorySelect';
 export { CharacterCreation } from './CharacterCreation';
 export { GameScreen } from './GameScreen';

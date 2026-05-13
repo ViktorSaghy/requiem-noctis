@@ -318,6 +318,44 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--gol
 .story-back { text-align: center; margin-top: 1.25rem; }
 
 /* ── Character Creation ─────────────────────────────────────────────────── */
+.template-pick-screen {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  overflow: hidden;
+}
+.template-pick-header {
+  padding: 1.5rem 1.5rem 1rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  text-align: center;
+}
+.template-pick-title {
+  font-family: var(--display);
+  font-size: 1.4rem;
+  color: var(--gold);
+  margin: 0 0 0.25rem;
+}
+.template-pick-sub {
+  font-size: 0.85rem;
+  color: var(--text-dim);
+  margin: 0;
+}
+.template-pick-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 1.5rem;
+}
+.template-pick-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+
 .creation-screen {
   height: 100%;
   display: flex;

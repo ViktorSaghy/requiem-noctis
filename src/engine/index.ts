@@ -409,7 +409,21 @@ export function useGame() {
   }, []);
 
   const useItemCb = useCallback((itemId: string) => {
-    setState(prev => prev ? { ...prev, inventory: removeItem(prev.inventory, itemId, 1) } : prev);
+    setState(prev => {
+      if (!prev) return prev;
+      const item = ITEM_CATALOG[itemId] ?? prev.inventory.items[itemId];
+      if (!item) return prev;
+      const inventory = removeItem(prev.inventory, itemId, 1);
+      let character = { ...prev.character };
+      for (const eff of item.effects ?? []) {
+        if (eff.type === 'hunger_reduce') {
+          character = { ...character, hunger: Math.max(0, character.hunger - eff.value) };
+        } else if (eff.type === 'hp_restore') {
+          character = { ...character, superficialDmg: Math.max(0, character.superficialDmg - eff.value) };
+        }
+      }
+      return { ...prev, inventory, character };
+    });
   }, []);
 
   const resume = useCallback(async (chronicle: Chronicle): Promise<boolean> => {

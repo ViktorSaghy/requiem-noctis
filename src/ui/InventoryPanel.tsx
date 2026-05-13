@@ -60,16 +60,19 @@ function ItemCard({
   isEquipped,
   onEquip,
   onUnequip,
+  onUse,
 }: {
   item: Item;
   isEquipped: boolean;
   onEquip?: () => void;
   onUnequip?: () => void;
+  onUse?: () => void;
 }) {
   const t = useT();
   const [expanded, setExpanded] = useState(false);
   const [tooltip, setTooltip] = useState(false);
   const lpHandlers = useLongPress(() => setTooltip(v => !v));
+  const isConsumable = item.type === 'consumable';
 
   return (
     <div
@@ -99,7 +102,17 @@ function ItemCard({
             </div>
           )}
         </div>
-        <TypeBadge type={item.type} t={t} />
+        <div className="inv-item-right">
+          {isConsumable && onUse && (
+            <button
+              className="btn btn-sm btn-gold inv-use-btn"
+              onClick={e => { e.stopPropagation(); onUse(); }}
+            >
+              {t('inventory.use')}
+            </button>
+          )}
+          <TypeBadge type={item.type} t={t} />
+        </div>
       </div>
 
       {(expanded || tooltip) && (
@@ -163,12 +176,13 @@ function GearSlot({
 
 // ── Section ───────────────────────────────────────────────────────────────────
 
-function Section({ title, items, equipped, onEquip, onUnequip }: {
+function Section({ title, items, equipped, onEquip, onUnequip, onUse }: {
   title: string;
   items: Item[];
   equipped: { weapon: string | null; armor: string | null };
   onEquip: (itemId: string) => void;
   onUnequip: (slot: EquipSlot) => void;
+  onUse?: (itemId: string) => void;
 }) {
   if (items.length === 0) return null;
 
@@ -185,6 +199,7 @@ function Section({ title, items, equipped, onEquip, onUnequip }: {
             isEquipped={isEquipped}
             onEquip={() => onEquip(item.id)}
             onUnequip={slot ? () => onUnequip(slot) : undefined}
+            onUse={onUse ? () => onUse(item.id) : undefined}
           />
         );
       })}
@@ -198,9 +213,10 @@ export interface InventoryPanelProps {
   inventory: Inventory;
   onEquip: (itemId: string) => void;
   onUnequip: (slot: EquipSlot) => void;
+  onUse?: (itemId: string) => void;
 }
 
-export function InventoryPanel({ inventory, onEquip, onUnequip }: InventoryPanelProps) {
+export function InventoryPanel({ inventory, onEquip, onUnequip, onUse }: InventoryPanelProps) {
   const t = useT();
   const items = Object.values(inventory.items);
   const { equipped } = inventory;
@@ -247,6 +263,7 @@ export function InventoryPanel({ inventory, onEquip, onUnequip }: InventoryPanel
         equipped={equipped}
         onEquip={onEquip}
         onUnequip={onUnequip}
+        onUse={onUse}
       />
       <Section
         title={t('inventory.cat.story')}

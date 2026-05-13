@@ -137,6 +137,17 @@
   align-items: flex-start;
   gap: 0.5rem;
 }
+.inv-item-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.3rem;
+  flex-shrink: 0;
+}
+.inv-use-btn {
+  font-size: 0.7rem;
+  padding: 0.15rem 0.5rem;
+}
 
 .inv-item-icon {
   font-size: 1.1rem;

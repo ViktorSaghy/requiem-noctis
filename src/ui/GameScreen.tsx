@@ -529,7 +529,7 @@ function CombatLayout({ game, sceneId, onApplyPostCombatDamage, onGoTo, onDefeat
           {activeTab === 'character' && <CharacterPane game={game} />}
           {activeTab === 'journal' && <JournalPane journal={game.journal} />}
           {activeTab === 'inventory' && (
-            <InventoryPanel inventory={game.inventory} onEquip={onEquipItem} onUnequip={onUnequipItem} />
+            <InventoryPanel inventory={game.inventory} onEquip={onEquipItem} onUnequip={onUnequipItem} onUse={onUseItem} />
           )}
           {activeTab === 'menu' && <MenuPane onSaveSlot={onSaveSlot} onLoadSlot={onLoadSlot} onSettings={onSettings} onBackToTitle={onBackToTitle} />}
         </div>
@@ -719,6 +719,7 @@ export function GameScreen({
                   inventory={game.inventory}
                   onEquip={onEquipItem}
                   onUnequip={onUnequipItem}
+                  onUse={onUseItem}
                 />
               )}
               {activeTab === 'menu' && (

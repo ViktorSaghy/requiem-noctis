@@ -296,6 +296,14 @@ export function CombatActionsPanel({ combat, scenario, inventory, onUseItem }: {
         <button className="combat-btn defense" disabled={cs.outcome !== 'ongoing'} onClick={() => dispatch({ type: 'full_defense' })}>
           {t('combat.fullDefense')}
         </button>
+        <button
+          className={`combat-btn rouse-heal${cs.player.hunger >= 4 ? ' rouse-heal--warn' : ''}`}
+          disabled={cs.outcome !== 'ongoing' || cs.player.superficialDmg === 0}
+          onClick={() => dispatch({ type: 'rouse_to_heal' })}
+        >
+          {t('combat.rouseHeal')}
+          <span className="rouse-heal-sub">Hunger {cs.player.hunger}/5</span>
+        </button>
         {consumables.length > 0 && (
           <button className="combat-btn item-use" disabled={cs.outcome !== 'ongoing'} onClick={() => setShowItems(true)}>
             {t('combat.useItem')}

@@ -214,9 +214,11 @@ const en = {
 
   // ── Rouse Check ───────────────────────────────────────────────────────────
   'rouse.title': 'Rouse Check',
+  'rouse.healTitle': 'Rouse to Heal',
   'rouse.success': 'Vitae holds — no hunger cost',
   'rouse.fail': '🩸 Blood spent — Hunger {hunger}/5',
   'rouse.die': 'Rolled {n}',
+  'rouse.healed': 'Mended {n} superficial damage',
   'compulsion.active': 'Compulsion Active',
 
   // ── Endings ───────────────────────────────────────────────────────────────
@@ -296,6 +298,9 @@ const en = {
   'combat.useItemMenu': 'Choose a consumable',
   'combat.noConsumables': 'No consumables in inventory.',
   'combat.itemUsed': 'Used {item}',
+  'combat.rouseHeal': '⌁ Rouse to Heal',
+  'combat.rouseHealFull': 'Already at full health',
+  'game.rouseHeal': '⌁ Rouse',
 };
 
 type TranslationDict = typeof en;
@@ -513,6 +518,8 @@ const hu: TranslationDict = {
 
   // ── Rouse Check ───────────────────────────────────────────────────────────
   'rouse.title': 'Aktiváló dobás',
+  'rouse.healTitle': 'Aktiválás: Gyógyulás',
+  'rouse.healed': '{n} felületes sérülés begyógyult',
   'rouse.success': 'A vér kitart — nincs éhségköltség',
   'rouse.fail': '🩸 Vér elfogyott — Éhség {hunger}/5',
   'rouse.die': 'Dobás: {n}',
@@ -592,6 +599,9 @@ const hu: TranslationDict = {
   'inventory.requires': 'Szükséges: {item}',
   'inventory.qty': '×{n}',
   'combat.useItem': '🎒 Tárgy használat',
+  'combat.rouseHeal': '⌁ Aktiválás: Gyógyulás',
+  'combat.rouseHealFull': 'Teljes életerő',
+  'game.rouseHeal': '⌁ Aktiválás',
   'combat.useItemMenu': 'Válassz fogyóeszközt',
   'combat.noConsumables': 'Nincs fogyóeszköz a táskában.',
   'combat.itemUsed': '{item} használva',

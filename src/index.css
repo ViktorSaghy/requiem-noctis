@@ -995,6 +995,7 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--gol
   opacity: 0.7;
 }
 .rouse-result { flex: 1; }
+.rouse-healed { color: inherit; opacity: 0.85; font-style: italic; }
 
 /* ── Active compulsion banner (from messy critical) ──────────────────────── */
 .compulsion-active-banner {
@@ -3426,6 +3427,23 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--gol
 .combat-btn.defense:hover:not(:disabled) { background: rgba(100,150,200,0.15); border-color: rgba(100,180,255,0.6); }
 .combat-btn.flee { border-color: rgba(255,255,255,0.1); }
 .combat-btn.flee:hover:not(:disabled) { background: rgba(255,255,255,0.05); }
+.combat-btn.rouse-heal {
+  border-color: rgba(160, 30, 30, 0.45);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+.combat-btn.rouse-heal:hover:not(:disabled) { background: rgba(160,30,30,0.2); border-color: var(--crimson); }
+.combat-btn.rouse-heal--warn { border-color: rgba(220,100,30,0.6); }
+.combat-btn.rouse-heal--warn:hover:not(:disabled) { background: rgba(220,100,30,0.18); border-color: rgba(220,140,30,0.9); }
+.rouse-heal-sub {
+  font-size: 0.6rem;
+  opacity: 0.6;
+  font-family: var(--serif);
+  letter-spacing: 0.04em;
+  text-transform: none;
+}
 
 /* Discipline menu */
 .disc-menu {
@@ -4283,6 +4301,26 @@ h1, h2, h3, h4 { font-family: var(--display); font-weight: 600; color: var(--gol
   align-items: center;
   gap: 0.4rem;
 }
+
+.gs-rouse-heal-btn {
+  all: unset;
+  cursor: pointer;
+  margin-left: auto;
+  font-size: 0.62rem;
+  font-family: var(--display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--crimson);
+  border: 1px solid rgba(160, 30, 30, 0.4);
+  border-radius: 3px;
+  padding: 0.1rem 0.4rem;
+  white-space: nowrap;
+  transition: background 0.12s, border-color 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+.gs-rouse-heal-btn:hover { background: rgba(160,30,30,0.15); border-color: var(--crimson); }
+.gs-rouse-heal-btn.danger { color: #e08030; border-color: rgba(220,120,30,0.5); }
+.gs-rouse-heal-btn.danger:hover { background: rgba(220,120,30,0.15); border-color: rgba(220,140,30,0.8); }
 
 .gs-vital-label {
   font-family: var(--display);

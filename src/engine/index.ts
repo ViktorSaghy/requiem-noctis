@@ -161,6 +161,7 @@ export interface RouseResult {
   success: boolean;
   newHunger: number;
   reason: string;
+  healed?: number;
 }
 
 export interface GameState {
@@ -516,5 +517,21 @@ export function useGame() {
     return true;
   }, [state]);
 
-  return { state, start, goTo, beginRoll, revealRoll, confirmRoll, hasFlag, resume, retryChronicle, saveToSlot, loadFromSlot, applyPostCombatDamage, equipItem: equipItemCb, unequipItem: unequipItemCb, useItem: useItemCb, currentScene: state ? currentScene(state) : null };
+  const rouseToHeal = useCallback(() => {
+    setState(prev => {
+      if (!prev) return prev;
+      const { character } = prev;
+      if (character.superficialDmg === 0) return prev;
+      const die = Math.ceil(Math.random() * 10);
+      const success = die >= 6;
+      const newHunger = success ? character.hunger : Math.min(5, character.hunger + 1);
+      return {
+        ...prev,
+        character: { ...character, hunger: newHunger, superficialDmg: 0 },
+        rouseLog: { die, success, newHunger, reason: 'heal', healed: character.superficialDmg },
+      };
+    });
+  }, []);
+
+  return { state, start, goTo, beginRoll, revealRoll, confirmRoll, hasFlag, resume, retryChronicle, saveToSlot, loadFromSlot, applyPostCombatDamage, equipItem: equipItemCb, unequipItem: unequipItemCb, useItem: useItemCb, rouseToHeal, currentScene: state ? currentScene(state) : null };
 }

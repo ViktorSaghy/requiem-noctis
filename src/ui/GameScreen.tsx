@@ -25,10 +25,14 @@ type GameTab = 'story' | 'character' | 'journal' | 'inventory' | 'menu';
 
 function RouseLogBanner({ rouseLog }: { rouseLog: RouseResult }) {
   const t = useT();
+  const isHeal = rouseLog.reason === 'heal';
   return (
     <div className={`rouse-log-banner ${rouseLog.success ? 'rouse-success' : 'rouse-fail'}`}>
-      <span className="rouse-title">{t('rouse.title')}</span>
+      <span className="rouse-title">{isHeal ? t('rouse.healTitle') : t('rouse.title')}</span>
       <span className="rouse-die">{t('rouse.die', { n: rouseLog.die })}</span>
+      {isHeal && rouseLog.healed != null && rouseLog.healed > 0 && (
+        <span className="rouse-healed">{t('rouse.healed', { n: rouseLog.healed })}</span>
+      )}
       <span className="rouse-result">
         {rouseLog.success
           ? t('rouse.success')
@@ -54,6 +58,7 @@ interface Props {
   onEquipItem: (itemId: string) => void;
   onUnequipItem: (slot: EquipSlot) => void;
   onUseItem: (itemId: string) => void;
+  onRouseHeal: () => void;
   devMode?: boolean;
 }
 
@@ -415,12 +420,14 @@ function StoryActionsPanel({ scene, character, flags, inventory, diceState, onGo
 
 // ─────────────── SCENE CARD ───────────────
 
-function SceneCard({ scene, character }: {
+function SceneCard({ scene, character, onRouseHeal }: {
   scene: NonNullable<GameState['chronicle']['scenes'][string]>;
   character: GameState['character'];
+  onRouseHeal?: () => void;
 }) {
   const t = useT();
   const currentHp = character.health - character.superficialDmg - character.aggravatedDmg;
+  const canRouse = character.superficialDmg > 0;
   return (
     <div className="gs-scene-card">
       {scene.act && (
@@ -435,6 +442,15 @@ function SceneCard({ scene, character }: {
           <span className="gs-vital-label">{t('game.hp')}</span>
           <HpTrack superficial={character.superficialDmg} aggravated={character.aggravatedDmg} max={character.health} compact />
           <span className="gs-vital-val">{Math.max(0, currentHp)}/{character.health}</span>
+          {onRouseHeal && canRouse && (
+            <button
+              className={`gs-rouse-heal-btn${character.hunger >= 4 ? ' danger' : ''}`}
+              onClick={onRouseHeal}
+              title={character.hunger >= 5 ? 'Warning: Hunger at maximum — Frenzy risk' : 'Rouse check to mend all superficial damage'}
+            >
+              {t('game.rouseHeal')}
+            </button>
+          )}
         </div>
         <div className="gs-vital-row">
           <span className="gs-vital-label">{t('game.wp')}</span>
@@ -543,7 +559,7 @@ function CombatLayout({ game, sceneId, onApplyPostCombatDamage, onGoTo, onDefeat
 export function GameScreen({
   game, onGoTo, onBeginRoll, onRevealRoll, onConfirmRoll, onEndingReady,
   onSaveSlot, onLoadSlot, onSettings, onBackToTitle, onApplyPostCombatDamage, onDefeat,
-  onEquipItem, onUnequipItem, onUseItem, devMode,
+  onEquipItem, onUnequipItem, onUseItem, onRouseHeal, devMode,
 }: Props) {
   const t = useT();
   const { character, chronicle, sceneId, diceState, endingId } = game;
@@ -629,7 +645,7 @@ export function GameScreen({
         <>
           <div className="gs-left">
             <div className="gs-scene-card-wrap">
-              <SceneCard scene={scene} character={character} />
+              <SceneCard scene={scene} character={character} onRouseHeal={onRouseHeal} />
             </div>
             <div className="gs-actions">
               <StoryActionsPanel

@@ -266,6 +266,7 @@ export default function App() {
           onEquipItem={game.equipItem}
           onUnequipItem={game.unequipItem}
           onUseItem={game.useItem}
+          onRouseHeal={game.rouseToHeal}
           devMode={settings.devMode}
         />
       )}

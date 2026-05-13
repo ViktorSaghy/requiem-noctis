@@ -283,7 +283,8 @@ export type CombatAction =
   | { type: 'full_defense' }
   | { type: 'discipline'; actionId: string; targetIdx?: number }
   | { type: 'flee' }
-  | { type: 'use_item'; itemId: string; itemName: string; hungerReduce?: number; hpRestore?: number };
+  | { type: 'use_item'; itemId: string; itemName: string; hungerReduce?: number; hpRestore?: number }
+  | { type: 'rouse_to_heal' };
 
 // ─────────────── ROUND PROCESSOR ───────────────
 
@@ -672,6 +673,28 @@ export function processCombatRound(
     s = { ...s, player: p };
     addLog(character.name, `Use ${action.itemName}`, effects.join('; ') || 'Used', true);
     addLog('GM', 'Item', '', false, { narration: `You quickly consume the ${action.itemName}, feeling its effects take hold as the fight continues around you.` });
+
+  } else if (action.type === 'rouse_to_heal') {
+    const healedDmg = s.player.superficialDmg;
+    const rouse = rouseCheck(s.player.hunger);
+    const wasBelow5 = s.player.hunger < 5;
+    const newHp = Math.max(0, character.health - s.player.aggravatedDmg);
+    s = { ...s, player: { ...s.player, hunger: rouse.newHunger, superficialDmg: 0, hp: newHp } };
+    const hungerNote = rouse.success ? 'Hunger holds' : `Hunger → ${rouse.newHunger}`;
+    addLog(character.name, 'Rouse to Heal', `Rolled ${rouse.rolled} — ${hungerNote}. Mended ${healedDmg} superficial.`, true);
+    addLog('GM', 'Mending', '', false, { narration: rouse.success
+      ? `Vitae surges through the wounds and flesh knits closed. The blood answered cleanly — your Hunger holds.`
+      : `Vitae surges through the wounds and flesh knits closed. The Beast feels the cost and leans harder — Hunger ${rouse.newHunger}.`,
+    });
+    if (!rouse.success && rouse.newHunger === 5 && wasBelow5) {
+      const frenzy = frenzyCheeck(character);
+      if (!frenzy.resisted) {
+        s = { ...s, player: { ...s.player, hunger: rouse.newHunger, isFrenzy: true } };
+        addLog('GM', 'Frenzy', '', false, { narration: `The blood price was too high. Hunger becomes everything — the Beast has you.` });
+      } else {
+        addLog(character.name, 'Resist Frenzy', `Barely held (${frenzy.successes} successes)`, true);
+      }
+    }
   }
 
   // Victory check after player action

@@ -11,7 +11,7 @@ import type { Character, ClanName } from '../engine/character';
 import type { Attributes } from '../engine/character';
 import { useT } from '../engine/i18n';
 import type { TranslationKey } from '../engine/i18n';
-import { STARTER_WEAPON_IDS, FIXED_STARTER_ITEM_IDS } from '../content/items';
+import { ITEM_CATALOG, STARTER_WEAPON_IDS, FIXED_STARTER_ITEM_IDS } from '../content/items';
 
 interface Props {
   onComplete: (c: Character, starterItems: string[]) => void;

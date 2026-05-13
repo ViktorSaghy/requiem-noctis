@@ -3,6 +3,7 @@ import { createCharacter, deriveHealth, deriveWillpower, portraitPath } from '..
 import type { Character, ClanName } from '../engine/character';
 import type { Attributes } from '../engine/character';
 import { ITEM_CATALOG, FIXED_STARTER_ITEM_IDS } from '../content/items';
+import './TemplatePickScreen.css';
 
 interface TemplateChar {
   name: string;
@@ -109,14 +110,86 @@ export const TEMPLATES: TemplateChar[] = [
   },
 ];
 
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+function dots(val: number, max = 5) {
+  return '●'.repeat(Math.min(val, max)) + '○'.repeat(Math.max(0, max - val));
+}
+
+function topN(obj: Record<string, number>, n: number): [string, number][] {
+  return Object.entries(obj).sort((a, b) => b[1] - a[1]).slice(0, n);
+}
+
+// ── Character sheet accordion ─────────────────────────────────────────────────
+
+function CharSheet({ tmpl }: { tmpl: TemplateChar }) {
+  const [open, setOpen] = useState(false);
+  const topAttrs = topN(tmpl.attrs as unknown as Record<string, number>, 3);
+  const topSkills = topN(tmpl.skills, 4);
+
+  return (
+    <div className="tps-sheet">
+      <button
+        className="tps-sheet-toggle"
+        onClick={() => setOpen(v => !v)}
+        aria-expanded={open}
+      >
+        <span>Character Sheet</span>
+        <span className="tps-sheet-chevron">{open ? '▲' : '▼'}</span>
+      </button>
+
+      {open && (
+        <div className="tps-sheet-body">
+          <div>
+            <div className="tps-sheet-section-label">Disciplines</div>
+            <div className="tps-disc-pills">
+              {tmpl.discPowers.map(p => (
+                <span key={p} className="tps-disc-pill">{p} ●</span>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="tps-sheet-section-label">Top Attributes</div>
+            <div className="tps-stat-grid">
+              {topAttrs.map(([attr, val]) => (
+                <div key={attr} className="tps-stat">
+                  <span className="tps-stat-name">{attr}</span>
+                  <span className="tps-stat-dots">{dots(val)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="tps-sheet-section-label">Key Skills</div>
+            <div className="tps-stat-grid">
+              {topSkills.map(([skill, val]) => (
+                <div key={skill} className="tps-stat">
+                  <span className="tps-stat-name">{skill}</span>
+                  <span className="tps-stat-dots">{dots(val)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ── Props ─────────────────────────────────────────────────────────────────────
+
 interface Props {
   onSelect: (char: Character, starterItems: string[]) => void;
   onCustom: () => void;
   onBack: () => void;
 }
 
+// ── Main screen ───────────────────────────────────────────────────────────────
+
 export function TemplatePickScreen({ onSelect, onCustom, onBack }: Props) {
-  const [preview, setPreview] = useState<TemplateChar | null>(null);
+  const [selected, setSelected] = useState<TemplateChar>(TEMPLATES[0]);
 
   function playAs(tmpl: TemplateChar) {
     const discObj: Record<string, number> = {};
@@ -138,105 +211,108 @@ export function TemplatePickScreen({ onSelect, onCustom, onBack }: Props) {
   }
 
   return (
-    <div className="template-pick-screen">
-      <div className="template-pick-header">
-        <h1 className="template-pick-title">Choose Your Character</h1>
-        <p className="template-pick-sub">Select a ready-made vampire to begin, or build your own.</p>
+    <div className="tps-screen">
+      <div className="tps-header">
+        <h1 className="tps-title">Choose Your Vampire</h1>
+        <p className="tps-sub">Select a ready-made character or forge your own.</p>
       </div>
 
-      <div className="template-pick-body">
-        {preview ? (
-          <div className="template-detail">
-            <div className="template-detail-header">
+      <div className="tps-body">
+        {/* ── Card grid ── */}
+        <div className="tps-grid">
+          {TEMPLATES.map(tmpl => (
+            <button
+              key={tmpl.name}
+              className={`tps-card ${selected.name === tmpl.name ? 'tps-card--selected' : ''}`}
+              onClick={() => setSelected(tmpl)}
+              aria-pressed={selected.name === tmpl.name}
+            >
               <img
-                className="template-detail-portrait"
-                src={portraitPath('modern', preview.clan, preview.gender)}
-                alt=""
-                onError={e => { e.currentTarget.style.display = 'none'; }}
+                className="tps-card-portrait"
+                src={portraitPath('modern', tmpl.clan, tmpl.gender)}
+                alt={tmpl.name}
+                onError={e => {
+                  const fallback = portraitPath('modern', tmpl.clan);
+                  if (!e.currentTarget.src.endsWith(fallback)) {
+                    e.currentTarget.src = fallback;
+                  } else {
+                    e.currentTarget.style.display = 'none';
+                  }
+                }}
               />
-              <div className="template-detail-titles">
-                <div className="template-detail-clan">{preview.clan}</div>
-                <div className="template-detail-name">{preview.name}</div>
-                <div className="template-detail-concept">{preview.concept}</div>
+              <div className="tps-card-meta">
+                <div className="tps-card-clan">{tmpl.clan}</div>
+                <div className="tps-card-name">{tmpl.name}</div>
               </div>
-            </div>
+            </button>
+          ))}
+        </div>
 
-            <p className="template-detail-background">{preview.background}</p>
-
-            <div className="template-detail-hint">
-              <span className="template-detail-hint-label">How to play — </span>
-              {preview.playHint}
-            </div>
-
-            <div className="template-detail-weapons">
-              <span className="template-detail-weapons-label">Starting loadout:</span>
-              <div className="template-detail-weapon-chips">
-                {preview.starterWeapons.map(id => {
-                  const item = ITEM_CATALOG[id];
-                  return item ? (
-                    <span key={id} className="template-weapon-chip">
-                      {item.icon} {item.name}
-                    </span>
-                  ) : null;
-                })}
-                {(preview.extraItems ?? []).map(id => {
-                  const item = ITEM_CATALOG[id];
-                  return item ? (
-                    <span key={id} className="template-weapon-chip template-weapon-chip--extra">
-                      {item.icon} {item.name}
-                    </span>
-                  ) : null;
-                })}
-              </div>
-            </div>
-
-            <div className="template-detail-actions">
-              <button className="btn btn-ghost btn-sm" onClick={() => setPreview(null)}>
-                ← Back
-              </button>
-              <button className="btn btn-primary" onClick={() => playAs(preview)}>
-                Play as {preview.name} →
-              </button>
+        {/* ── Detail panel ── */}
+        <div className="tps-detail">
+          {/* Hero */}
+          <div className="tps-hero">
+            <img
+              className="tps-hero-portrait"
+              src={portraitPath('modern', selected.clan, selected.gender)}
+              alt=""
+              onError={e => { e.currentTarget.style.display = 'none'; }}
+            />
+            <div className="tps-hero-identity">
+              <div className="tps-detail-clan">{selected.clan}</div>
+              <div className="tps-detail-name">{selected.name}</div>
+              <div className="tps-detail-concept">{selected.concept}</div>
             </div>
           </div>
-        ) : (
-          <div className="template-row">
-            {TEMPLATES.map(tmpl => (
-              <div
-                key={tmpl.name}
-                className="template-card"
-                onClick={() => setPreview(tmpl)}
-              >
-                <img
-                  className="template-portrait"
-                  src={portraitPath('modern', tmpl.clan, tmpl.gender)}
-                  alt=""
-                  onError={e => {
-                    const fallback = portraitPath('modern', tmpl.clan);
-                    if (!e.currentTarget.src.endsWith(fallback)) {
-                      e.currentTarget.src = fallback;
-                    } else {
-                      e.currentTarget.style.display = 'none';
-                    }
-                  }}
-                />
-                <div className="template-clan">{tmpl.clan}</div>
-                <div className="template-name">{tmpl.name}</div>
-                <div className="template-concept">{tmpl.concept}</div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
 
-      {!preview && (
-        <div className="template-pick-footer">
-          <button className="btn btn-ghost" onClick={onBack}>← Back</button>
-          <button className="btn btn-primary" onClick={onCustom}>
-            Create Custom Character →
+          {/* Background */}
+          <p className="tps-background">{selected.background}</p>
+
+          {/* Play hint */}
+          <div className="tps-hint">
+            <span className="tps-hint-label">How to play</span>
+            {selected.playHint}
+          </div>
+
+          {/* Starting loadout */}
+          <div>
+            <div className="tps-loadout-label">Starting Loadout</div>
+            <div className="tps-chips">
+              {selected.starterWeapons.map(id => {
+                const item = ITEM_CATALOG[id];
+                return item ? (
+                  <span key={id} className="tps-chip">{item.icon} {item.name}</span>
+                ) : null;
+              })}
+              {(selected.extraItems ?? []).map(id => {
+                const item = ITEM_CATALOG[id];
+                return item ? (
+                  <span key={id} className="tps-chip tps-chip--item">{item.icon} {item.name}</span>
+                ) : null;
+              })}
+            </div>
+          </div>
+
+          {/* Character sheet accordion */}
+          <CharSheet key={selected.name} tmpl={selected} />
+
+          {/* Primary CTA */}
+          <button
+            className="btn btn-primary tps-play-btn"
+            onClick={() => playAs(selected)}
+          >
+            Play as {selected.name} →
           </button>
         </div>
-      )}
+      </div>
+
+      {/* Footer — secondary actions */}
+      <div className="tps-footer">
+        <button className="btn btn-ghost btn-sm" onClick={onBack}>← Back</button>
+        <button className="btn btn-ghost tps-custom-btn" onClick={onCustom}>
+          Create Custom Character
+        </button>
+      </div>
     </div>
   );
 }

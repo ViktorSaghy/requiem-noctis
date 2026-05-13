@@ -1,0 +1,393 @@
+/* TemplatePickScreen — mobile-first, VTM dark aesthetic */
+
+/* ── Screen shell ─────────────────────────────────────────────────────────── */
+
+.tps-screen {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg);
+  overflow: hidden;
+}
+
+/* ── Header ───────────────────────────────────────────────────────────────── */
+
+.tps-header {
+  padding: 1.25rem 1.25rem 0.9rem;
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+  text-align: center;
+}
+
+.tps-title {
+  font-family: var(--display);
+  font-size: 1.35rem;
+  color: var(--gold);
+  margin: 0 0 0.2rem;
+  letter-spacing: 0.04em;
+}
+
+.tps-sub {
+  font-size: 0.8rem;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+/* ── Scrollable body ──────────────────────────────────────────────────────── */
+
+.tps-body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  padding: 1rem;
+  gap: 1rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Card grid ────────────────────────────────────────────────────────────── */
+
+.tps-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  flex-shrink: 0;
+}
+
+.tps-card {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  background: var(--bg-2);
+  border: 1px solid rgba(201, 168, 76, 0.18);
+  border-radius: 5px;
+  overflow: hidden;
+  transition: border-color 0.15s, background 0.15s;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+.tps-card:hover {
+  border-color: rgba(201, 168, 76, 0.5);
+  background: rgba(201, 168, 76, 0.04);
+}
+
+.tps-card--selected {
+  border-color: var(--gold) !important;
+  background: rgba(201, 168, 76, 0.09) !important;
+  box-shadow: 0 0 0 1px rgba(201, 168, 76, 0.25);
+}
+
+.tps-card-portrait {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  object-fit: cover;
+  object-position: top;
+  display: block;
+}
+
+.tps-card-meta {
+  padding: 0.3rem 0.4rem 0.4rem;
+}
+
+.tps-card-clan {
+  font-family: var(--display);
+  font-size: 0.55rem;
+  letter-spacing: 0.12em;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+  margin-bottom: 0.1rem;
+}
+
+.tps-card-name {
+  font-size: 0.72rem;
+  color: var(--text-main);
+  font-family: var(--display);
+  line-height: 1.2;
+}
+
+/* ── Detail panel ─────────────────────────────────────────────────────────── */
+
+.tps-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(201, 168, 76, 0.2);
+  border-radius: 6px;
+  padding: 1rem;
+}
+
+/* Hero: portrait + identity */
+.tps-hero {
+  display: flex;
+  gap: 0.85rem;
+  align-items: flex-start;
+}
+
+.tps-hero-portrait {
+  width: 80px;
+  height: 100px;
+  object-fit: cover;
+  object-position: top;
+  border-radius: 4px;
+  border: 1px solid rgba(201, 168, 76, 0.3);
+  flex-shrink: 0;
+}
+
+.tps-hero-identity {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 0.2rem;
+  min-width: 0;
+}
+
+.tps-detail-clan {
+  font-family: var(--display);
+  font-size: 0.6rem;
+  letter-spacing: 0.14em;
+  color: var(--gold-dim);
+  text-transform: uppercase;
+}
+
+.tps-detail-name {
+  font-family: var(--display);
+  font-size: 1.1rem;
+  color: var(--gold);
+  line-height: 1.15;
+}
+
+.tps-detail-concept {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+/* Background text */
+.tps-background {
+  font-size: 0.82rem;
+  line-height: 1.6;
+  color: var(--text);
+  margin: 0;
+}
+
+/* Play hint */
+.tps-hint {
+  font-size: 0.78rem;
+  line-height: 1.55;
+  color: var(--text-dim);
+  border-left: 2px solid rgba(201, 168, 76, 0.4);
+  padding-left: 0.65rem;
+  font-style: italic;
+}
+
+.tps-hint-label {
+  display: block;
+  font-family: var(--display);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  font-style: normal;
+  margin-bottom: 0.25rem;
+}
+
+/* Loadout */
+.tps-loadout-label {
+  font-family: var(--display);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 0.4rem;
+}
+
+.tps-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+}
+
+.tps-chip {
+  background: rgba(201, 168, 76, 0.08);
+  border: 1px solid rgba(201, 168, 76, 0.28);
+  border-radius: 3px;
+  padding: 0.18rem 0.5rem;
+  font-size: 0.73rem;
+  color: var(--text);
+}
+
+.tps-chip--item {
+  border-color: rgba(100, 170, 120, 0.35);
+  background: rgba(100, 170, 120, 0.06);
+  color: var(--text-dim);
+}
+
+/* ── Character sheet accordion ────────────────────────────────────────────── */
+
+.tps-sheet {
+  border: 1px solid rgba(255, 255, 255, 0.07);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.tps-sheet-toggle {
+  all: unset;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 0.55rem 0.75rem;
+  background: rgba(255, 255, 255, 0.03);
+  font-family: var(--display);
+  font-size: 0.68rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  box-sizing: border-box;
+  transition: background 0.12s;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.tps-sheet-toggle:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--text-main);
+}
+
+.tps-sheet-chevron {
+  font-size: 0.6rem;
+  opacity: 0.6;
+}
+
+.tps-sheet-body {
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.tps-sheet-section-label {
+  font-family: var(--display);
+  font-size: 0.58rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--gold-dim);
+  margin-bottom: 0.35rem;
+}
+
+.tps-disc-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.3rem;
+}
+
+.tps-disc-pill {
+  background: rgba(201, 168, 76, 0.09);
+  border: 1px solid rgba(201, 168, 76, 0.22);
+  border-radius: 3px;
+  padding: 0.15rem 0.45rem;
+  font-size: 0.7rem;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+}
+
+.tps-stat-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.3rem 0.75rem;
+}
+
+.tps-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.tps-stat-name {
+  font-size: 0.72rem;
+  color: var(--text-dim);
+}
+
+.tps-stat-dots {
+  font-size: 0.55rem;
+  letter-spacing: 0.05em;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+
+/* ── Primary play button ──────────────────────────────────────────────────── */
+
+.tps-play-btn {
+  width: 100%;
+  padding: 0.75rem 1rem !important;
+  font-size: 0.95rem !important;
+  letter-spacing: 0.06em;
+  margin-top: 0.25rem;
+}
+
+/* ── Footer ───────────────────────────────────────────────────────────────── */
+
+.tps-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+  gap: 0.75rem;
+}
+
+.tps-custom-btn {
+  flex: 1;
+  text-align: center;
+  justify-content: center;
+  max-width: 260px;
+}
+
+/* ── Tablet: 4-column grid ────────────────────────────────────────────────── */
+
+@media (min-width: 540px) {
+  .tps-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+/* ── Desktop: side-by-side ────────────────────────────────────────────────── */
+
+@media (min-width: 900px) {
+  .tps-body {
+    flex-direction: row;
+    align-items: flex-start;
+    overflow: hidden;
+    padding: 1.25rem;
+  }
+
+  .tps-grid {
+    grid-template-columns: repeat(2, 1fr);
+    width: 220px;
+    flex-shrink: 0;
+    align-self: flex-start;
+    position: sticky;
+    top: 0;
+    max-height: 100%;
+    overflow-y: auto;
+  }
+
+  .tps-detail {
+    flex: 1;
+    height: 100%;
+    overflow-y: auto;
+  }
+}
+
+@media (min-width: 1100px) {
+  .tps-grid {
+    grid-template-columns: repeat(2, 1fr);
+    width: 260px;
+  }
+}
